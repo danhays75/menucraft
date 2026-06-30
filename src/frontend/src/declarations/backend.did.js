@@ -54,6 +54,7 @@ export const UserProfilePublic = IDL.Record({
   'createdAt' : Timestamp,
   'role' : UserRole,
 });
+export const PositionId = IDL.Nat;
 export const ExternalBlob = IDL.Vec(IDL.Nat8);
 export const CategoryId = IDL.Nat;
 export const SubCategoryId = IDL.Nat;
@@ -94,6 +95,16 @@ export const MenuItemPublic = IDL.Record({
   'itemPhoto' : ExternalBlob,
   'ingredients' : IDL.Vec(IDL.Text),
 });
+export const PositionPublic = IDL.Record({
+  'id' : PositionId,
+  'sortOrder' : IDL.Nat,
+  'name' : IDL.Text,
+  'createdAt' : Timestamp,
+  'description' : IDL.Opt(IDL.Text),
+  'coverPhoto' : IDL.Opt(ExternalBlob),
+  'updatedAt' : Timestamp,
+  'categoryCount' : IDL.Nat,
+});
 export const FontChoice = IDL.Variant({
   'sansSerif' : IDL.Null,
   'monospace' : IDL.Null,
@@ -112,6 +123,7 @@ export const CategoryPublic = IDL.Record({
   'sortOrder' : IDL.Nat,
   'name' : IDL.Text,
   'itemCount' : IDL.Nat,
+  'positionId' : PositionId,
   'coverPhoto' : ExternalBlob,
 });
 
@@ -119,6 +131,7 @@ export const idlService = IDL.Service({
   '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
   '__categories' : IDL.Func([], [IDL.Reserved], ['query']),
   '__items' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__positions' : IDL.Func([], [IDL.Reserved], ['query']),
   '__state' : IDL.Func([], [IDL.Reserved], ['query']),
   '__steps' : IDL.Func([], [IDL.Reserved], ['query']),
   '__subCategories' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -156,10 +169,19 @@ export const idlService = IDL.Service({
   '_internet_identity_sign_in_start' : IDL.Func([], [IDL.Vec(IDL.Nat8)], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'assignRole' : IDL.Func([Principal, UserRole], [UserProfilePublic], []),
-  'createCategory' : IDL.Func([IDL.Text, ExternalBlob], [CategoryId], []),
+  'createCategory' : IDL.Func(
+      [PositionId, IDL.Text, ExternalBlob],
+      [CategoryId],
+      [],
+    ),
   'createMenuItem' : IDL.Func(
       [CategoryId, IDL.Opt(SubCategoryId), IDL.Text, IDL.Text, ExternalBlob],
       [ItemId],
+      [],
+    ),
+  'createPosition' : IDL.Func(
+      [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(ExternalBlob)],
+      [PositionId],
       [],
     ),
   'createSubCategory' : IDL.Func(
@@ -174,6 +196,7 @@ export const idlService = IDL.Service({
     ),
   'deleteCategory' : IDL.Func([CategoryId], [IDL.Nat], []),
   'deleteMenuItem' : IDL.Func([ItemId], [], []),
+  'deletePosition' : IDL.Func([PositionId], [IDL.Nat], []),
   'deleteSubCategory' : IDL.Func(
       [SubCategoryId],
       [IDL.Record({ 'itemCount' : IDL.Nat })],
@@ -192,6 +215,7 @@ export const idlService = IDL.Service({
     ),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getMenuItem' : IDL.Func([ItemId], [IDL.Opt(MenuItemPublic)], ['query']),
+  'getPosition' : IDL.Func([PositionId], [IDL.Opt(PositionPublic)], ['query']),
   'getTheme' : IDL.Func([], [ThemePublic], ['query']),
   'getTrainingStep' : IDL.Func(
       [IDL.Nat],
@@ -210,6 +234,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(MenuItemPublic)],
       ['query'],
     ),
+  'listPositions' : IDL.Func([], [IDL.Vec(PositionPublic)], ['query']),
   'listSubCategories' : IDL.Func(
       [CategoryId],
       [IDL.Vec(SubCategoryPublic)],
@@ -232,8 +257,13 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'setCategorySortOrder' : IDL.Func([CategoryId, IDL.Nat], [], []),
+  'setPositionSortOrder' : IDL.Func([PositionId, IDL.Nat], [], []),
   'setSubCategorySortOrder' : IDL.Func([SubCategoryId, IDL.Nat], [], []),
-  'updateCategory' : IDL.Func([CategoryId, IDL.Text, ExternalBlob], [], []),
+  'updateCategory' : IDL.Func(
+      [CategoryId, PositionId, IDL.Text, ExternalBlob],
+      [],
+      [],
+    ),
   'updateLogo' : IDL.Func([IDL.Opt(ExternalBlob)], [ThemePublic], []),
   'updateMenuItem' : IDL.Func(
       [
@@ -249,6 +279,11 @@ export const idlService = IDL.Service({
     ),
   'updateMenuItemRecipe' : IDL.Func(
       [ItemId, IDL.Vec(IDL.Text), IDL.Vec(IDL.Text)],
+      [],
+      [],
+    ),
+  'updatePosition' : IDL.Func(
+      [PositionId, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(ExternalBlob)],
       [],
       [],
     ),
@@ -313,6 +348,7 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : Timestamp,
     'role' : UserRole,
   });
+  const PositionId = IDL.Nat;
   const ExternalBlob = IDL.Vec(IDL.Nat8);
   const CategoryId = IDL.Nat;
   const SubCategoryId = IDL.Nat;
@@ -353,6 +389,16 @@ export const idlFactory = ({ IDL }) => {
     'itemPhoto' : ExternalBlob,
     'ingredients' : IDL.Vec(IDL.Text),
   });
+  const PositionPublic = IDL.Record({
+    'id' : PositionId,
+    'sortOrder' : IDL.Nat,
+    'name' : IDL.Text,
+    'createdAt' : Timestamp,
+    'description' : IDL.Opt(IDL.Text),
+    'coverPhoto' : IDL.Opt(ExternalBlob),
+    'updatedAt' : Timestamp,
+    'categoryCount' : IDL.Nat,
+  });
   const FontChoice = IDL.Variant({
     'sansSerif' : IDL.Null,
     'monospace' : IDL.Null,
@@ -371,6 +417,7 @@ export const idlFactory = ({ IDL }) => {
     'sortOrder' : IDL.Nat,
     'name' : IDL.Text,
     'itemCount' : IDL.Nat,
+    'positionId' : PositionId,
     'coverPhoto' : ExternalBlob,
   });
   
@@ -378,6 +425,7 @@ export const idlFactory = ({ IDL }) => {
     '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
     '__categories' : IDL.Func([], [IDL.Reserved], ['query']),
     '__items' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__positions' : IDL.Func([], [IDL.Reserved], ['query']),
     '__state' : IDL.Func([], [IDL.Reserved], ['query']),
     '__steps' : IDL.Func([], [IDL.Reserved], ['query']),
     '__subCategories' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -415,10 +463,19 @@ export const idlFactory = ({ IDL }) => {
     '_internet_identity_sign_in_start' : IDL.Func([], [IDL.Vec(IDL.Nat8)], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'assignRole' : IDL.Func([Principal, UserRole], [UserProfilePublic], []),
-    'createCategory' : IDL.Func([IDL.Text, ExternalBlob], [CategoryId], []),
+    'createCategory' : IDL.Func(
+        [PositionId, IDL.Text, ExternalBlob],
+        [CategoryId],
+        [],
+      ),
     'createMenuItem' : IDL.Func(
         [CategoryId, IDL.Opt(SubCategoryId), IDL.Text, IDL.Text, ExternalBlob],
         [ItemId],
+        [],
+      ),
+    'createPosition' : IDL.Func(
+        [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(ExternalBlob)],
+        [PositionId],
         [],
       ),
     'createSubCategory' : IDL.Func(
@@ -433,6 +490,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'deleteCategory' : IDL.Func([CategoryId], [IDL.Nat], []),
     'deleteMenuItem' : IDL.Func([ItemId], [], []),
+    'deletePosition' : IDL.Func([PositionId], [IDL.Nat], []),
     'deleteSubCategory' : IDL.Func(
         [SubCategoryId],
         [IDL.Record({ 'itemCount' : IDL.Nat })],
@@ -451,6 +509,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getMenuItem' : IDL.Func([ItemId], [IDL.Opt(MenuItemPublic)], ['query']),
+    'getPosition' : IDL.Func(
+        [PositionId],
+        [IDL.Opt(PositionPublic)],
+        ['query'],
+      ),
     'getTheme' : IDL.Func([], [ThemePublic], ['query']),
     'getTrainingStep' : IDL.Func(
         [IDL.Nat],
@@ -469,6 +532,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(MenuItemPublic)],
         ['query'],
       ),
+    'listPositions' : IDL.Func([], [IDL.Vec(PositionPublic)], ['query']),
     'listSubCategories' : IDL.Func(
         [CategoryId],
         [IDL.Vec(SubCategoryPublic)],
@@ -491,8 +555,13 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'setCategorySortOrder' : IDL.Func([CategoryId, IDL.Nat], [], []),
+    'setPositionSortOrder' : IDL.Func([PositionId, IDL.Nat], [], []),
     'setSubCategorySortOrder' : IDL.Func([SubCategoryId, IDL.Nat], [], []),
-    'updateCategory' : IDL.Func([CategoryId, IDL.Text, ExternalBlob], [], []),
+    'updateCategory' : IDL.Func(
+        [CategoryId, PositionId, IDL.Text, ExternalBlob],
+        [],
+        [],
+      ),
     'updateLogo' : IDL.Func([IDL.Opt(ExternalBlob)], [ThemePublic], []),
     'updateMenuItem' : IDL.Func(
         [
@@ -508,6 +577,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'updateMenuItemRecipe' : IDL.Func(
         [ItemId, IDL.Vec(IDL.Text), IDL.Vec(IDL.Text)],
+        [],
+        [],
+      ),
+    'updatePosition' : IDL.Func(
+        [PositionId, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(ExternalBlob)],
         [],
         [],
       ),

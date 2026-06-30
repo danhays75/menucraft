@@ -16,6 +16,7 @@ export interface CategoryPublic {
   'sortOrder' : bigint,
   'name' : string,
   'itemCount' : bigint,
+  'positionId' : PositionId,
   'coverPhoto' : ExternalBlob,
 }
 export type Error = { 'FrontendOriginsNotConfigured' : null } |
@@ -48,6 +49,17 @@ export interface MenuItemPublic {
   'subCategoryId' : [] | [SubCategoryId],
   'itemPhoto' : ExternalBlob,
   'ingredients' : Array<string>,
+}
+export type PositionId = bigint;
+export interface PositionPublic {
+  'id' : PositionId,
+  'sortOrder' : bigint,
+  'name' : string,
+  'createdAt' : Timestamp,
+  'description' : [] | [string],
+  'coverPhoto' : [] | [ExternalBlob],
+  'updatedAt' : Timestamp,
+  'categoryCount' : bigint,
 }
 export type Principal = Principal;
 export type Result = { 'ok' : null } |
@@ -111,6 +123,7 @@ export interface _SERVICE {
   '__accessControlState' : ActorMethod<[], any>,
   '__categories' : ActorMethod<[], any>,
   '__items' : ActorMethod<[], any>,
+  '__positions' : ActorMethod<[], any>,
   '__state' : ActorMethod<[], any>,
   '__steps' : ActorMethod<[], any>,
   '__subCategories' : ActorMethod<[], any>,
@@ -140,10 +153,17 @@ export interface _SERVICE {
   '_internet_identity_sign_in_start' : ActorMethod<[], Uint8Array>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignRole' : ActorMethod<[Principal, UserRole], UserProfilePublic>,
-  'createCategory' : ActorMethod<[string, ExternalBlob], CategoryId>,
+  'createCategory' : ActorMethod<
+    [PositionId, string, ExternalBlob],
+    CategoryId
+  >,
   'createMenuItem' : ActorMethod<
     [CategoryId, [] | [SubCategoryId], string, string, ExternalBlob],
     ItemId
+  >,
+  'createPosition' : ActorMethod<
+    [string, [] | [string], [] | [ExternalBlob]],
+    PositionId
   >,
   'createSubCategory' : ActorMethod<
     [CategoryId, string, ExternalBlob],
@@ -155,6 +175,7 @@ export interface _SERVICE {
   >,
   'deleteCategory' : ActorMethod<[CategoryId], bigint>,
   'deleteMenuItem' : ActorMethod<[ItemId], undefined>,
+  'deletePosition' : ActorMethod<[PositionId], bigint>,
   'deleteSubCategory' : ActorMethod<[SubCategoryId], { 'itemCount' : bigint }>,
   'deleteTrainingStep' : ActorMethod<[bigint], boolean>,
   'editTrainingStep' : ActorMethod<
@@ -164,6 +185,7 @@ export interface _SERVICE {
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfilePublic]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getMenuItem' : ActorMethod<[ItemId], [] | [MenuItemPublic]>,
+  'getPosition' : ActorMethod<[PositionId], [] | [PositionPublic]>,
   'getTheme' : ActorMethod<[], ThemePublic>,
   'getTrainingStep' : ActorMethod<[bigint], [] | [TrainingStepPublic]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
@@ -173,6 +195,7 @@ export interface _SERVICE {
     [SubCategoryId],
     Array<MenuItemPublic>
   >,
+  'listPositions' : ActorMethod<[], Array<PositionPublic>>,
   'listSubCategories' : ActorMethod<[CategoryId], Array<SubCategoryPublic>>,
   'listTrainingSteps' : ActorMethod<[ItemId], Array<TrainingStepPublic>>,
   'listUsers' : ActorMethod<[], Array<UserProfilePublic>>,
@@ -186,8 +209,12 @@ export interface _SERVICE {
     Array<MenuItemPublic>
   >,
   'setCategorySortOrder' : ActorMethod<[CategoryId, bigint], undefined>,
+  'setPositionSortOrder' : ActorMethod<[PositionId, bigint], undefined>,
   'setSubCategorySortOrder' : ActorMethod<[SubCategoryId, bigint], undefined>,
-  'updateCategory' : ActorMethod<[CategoryId, string, ExternalBlob], undefined>,
+  'updateCategory' : ActorMethod<
+    [CategoryId, PositionId, string, ExternalBlob],
+    undefined
+  >,
   'updateLogo' : ActorMethod<[[] | [ExternalBlob]], ThemePublic>,
   'updateMenuItem' : ActorMethod<
     [ItemId, CategoryId, [] | [SubCategoryId], string, string, ExternalBlob],
@@ -195,6 +222,10 @@ export interface _SERVICE {
   >,
   'updateMenuItemRecipe' : ActorMethod<
     [ItemId, Array<string>, Array<string>],
+    undefined
+  >,
+  'updatePosition' : ActorMethod<
+    [PositionId, string, [] | [string], [] | [ExternalBlob]],
     undefined
   >,
   'updateSubCategory' : ActorMethod<

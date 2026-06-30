@@ -70,6 +70,18 @@ type Result =
    ok;
  };
 type Principal = principal;
+type PositionPublic = 
+ record {
+   categoryCount: nat;
+   coverPhoto: opt ExternalBlob;
+   createdAt: Timestamp;
+   description: opt text;
+   id: PositionId;
+   name: text;
+   sortOrder: nat;
+   updatedAt: Timestamp;
+ };
+type PositionId = nat;
 type MenuItemPublic = 
  record {
    categoryId: CategoryId;
@@ -118,6 +130,7 @@ type CategoryPublic =
    id: CategoryId;
    itemCount: nat;
    name: text;
+   positionId: PositionId;
    sortOrder: nat;
  };
 type CategoryId = nat;
@@ -125,6 +138,7 @@ service : {
   __accessControlState: () -> (reserved) query;
   __categories: () -> (reserved) query;
   __items: () -> (reserved) query;
+  __positions: () -> (reserved) query;
   __state: () -> (reserved) query;
   __steps: () -> (reserved) query;
   __subCategories: () -> (reserved) query;
@@ -145,15 +159,19 @@ service : {
   _internet_identity_sign_in_start: () -> (blob);
   assignCallerUserRole: (user: principal, role: UserRole) -> ();
   assignRole: (user: Principal, role: UserRole) -> (UserProfilePublic);
-  createCategory: (name: text, coverPhoto: ExternalBlob) -> (CategoryId);
+  createCategory: (positionId: PositionId, name: text, coverPhoto:
+   ExternalBlob) -> (CategoryId);
   createMenuItem: (categoryId: CategoryId, subCategoryId: opt SubCategoryId,
    name: text, description: text, itemPhoto: ExternalBlob) -> (ItemId);
+  createPosition: (name: text, description: opt text, coverPhoto:
+   opt ExternalBlob) -> (PositionId);
   createSubCategory: (parentCategoryId: CategoryId, name: text, coverPhoto:
    ExternalBlob) -> (SubCategoryPublic);
   createTrainingStep: (itemId: ItemId, input: TrainingStepInput) ->
    (TrainingStepPublic);
   deleteCategory: (id: CategoryId) -> (nat);
   deleteMenuItem: (id: ItemId) -> ();
+  deletePosition: (id: PositionId) -> (nat);
   deleteSubCategory: (id: SubCategoryId) -> (record {itemCount: nat;});
   deleteTrainingStep: (stepId: nat) -> (bool);
   editTrainingStep: (stepId: nat, edit: TrainingStepEdit) ->
@@ -161,6 +179,7 @@ service : {
   getCallerUserProfile: () -> (opt UserProfilePublic) query;
   getCallerUserRole: () -> (UserRole) query;
   getMenuItem: (itemId: ItemId) -> (opt MenuItemPublic) query;
+  getPosition: (id: PositionId) -> (opt PositionPublic) query;
   getTheme: () -> (ThemePublic) query;
   getTrainingStep: (stepId: nat) -> (opt TrainingStepPublic) query;
   isCallerAdmin: () -> (bool) query;
@@ -168,6 +187,7 @@ service : {
   listItemsByCategory: (categoryId: CategoryId) -> (vec MenuItemPublic) query;
   listItemsBySubCategory: (subCategoryId: SubCategoryId) ->
    (vec MenuItemPublic) query;
+  listPositions: () -> (vec PositionPublic) query;
   listSubCategories: (categoryId: CategoryId) ->
    (vec SubCategoryPublic) query;
   listTrainingSteps: (itemId: ItemId) -> (vec TrainingStepPublic) query;
@@ -180,15 +200,18 @@ service : {
   searchItemsInCategory: (categoryId: CategoryId, searchTerm: text) ->
    (vec MenuItemPublic) query;
   setCategorySortOrder: (id: CategoryId, sortOrder: nat) -> ();
+  setPositionSortOrder: (id: PositionId, sortOrder: nat) -> ();
   setSubCategorySortOrder: (id: SubCategoryId, sortOrder: nat) -> ();
-  updateCategory: (id: CategoryId, name: text, coverPhoto: ExternalBlob) ->
-   ();
+  updateCategory: (id: CategoryId, positionId: PositionId, name: text,
+   coverPhoto: ExternalBlob) -> ();
   updateLogo: (logo: opt ExternalBlob) -> (ThemePublic);
   updateMenuItem: (id: ItemId, categoryId: CategoryId, subCategoryId:
    opt SubCategoryId, name: text, description: text, itemPhoto:
    ExternalBlob) -> ();
   updateMenuItemRecipe: (id: ItemId, ingredients: vec text, instructions:
    vec text) -> ();
+  updatePosition: (id: PositionId, name: text, description: opt text,
+   coverPhoto: opt ExternalBlob) -> ();
   updateSubCategory: (id: SubCategoryId, name: text, coverPhoto:
    ExternalBlob) -> (SubCategoryPublic);
   updateTheme: (primaryColor: opt text, accentColor: opt text, font:

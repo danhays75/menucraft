@@ -9,6 +9,8 @@ import type {
   FontChoice,
   ItemId,
   MenuItemPublic,
+  PositionId,
+  PositionPublic,
   SubCategoryId,
   SubCategoryPublic,
   ThemePublic,
@@ -132,6 +134,114 @@ export function useRevokeRole() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Positions                                                            */
+/* ------------------------------------------------------------------ */
+
+export function usePositions() {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<PositionPublic[]>({
+    queryKey: ["positions"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.listPositions();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function usePosition(id: PositionId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<PositionPublic | null>({
+    queryKey: ["position", String(id)],
+    queryFn: async () => {
+      if (!actor || id === undefined) return null;
+      return actor.getPosition(id);
+    },
+    enabled: !!actor && !isFetching && id !== undefined,
+  });
+}
+
+export function useCreatePosition() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      name: string;
+      description: string | null;
+      coverPhoto: ExternalBlob | null;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createPosition(vars.name, vars.description, vars.coverPhoto);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["positions"] }),
+  });
+}
+
+export function useUpdatePosition() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: PositionId;
+      name: string;
+      description: string | null;
+      coverPhoto: ExternalBlob | null;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updatePosition(
+        vars.id,
+        vars.name,
+        vars.description,
+        vars.coverPhoto,
+      );
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["positions"] });
+      qc.invalidateQueries({ queryKey: ["position", String(vars.id)] });
+    },
+  });
+}
+
+export function useDeletePosition() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: PositionId) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.deletePosition(id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["positions"] }),
+  });
+}
+
+export function useSetPositionSortOrder() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { id: PositionId; sortOrder: bigint }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.setPositionSortOrder(vars.id, vars.sortOrder);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["positions"] }),
+  });
+}
+
+export function useCategoriesByPosition(positionId: PositionId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<CategoryPublic[]>({
+    queryKey: ["categories", "position", String(positionId)],
+    queryFn: async () => {
+      if (!actor || positionId === undefined) return [];
+      // The backend does not expose listCategoriesByPosition; filter the full
+      // list client-side by positionId. CategoryPublic carries positionId.
+      const all = await actor.listCategories();
+      return all.filter((c) => c.positionId === positionId);
+    },
+    enabled: !!actor && !isFetching && positionId !== undefined,
+  });
+}
+
+/* ------------------------------------------------------------------ */
 /* Categories                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -164,11 +274,21 @@ export function useCreateCategory() {
   const { actor } = useActor(createActor);
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (vars: { name: string; coverPhoto: ExternalBlob }) => {
+    mutationFn: async (vars: {
+      positionId: PositionId;
+      name: string;
+      coverPhoto: ExternalBlob;
+    }) => {
       if (!actor) throw new Error("actor not ready");
-      return actor.createCategory(vars.name, vars.coverPhoto);
+      return actor.createCategory(vars.positionId, vars.name, vars.coverPhoto);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["categories", "position", String(vars.positionId)],
+      });
+      qc.invalidateQueries({ queryKey: ["positions"] });
+    },
   });
 }
 
@@ -178,13 +298,25 @@ export function useUpdateCategory() {
   return useMutation({
     mutationFn: async (vars: {
       id: CategoryId;
+      positionId: PositionId;
       name: string;
       coverPhoto: ExternalBlob;
     }) => {
       if (!actor) throw new Error("actor not ready");
-      await actor.updateCategory(vars.id, vars.name, vars.coverPhoto);
+      await actor.updateCategory(
+        vars.id,
+        vars.positionId,
+        vars.name,
+        vars.coverPhoto,
+      );
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["categories", "position", String(vars.positionId)],
+      });
+      qc.invalidateQueries({ queryKey: ["positions"] });
+    },
   });
 }
 

@@ -10,6 +10,8 @@ import type {
   FontChoice,
   ItemId,
   MenuItemPublic,
+  PositionId,
+  PositionPublic,
   SubCategoryId,
   SubCategoryPublic,
   ThemePublic,
@@ -29,6 +31,8 @@ export type {
   FontChoice,
   ItemId,
   MenuItemPublic,
+  PositionId,
+  PositionPublic,
   SubCategoryId,
   SubCategoryPublic,
   ThemePublic,
@@ -46,6 +50,18 @@ export interface CategoryView {
   itemCount: number;
   sortOrder: number;
   coverUrl: string;
+}
+
+/** A position card enriched with a usable cover-photo URL for display. */
+export interface PositionView {
+  id: bigint;
+  name: string;
+  description: string | null;
+  categoryCount: number;
+  sortOrder: number;
+  coverUrl: string;
+  createdAt: bigint;
+  updatedAt: bigint;
 }
 
 /** A sub-category card enriched with a usable cover-photo URL for display. */
@@ -106,6 +122,20 @@ export function toCategoryView(c: CategoryPublic): CategoryView {
     itemCount: Number(c.itemCount),
     sortOrder: Number(c.sortOrder),
     coverUrl: blobUrl(c.coverPhoto),
+  };
+}
+
+/** Convert a backend PositionPublic into a display-ready PositionView. */
+export function toPositionView(p: PositionPublic): PositionView {
+  return {
+    id: p.id,
+    name: p.name,
+    description: p.description ?? null,
+    categoryCount: Number(p.categoryCount),
+    sortOrder: Number(p.sortOrder),
+    coverUrl: blobUrl(p.coverPhoto ?? null),
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
   };
 }
 

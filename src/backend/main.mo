@@ -12,13 +12,16 @@ import Training "types/training";
 import CategoriesItemsApi "mixins/categories-items-api";
 import TrainingApi "mixins/training-api";
 import UsersThemeApi "mixins/users-theme-api";
+import PositionsApi "mixins/positions-api";
 
 actor {
   // Stable state — initial values come from the migration chain.
+  let positions : List.List<Types.Position>;
   let categories : List.List<Types.Category>;
   let subCategories : List.List<Types.SubCategory>;
   let items : Map.Map<Common.ItemId, Types.MenuItem>;
   let state : {
+    var nextPositionId : Common.PositionId;
     var nextCategoryId : Common.CategoryId;
     var nextSubCategoryId : Common.SubCategoryId;
     var nextItemId : Common.ItemId;
@@ -39,7 +42,8 @@ actor {
   include MixinAuthorization(accessControlState, null);
 
   // Domain mixins.
-  include CategoriesItemsApi(categories, subCategories, items, state, accessControlState);
+  include PositionsApi(positions, categories, state, accessControlState);
+  include CategoriesItemsApi(positions, categories, subCategories, items, state, accessControlState);
   include TrainingApi(steps, trainingState, accessControlState);
   include UsersThemeApi(accessControlState, users, theme);
 };

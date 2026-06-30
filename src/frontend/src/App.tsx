@@ -6,6 +6,7 @@ import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useThemeSettings } from "@/hooks/useThemeSettings";
 import { CategoryPage } from "@/pages/CategoryPage";
+import { PositionPage } from "@/pages/PositionPage";
 import { RecipeCardPage } from "@/pages/RecipeCardPage";
 import { StorefrontHomePage } from "@/pages/StorefrontHomePage";
 import { SubCategoryPage } from "@/pages/SubCategoryPage";
@@ -13,6 +14,7 @@ import { TrainingPage } from "@/pages/TrainingPage";
 import { AdminCategoriesPage } from "@/pages/admin/AdminCategoriesPage";
 import { AdminItemEditPage } from "@/pages/admin/AdminItemEditPage";
 import { AdminItemsPage } from "@/pages/admin/AdminItemsPage";
+import { AdminPositionsPage } from "@/pages/admin/AdminPositionsPage";
 import { AdminThemePage } from "@/pages/admin/AdminThemePage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import {
@@ -79,6 +81,12 @@ const trainingRoute = createRoute({
   ),
 });
 
+const positionRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id",
+  component: PositionPage,
+});
+
 const adminLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "admin-layout",
@@ -99,6 +107,12 @@ const adminCategoriesRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: "/admin/categories",
   component: AdminCategoriesPage,
+});
+
+const adminPositionsRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/positions",
+  component: AdminPositionsPage,
 });
 
 const adminItemsRoute = createRoute({
@@ -132,10 +146,12 @@ const routeTree = rootRoute.addChildren([
     subCategoryRoute,
     itemRoute,
     trainingRoute,
+    positionRoute,
   ]),
   adminLayoutRoute.addChildren([
     adminDashboardRoute,
     adminCategoriesRoute,
+    adminPositionsRoute,
     adminItemsRoute,
     adminItemEditRoute,
     adminUsersRoute,

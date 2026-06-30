@@ -31888,6 +31888,7 @@ const UserProfilePublic = Record({
   "createdAt": Timestamp,
   "role": UserRole$1
 });
+const PositionId = Nat;
 const ExternalBlob$1 = Vec(Nat8);
 const CategoryId = Nat;
 const SubCategoryId = Nat;
@@ -31928,6 +31929,16 @@ const MenuItemPublic = Record({
   "itemPhoto": ExternalBlob$1,
   "ingredients": Vec(Text)
 });
+const PositionPublic = Record({
+  "id": PositionId,
+  "sortOrder": Nat,
+  "name": Text,
+  "createdAt": Timestamp,
+  "description": Opt(Text),
+  "coverPhoto": Opt(ExternalBlob$1),
+  "updatedAt": Timestamp,
+  "categoryCount": Nat
+});
 const FontChoice$1 = Variant({
   "sansSerif": Null,
   "monospace": Null,
@@ -31946,12 +31957,14 @@ const CategoryPublic = Record({
   "sortOrder": Nat,
   "name": Text,
   "itemCount": Nat,
+  "positionId": PositionId,
   "coverPhoto": ExternalBlob$1
 });
 Service({
   "__accessControlState": Func([], [Reserved], ["query"]),
   "__categories": Func([], [Reserved], ["query"]),
   "__items": Func([], [Reserved], ["query"]),
+  "__positions": Func([], [Reserved], ["query"]),
   "__state": Func([], [Reserved], ["query"]),
   "__steps": Func([], [Reserved], ["query"]),
   "__subCategories": Func([], [Reserved], ["query"]),
@@ -31989,10 +32002,19 @@ Service({
   "_internet_identity_sign_in_start": Func([], [Vec(Nat8)], []),
   "assignCallerUserRole": Func([Principal$1, UserRole$1], [], []),
   "assignRole": Func([Principal2, UserRole$1], [UserProfilePublic], []),
-  "createCategory": Func([Text, ExternalBlob$1], [CategoryId], []),
+  "createCategory": Func(
+    [PositionId, Text, ExternalBlob$1],
+    [CategoryId],
+    []
+  ),
   "createMenuItem": Func(
     [CategoryId, Opt(SubCategoryId), Text, Text, ExternalBlob$1],
     [ItemId],
+    []
+  ),
+  "createPosition": Func(
+    [Text, Opt(Text), Opt(ExternalBlob$1)],
+    [PositionId],
     []
   ),
   "createSubCategory": Func(
@@ -32007,6 +32029,7 @@ Service({
   ),
   "deleteCategory": Func([CategoryId], [Nat], []),
   "deleteMenuItem": Func([ItemId], [], []),
+  "deletePosition": Func([PositionId], [Nat], []),
   "deleteSubCategory": Func(
     [SubCategoryId],
     [Record({ "itemCount": Nat })],
@@ -32025,6 +32048,7 @@ Service({
   ),
   "getCallerUserRole": Func([], [UserRole$1], ["query"]),
   "getMenuItem": Func([ItemId], [Opt(MenuItemPublic)], ["query"]),
+  "getPosition": Func([PositionId], [Opt(PositionPublic)], ["query"]),
   "getTheme": Func([], [ThemePublic], ["query"]),
   "getTrainingStep": Func(
     [Nat],
@@ -32043,6 +32067,7 @@ Service({
     [Vec(MenuItemPublic)],
     ["query"]
   ),
+  "listPositions": Func([], [Vec(PositionPublic)], ["query"]),
   "listSubCategories": Func(
     [CategoryId],
     [Vec(SubCategoryPublic)],
@@ -32065,8 +32090,13 @@ Service({
     ["query"]
   ),
   "setCategorySortOrder": Func([CategoryId, Nat], [], []),
+  "setPositionSortOrder": Func([PositionId, Nat], [], []),
   "setSubCategorySortOrder": Func([SubCategoryId, Nat], [], []),
-  "updateCategory": Func([CategoryId, Text, ExternalBlob$1], [], []),
+  "updateCategory": Func(
+    [CategoryId, PositionId, Text, ExternalBlob$1],
+    [],
+    []
+  ),
   "updateLogo": Func([Opt(ExternalBlob$1)], [ThemePublic], []),
   "updateMenuItem": Func(
     [
@@ -32082,6 +32112,11 @@ Service({
   ),
   "updateMenuItemRecipe": Func(
     [ItemId, Vec(Text), Vec(Text)],
+    [],
+    []
+  ),
+  "updatePosition": Func(
+    [PositionId, Text, Opt(Text), Opt(ExternalBlob$1)],
     [],
     []
   ),
@@ -32143,6 +32178,7 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "createdAt": Timestamp2,
     "role": UserRole2
   });
+  const PositionId2 = IDL2.Nat;
   const ExternalBlob3 = IDL2.Vec(IDL2.Nat8);
   const CategoryId2 = IDL2.Nat;
   const SubCategoryId2 = IDL2.Nat;
@@ -32183,6 +32219,16 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "itemPhoto": ExternalBlob3,
     "ingredients": IDL2.Vec(IDL2.Text)
   });
+  const PositionPublic2 = IDL2.Record({
+    "id": PositionId2,
+    "sortOrder": IDL2.Nat,
+    "name": IDL2.Text,
+    "createdAt": Timestamp2,
+    "description": IDL2.Opt(IDL2.Text),
+    "coverPhoto": IDL2.Opt(ExternalBlob3),
+    "updatedAt": Timestamp2,
+    "categoryCount": IDL2.Nat
+  });
   const FontChoice2 = IDL2.Variant({
     "sansSerif": IDL2.Null,
     "monospace": IDL2.Null,
@@ -32201,12 +32247,14 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "sortOrder": IDL2.Nat,
     "name": IDL2.Text,
     "itemCount": IDL2.Nat,
+    "positionId": PositionId2,
     "coverPhoto": ExternalBlob3
   });
   return IDL2.Service({
     "__accessControlState": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__categories": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__items": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__positions": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__state": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__steps": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__subCategories": IDL2.Func([], [IDL2.Reserved], ["query"]),
@@ -32244,10 +32292,19 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "_internet_identity_sign_in_start": IDL2.Func([], [IDL2.Vec(IDL2.Nat8)], []),
     "assignCallerUserRole": IDL2.Func([IDL2.Principal, UserRole2], [], []),
     "assignRole": IDL2.Func([Principal3, UserRole2], [UserProfilePublic2], []),
-    "createCategory": IDL2.Func([IDL2.Text, ExternalBlob3], [CategoryId2], []),
+    "createCategory": IDL2.Func(
+      [PositionId2, IDL2.Text, ExternalBlob3],
+      [CategoryId2],
+      []
+    ),
     "createMenuItem": IDL2.Func(
       [CategoryId2, IDL2.Opt(SubCategoryId2), IDL2.Text, IDL2.Text, ExternalBlob3],
       [ItemId2],
+      []
+    ),
+    "createPosition": IDL2.Func(
+      [IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(ExternalBlob3)],
+      [PositionId2],
       []
     ),
     "createSubCategory": IDL2.Func(
@@ -32262,6 +32319,7 @@ const idlFactory = ({ IDL: IDL2 }) => {
     ),
     "deleteCategory": IDL2.Func([CategoryId2], [IDL2.Nat], []),
     "deleteMenuItem": IDL2.Func([ItemId2], [], []),
+    "deletePosition": IDL2.Func([PositionId2], [IDL2.Nat], []),
     "deleteSubCategory": IDL2.Func(
       [SubCategoryId2],
       [IDL2.Record({ "itemCount": IDL2.Nat })],
@@ -32280,6 +32338,11 @@ const idlFactory = ({ IDL: IDL2 }) => {
     ),
     "getCallerUserRole": IDL2.Func([], [UserRole2], ["query"]),
     "getMenuItem": IDL2.Func([ItemId2], [IDL2.Opt(MenuItemPublic2)], ["query"]),
+    "getPosition": IDL2.Func(
+      [PositionId2],
+      [IDL2.Opt(PositionPublic2)],
+      ["query"]
+    ),
     "getTheme": IDL2.Func([], [ThemePublic2], ["query"]),
     "getTrainingStep": IDL2.Func(
       [IDL2.Nat],
@@ -32298,6 +32361,7 @@ const idlFactory = ({ IDL: IDL2 }) => {
       [IDL2.Vec(MenuItemPublic2)],
       ["query"]
     ),
+    "listPositions": IDL2.Func([], [IDL2.Vec(PositionPublic2)], ["query"]),
     "listSubCategories": IDL2.Func(
       [CategoryId2],
       [IDL2.Vec(SubCategoryPublic2)],
@@ -32320,8 +32384,13 @@ const idlFactory = ({ IDL: IDL2 }) => {
       ["query"]
     ),
     "setCategorySortOrder": IDL2.Func([CategoryId2, IDL2.Nat], [], []),
+    "setPositionSortOrder": IDL2.Func([PositionId2, IDL2.Nat], [], []),
     "setSubCategorySortOrder": IDL2.Func([SubCategoryId2, IDL2.Nat], [], []),
-    "updateCategory": IDL2.Func([CategoryId2, IDL2.Text, ExternalBlob3], [], []),
+    "updateCategory": IDL2.Func(
+      [CategoryId2, PositionId2, IDL2.Text, ExternalBlob3],
+      [],
+      []
+    ),
     "updateLogo": IDL2.Func([IDL2.Opt(ExternalBlob3)], [ThemePublic2], []),
     "updateMenuItem": IDL2.Func(
       [
@@ -32337,6 +32406,11 @@ const idlFactory = ({ IDL: IDL2 }) => {
     ),
     "updateMenuItemRecipe": IDL2.Func(
       [ItemId2, IDL2.Vec(IDL2.Text), IDL2.Vec(IDL2.Text)],
+      [],
+      []
+    ),
+    "updatePosition": IDL2.Func(
+      [PositionId2, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(ExternalBlob3)],
       [],
       []
     ),
@@ -32460,6 +32534,20 @@ class Backend {
       }
     } else {
       const result = await this.actor.__items();
+      return result;
+    }
+  }
+  async __positions() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__positions();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__positions();
       return result;
     }
   }
@@ -32701,17 +32789,17 @@ class Backend {
       return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
     }
   }
-  async createCategory(arg0, arg1) {
+  async createCategory(arg0, arg1, arg2) {
     if (this.processError) {
       try {
-        const result = await this.actor.createCategory(arg0, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg1));
+        const result = await this.actor.createCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
         return result;
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.createCategory(arg0, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg1));
+      const result = await this.actor.createCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
       return result;
     }
   }
@@ -32729,32 +32817,46 @@ class Backend {
       return result;
     }
   }
+  async createPosition(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createPosition(arg0, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg2));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createPosition(arg0, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg2));
+      return result;
+    }
+  }
   async createSubCategory(arg0, arg1, arg2) {
     if (this.processError) {
       try {
         const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_SubCategoryPublic_n20(this._uploadFile, this._downloadFile, result);
+        return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_SubCategoryPublic_n20(this._uploadFile, this._downloadFile, result);
+      return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
     }
   }
   async createTrainingStep(arg0, arg1) {
     if (this.processError) {
       try {
-        const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n23(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_TrainingStepPublic_n25(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n25(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n23(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_TrainingStepPublic_n25(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n25(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
     }
   }
   async deleteCategory(arg0) {
@@ -32782,6 +32884,20 @@ class Backend {
       }
     } else {
       const result = await this.actor.deleteMenuItem(arg0);
+      return result;
+    }
+  }
+  async deletePosition(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deletePosition(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deletePosition(arg0);
       return result;
     }
   }
@@ -32816,29 +32932,29 @@ class Backend {
   async editTrainingStep(arg0, arg1) {
     if (this.processError) {
       try {
-        const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n28(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_TrainingStepPublic_n25(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n30(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n28(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_TrainingStepPublic_n25(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n30(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
     }
   }
   async getCallerUserProfile() {
     if (this.processError) {
       try {
         const result = await this.actor.getCallerUserProfile();
-        return from_candid_opt_n29(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n31(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getCallerUserProfile();
-      return from_candid_opt_n29(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n31(this._uploadFile, this._downloadFile, result);
     }
   }
   async getCallerUserRole() {
@@ -32859,42 +32975,56 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.getMenuItem(arg0);
-        return from_candid_opt_n30(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n32(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getMenuItem(arg0);
-      return from_candid_opt_n30(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n32(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getPosition(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getPosition(arg0);
+        return from_candid_opt_n36(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getPosition(arg0);
+      return from_candid_opt_n36(this._uploadFile, this._downloadFile, result);
     }
   }
   async getTheme() {
     if (this.processError) {
       try {
         const result = await this.actor.getTheme();
-        return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getTheme();
-      return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
     }
   }
   async getTrainingStep(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.getTrainingStep(arg0);
-        return from_candid_opt_n38(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n44(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getTrainingStep(arg0);
-      return from_candid_opt_n38(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n44(this._uploadFile, this._downloadFile, result);
     }
   }
   async isCallerAdmin() {
@@ -32915,84 +33045,98 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.listCategories();
-        return from_candid_vec_n39(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listCategories();
-      return from_candid_vec_n39(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listItemsByCategory(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listItemsByCategory(arg0);
-        return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listItemsByCategory(arg0);
-      return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listItemsBySubCategory(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listItemsBySubCategory(arg0);
-        return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listItemsBySubCategory(arg0);
-      return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listSubCategories(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listSubCategories(arg0);
-        return from_candid_vec_n43(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listSubCategories(arg0);
-      return from_candid_vec_n43(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listTrainingSteps(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listTrainingSteps(arg0);
-        return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listTrainingSteps(arg0);
-      return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listUsers() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listUsers();
         return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.listUsers();
+      const result = await this.actor.listCategories();
       return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listItemsByCategory(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listItemsByCategory(arg0);
+        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listItemsByCategory(arg0);
+      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listItemsBySubCategory(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listItemsBySubCategory(arg0);
+        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listItemsBySubCategory(arg0);
+      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listPositions() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listPositions();
+        return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listPositions();
+      return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listSubCategories(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listSubCategories(arg0);
+        return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listSubCategories(arg0);
+      return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listTrainingSteps(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listTrainingSteps(arg0);
+        return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listTrainingSteps(arg0);
+      return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listUsers() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listUsers();
+        return from_candid_vec_n52(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listUsers();
+      return from_candid_vec_n52(this._uploadFile, this._downloadFile, result);
     }
   }
   async moveTrainingStep(arg0, arg1) {
@@ -33013,14 +33157,14 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.resetTheme();
-        return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.resetTheme();
-      return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
     }
   }
   async revokeRole(arg0) {
@@ -33055,28 +33199,28 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.searchItems(arg0);
-        return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.searchItems(arg0);
-      return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
     }
   }
   async searchItemsInCategory(arg0, arg1) {
     if (this.processError) {
       try {
         const result = await this.actor.searchItemsInCategory(arg0, arg1);
-        return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.searchItemsInCategory(arg0, arg1);
-      return from_candid_vec_n42(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
     }
   }
   async setCategorySortOrder(arg0, arg1) {
@@ -33090,6 +33234,20 @@ class Backend {
       }
     } else {
       const result = await this.actor.setCategorySortOrder(arg0, arg1);
+      return result;
+    }
+  }
+  async setPositionSortOrder(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.setPositionSortOrder(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.setPositionSortOrder(arg0, arg1);
       return result;
     }
   }
@@ -33107,32 +33265,32 @@ class Backend {
       return result;
     }
   }
-  async updateCategory(arg0, arg1, arg2) {
+  async updateCategory(arg0, arg1, arg2, arg3) {
     if (this.processError) {
       try {
-        const result = await this.actor.updateCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+        const result = await this.actor.updateCategory(arg0, arg1, arg2, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg3));
         return result;
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.updateCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+      const result = await this.actor.updateCategory(arg0, arg1, arg2, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg3));
       return result;
     }
   }
   async updateLogo(arg0) {
     if (this.processError) {
       try {
-        const result = await this.actor.updateLogo(await to_candid_opt_n46(this._uploadFile, this._downloadFile, arg0));
-        return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
+        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.updateLogo(await to_candid_opt_n46(this._uploadFile, this._downloadFile, arg0));
-      return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
+      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
     }
   }
   async updateMenuItem(arg0, arg1, arg2, arg3, arg4, arg5) {
@@ -33163,61 +33321,78 @@ class Backend {
       return result;
     }
   }
+  async updatePosition(arg0, arg1, arg2, arg3) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg2), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg2), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
+      return result;
+    }
+  }
   async updateSubCategory(arg0, arg1, arg2) {
     if (this.processError) {
       try {
         const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_SubCategoryPublic_n20(this._uploadFile, this._downloadFile, result);
+        return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_SubCategoryPublic_n20(this._uploadFile, this._downloadFile, result);
+      return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
     }
   }
   async updateTheme(arg0, arg1, arg2) {
     if (this.processError) {
       try {
-        const result = await this.actor.updateTheme(to_candid_opt_n47(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n53(this._uploadFile, this._downloadFile, arg2));
+        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.updateTheme(to_candid_opt_n47(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_ThemePublic_n34(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n53(this._uploadFile, this._downloadFile, arg2));
+      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
     }
   }
 }
-async function from_candid_CategoryPublic_n40(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n41(_uploadFile, _downloadFile, value);
+async function from_candid_CategoryPublic_n46(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n47(_uploadFile, _downloadFile, value);
 }
 function from_candid_Error_n10(_uploadFile, _downloadFile, value) {
   return from_candid_variant_n11(_uploadFile, _downloadFile, value);
 }
-async function from_candid_ExternalBlob_n22(_uploadFile, _downloadFile, value) {
+async function from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value) {
   return await _downloadFile(value);
 }
-function from_candid_FontChoice_n36(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n37(_uploadFile, _downloadFile, value);
+function from_candid_FontChoice_n42(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n43(_uploadFile, _downloadFile, value);
 }
-async function from_candid_MenuItemPublic_n31(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n32(_uploadFile, _downloadFile, value);
+async function from_candid_MenuItemPublic_n33(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n34(_uploadFile, _downloadFile, value);
+}
+async function from_candid_PositionPublic_n37(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n38(_uploadFile, _downloadFile, value);
 }
 function from_candid_Result_n8(_uploadFile, _downloadFile, value) {
   return from_candid_variant_n9(_uploadFile, _downloadFile, value);
 }
-async function from_candid_SubCategoryPublic_n20(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n21(_uploadFile, _downloadFile, value);
+async function from_candid_SubCategoryPublic_n22(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n23(_uploadFile, _downloadFile, value);
 }
-async function from_candid_ThemePublic_n34(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n35(_uploadFile, _downloadFile, value);
+async function from_candid_ThemePublic_n40(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n41(_uploadFile, _downloadFile, value);
 }
-async function from_candid_TrainingStepPublic_n25(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n26(_uploadFile, _downloadFile, value);
+async function from_candid_TrainingStepPublic_n27(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n28(_uploadFile, _downloadFile, value);
 }
 function from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value) {
   return from_candid_record_n15(_uploadFile, _downloadFile, value);
@@ -33228,20 +33403,26 @@ function from_candid_UserRole_n16(_uploadFile, _downloadFile, value) {
 function from_candid__ImmutableObjectStorageRefillResult_n4(_uploadFile, _downloadFile, value) {
   return from_candid_record_n5(_uploadFile, _downloadFile, value);
 }
-async function from_candid_opt_n27(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_ExternalBlob_n22(_uploadFile, _downloadFile, value[0]);
+async function from_candid_opt_n29(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_opt_n29(_uploadFile, _downloadFile, value) {
+function from_candid_opt_n31(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value[0]);
 }
-async function from_candid_opt_n30(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_MenuItemPublic_n31(_uploadFile, _downloadFile, value[0]);
+async function from_candid_opt_n32(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_MenuItemPublic_n33(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_opt_n33(_uploadFile, _downloadFile, value) {
+function from_candid_opt_n35(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : value[0];
 }
-async function from_candid_opt_n38(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_TrainingStepPublic_n25(_uploadFile, _downloadFile, value[0]);
+async function from_candid_opt_n36(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_PositionPublic_n37(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : value[0];
+}
+async function from_candid_opt_n44(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_TrainingStepPublic_n27(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n6(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : value[0];
@@ -33257,54 +33438,67 @@ function from_candid_record_n15(_uploadFile, _downloadFile, value) {
     role: from_candid_UserRole_n16(_uploadFile, _downloadFile, value.role)
   };
 }
-async function from_candid_record_n21(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n23(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     sortOrder: value.sortOrder,
     name: value.name,
     itemCount: value.itemCount,
     parentCategoryId: value.parentCategoryId,
-    coverPhoto: await from_candid_ExternalBlob_n22(_uploadFile, _downloadFile, value.coverPhoto)
+    coverPhoto: await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value.coverPhoto)
   };
 }
-async function from_candid_record_n26(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n28(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     itemId: value.itemId,
     order: value.order,
-    video: record_opt_to_undefined(await from_candid_opt_n27(_uploadFile, _downloadFile, value.video)),
+    video: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.video)),
     text: value.text,
-    photo: record_opt_to_undefined(await from_candid_opt_n27(_uploadFile, _downloadFile, value.photo))
+    photo: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.photo))
   };
 }
-async function from_candid_record_n32(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n34(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     categoryId: value.categoryId,
     name: value.name,
     description: value.description,
     instructions: value.instructions,
-    subCategoryId: record_opt_to_undefined(from_candid_opt_n33(_uploadFile, _downloadFile, value.subCategoryId)),
-    itemPhoto: await from_candid_ExternalBlob_n22(_uploadFile, _downloadFile, value.itemPhoto),
+    subCategoryId: record_opt_to_undefined(from_candid_opt_n35(_uploadFile, _downloadFile, value.subCategoryId)),
+    itemPhoto: await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value.itemPhoto),
     ingredients: value.ingredients
   };
 }
-async function from_candid_record_n35(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n38(_uploadFile, _downloadFile, value) {
   return {
-    font: from_candid_FontChoice_n36(_uploadFile, _downloadFile, value.font),
+    id: value.id,
+    sortOrder: value.sortOrder,
+    name: value.name,
+    createdAt: value.createdAt,
+    description: record_opt_to_undefined(from_candid_opt_n39(_uploadFile, _downloadFile, value.description)),
+    coverPhoto: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.coverPhoto)),
+    updatedAt: value.updatedAt,
+    categoryCount: value.categoryCount
+  };
+}
+async function from_candid_record_n41(_uploadFile, _downloadFile, value) {
+  return {
+    font: from_candid_FontChoice_n42(_uploadFile, _downloadFile, value.font),
     primaryColor: value.primaryColor,
-    logo: record_opt_to_undefined(await from_candid_opt_n27(_uploadFile, _downloadFile, value.logo)),
+    logo: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.logo)),
     accentColor: value.accentColor,
     updatedAt: value.updatedAt
   };
 }
-async function from_candid_record_n41(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n47(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     sortOrder: value.sortOrder,
     name: value.name,
     itemCount: value.itemCount,
-    coverPhoto: await from_candid_ExternalBlob_n22(_uploadFile, _downloadFile, value.coverPhoto)
+    positionId: value.positionId,
+    coverPhoto: await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value.coverPhoto)
   };
 }
 function from_candid_record_n5(_uploadFile, _downloadFile, value) {
@@ -33349,7 +33543,7 @@ function from_candid_variant_n11(_uploadFile, _downloadFile, value) {
 function from_candid_variant_n17(_uploadFile, _downloadFile, value) {
   return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
 }
-function from_candid_variant_n37(_uploadFile, _downloadFile, value) {
+function from_candid_variant_n43(_uploadFile, _downloadFile, value) {
   return "sansSerif" in value ? "sansSerif" : "monospace" in value ? "monospace" : "serif" in value ? "serif" : "systemFont" in value ? "systemFont" : value;
 }
 function from_candid_variant_n9(_uploadFile, _downloadFile, value) {
@@ -33361,32 +33555,35 @@ function from_candid_variant_n9(_uploadFile, _downloadFile, value) {
     err: from_candid_Error_n10(_uploadFile, _downloadFile, value.err)
   } : value;
 }
-async function from_candid_vec_n39(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_CategoryPublic_n40(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_CategoryPublic_n46(_uploadFile, _downloadFile, x2)));
 }
-async function from_candid_vec_n42(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_MenuItemPublic_n31(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n48(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_MenuItemPublic_n33(_uploadFile, _downloadFile, x2)));
 }
-async function from_candid_vec_n43(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_SubCategoryPublic_n20(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n49(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_PositionPublic_n37(_uploadFile, _downloadFile, x2)));
 }
-async function from_candid_vec_n44(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_TrainingStepPublic_n25(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n50(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_SubCategoryPublic_n22(_uploadFile, _downloadFile, x2)));
 }
-function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
+async function from_candid_vec_n51(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_TrainingStepPublic_n27(_uploadFile, _downloadFile, x2)));
+}
+function from_candid_vec_n52(_uploadFile, _downloadFile, value) {
   return value.map((x2) => from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, x2));
 }
 async function to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value) {
   return await _uploadFile(value);
 }
-function to_candid_FontChoice_n49(_uploadFile, _downloadFile, value) {
-  return to_candid_variant_n50(_uploadFile, _downloadFile, value);
+function to_candid_FontChoice_n54(_uploadFile, _downloadFile, value) {
+  return to_candid_variant_n55(_uploadFile, _downloadFile, value);
 }
-async function to_candid_TrainingStepEdit_n28(_uploadFile, _downloadFile, value) {
-  return await to_candid_record_n24(_uploadFile, _downloadFile, value);
+async function to_candid_TrainingStepEdit_n30(_uploadFile, _downloadFile, value) {
+  return await to_candid_record_n26(_uploadFile, _downloadFile, value);
 }
-async function to_candid_TrainingStepInput_n23(_uploadFile, _downloadFile, value) {
-  return await to_candid_record_n24(_uploadFile, _downloadFile, value);
+async function to_candid_TrainingStepInput_n25(_uploadFile, _downloadFile, value) {
+  return await to_candid_record_n26(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n12(_uploadFile, _downloadFile, value) {
   return to_candid_variant_n13(_uploadFile, _downloadFile, value);
@@ -33400,16 +33597,16 @@ function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
 function to_candid_opt_n19(_uploadFile, _downloadFile, value) {
   return value === null ? candid_none() : candid_some(value);
 }
-async function to_candid_opt_n46(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value));
-}
-function to_candid_opt_n47(_uploadFile, _downloadFile, value) {
+function to_candid_opt_n20(_uploadFile, _downloadFile, value) {
   return value === null ? candid_none() : candid_some(value);
 }
-function to_candid_opt_n48(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(to_candid_FontChoice_n49(_uploadFile, _downloadFile, value));
+async function to_candid_opt_n21(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value));
 }
-async function to_candid_record_n24(_uploadFile, _downloadFile, value) {
+function to_candid_opt_n53(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(to_candid_FontChoice_n54(_uploadFile, _downloadFile, value));
+}
+async function to_candid_record_n26(_uploadFile, _downloadFile, value) {
   return {
     video: value.video ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.video)) : candid_none(),
     text: value.text,
@@ -33430,7 +33627,7 @@ function to_candid_variant_n13(_uploadFile, _downloadFile, value) {
     guest: null
   } : value;
 }
-function to_candid_variant_n50(_uploadFile, _downloadFile, value) {
+function to_candid_variant_n55(_uploadFile, _downloadFile, value) {
   return value == "sansSerif" ? {
     sansSerif: null
   } : value == "monospace" ? {
@@ -38764,11 +38961,22 @@ const createLucideIcon = (iconName, iconNode) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$F = [
+const __iconNode$G = [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$F);
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$G);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$F = [
+  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+];
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$F);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -38776,10 +38984,10 @@ const ArrowDown = createLucideIcon("arrow-down", __iconNode$F);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$E = [
-  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$E);
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$E);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -38787,10 +38995,10 @@ const ArrowLeft = createLucideIcon("arrow-left", __iconNode$E);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$D = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
+  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+  ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$D);
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$D);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -38798,10 +39006,10 @@ const ArrowRight = createLucideIcon("arrow-right", __iconNode$D);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$C = [
-  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-  ["path", { d: "M12 19V5", key: "x0mq9r" }]
+  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
+  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
 ];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$C);
+const Briefcase = createLucideIcon("briefcase", __iconNode$C);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39370,6 +39578,13 @@ const NAV = [
     icon: LayoutDashboard,
     ocid: "admin.nav.dashboard",
     end: true
+  },
+  {
+    label: "Positions",
+    to: "/admin/positions",
+    icon: Briefcase,
+    ocid: "admin.nav.positions",
+    end: false
   },
   {
     label: "Categories",
@@ -45654,6 +45869,92 @@ function useRevokeRole() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] })
   });
 }
+function usePositions() {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["positions"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.listPositions();
+    },
+    enabled: !!actor && !isFetching
+  });
+}
+function usePosition(id2) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["position", String(id2)],
+    queryFn: async () => {
+      if (!actor || id2 === void 0) return null;
+      return actor.getPosition(id2);
+    },
+    enabled: !!actor && !isFetching && id2 !== void 0
+  });
+}
+function useCreatePosition() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createPosition(vars.name, vars.description, vars.coverPhoto);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["positions"] })
+  });
+}
+function useUpdatePosition() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updatePosition(
+        vars.id,
+        vars.name,
+        vars.description,
+        vars.coverPhoto
+      );
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["positions"] });
+      qc.invalidateQueries({ queryKey: ["position", String(vars.id)] });
+    }
+  });
+}
+function useDeletePosition() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id2) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.deletePosition(id2);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["positions"] })
+  });
+}
+function useSetPositionSortOrder() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.setPositionSortOrder(vars.id, vars.sortOrder);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["positions"] })
+  });
+}
+function useCategoriesByPosition(positionId) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["categories", "position", String(positionId)],
+    queryFn: async () => {
+      if (!actor || positionId === void 0) return [];
+      const all = await actor.listCategories();
+      return all.filter((c2) => c2.positionId === positionId);
+    },
+    enabled: !!actor && !isFetching && positionId !== void 0
+  });
+}
 function useCategories() {
   const { actor, isFetching } = useActor(createActor);
   return useQuery({
@@ -45683,9 +45984,15 @@ function useCreateCategory() {
   return useMutation({
     mutationFn: async (vars) => {
       if (!actor) throw new Error("actor not ready");
-      return actor.createCategory(vars.name, vars.coverPhoto);
+      return actor.createCategory(vars.positionId, vars.name, vars.coverPhoto);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] })
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["categories", "position", String(vars.positionId)]
+      });
+      qc.invalidateQueries({ queryKey: ["positions"] });
+    }
   });
 }
 function useUpdateCategory() {
@@ -45694,9 +46001,20 @@ function useUpdateCategory() {
   return useMutation({
     mutationFn: async (vars) => {
       if (!actor) throw new Error("actor not ready");
-      await actor.updateCategory(vars.id, vars.name, vars.coverPhoto);
+      await actor.updateCategory(
+        vars.id,
+        vars.positionId,
+        vars.name,
+        vars.coverPhoto
+      );
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] })
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["categories", "position", String(vars.positionId)]
+      });
+      qc.invalidateQueries({ queryKey: ["positions"] });
+    }
   });
 }
 function useDeleteCategory() {
@@ -54070,7 +54388,7 @@ const featureBundle = {
   ...layout
 };
 const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
-const GRID_CLASSES = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+const GRID_CLASSES$1 = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
 function CategoryPage() {
   const { id: id2 } = useParams({ from: "/storefront-layout/category/$id" });
   const categoryId = BigInt(id2);
@@ -54135,7 +54453,7 @@ function CategoryPage() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-12", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-40" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: ["sub-skel-1", "sub-skel-2", "sub-skel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: ["sub-skel-1", "sub-skel-2", "sub-skel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "aspect-[4/3] w-full rounded-xl",
@@ -54146,7 +54464,7 @@ function CategoryPage() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-32" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: [
           "skel-1",
           "skel-2",
           "skel-3",
@@ -54186,7 +54504,7 @@ function CategoryPage() {
                 subCount === 1 ? "collection" : "collections"
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: subcategories.map((sub, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: subcategories.map((sub, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               motion.div,
               {
                 initial: { opacity: 0, y: 16 },
@@ -54214,7 +54532,7 @@ function CategoryPage() {
             itemCount === 1 ? "dish" : "dishes"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           motion.div,
           {
             initial: { opacity: 0, y: 16 },
@@ -54230,6 +54548,199 @@ function CategoryPage() {
           String(item.id)
         )) })
       ] }) : null
+    ] }) })
+  ] });
+}
+function CategoryCard({
+  category,
+  index: index2
+}) {
+  const coverUrl = blobUrl(category.coverPhoto);
+  const count2 = Number(category.itemCount);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Link,
+    {
+      to: "/category/$id",
+      params: { id: String(category.id) },
+      className: "group block focus-visible:outline-none",
+      "data-ocid": `home.category.item.${index2 + 1}`,
+      "aria-label": `Browse ${category.name} category`,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[4/3] overflow-hidden bg-muted", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: coverUrl,
+              alt: category.name,
+              loading: "lazy",
+              className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 bg-primary px-4 py-3 text-primary-foreground", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-1", children: category.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3" }),
+            count2,
+            " ",
+            count2 === 1 ? "dish" : "dishes"
+          ] })
+        ] })
+      ] })
+    }
+  );
+}
+function toCategoryView(c2) {
+  return {
+    id: c2.id,
+    name: c2.name,
+    itemCount: Number(c2.itemCount),
+    sortOrder: Number(c2.sortOrder),
+    coverUrl: blobUrl(c2.coverPhoto)
+  };
+}
+function toPositionView(p2) {
+  return {
+    id: p2.id,
+    name: p2.name,
+    description: p2.description ?? null,
+    categoryCount: Number(p2.categoryCount),
+    sortOrder: Number(p2.sortOrder),
+    coverUrl: blobUrl(p2.coverPhoto ?? null),
+    createdAt: p2.createdAt,
+    updatedAt: p2.updatedAt
+  };
+}
+const GRID_CLASSES = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+function PositionPage() {
+  const { id: id2 } = useParams({ from: "/storefront-layout/position/$id" });
+  const positionId = BigInt(id2);
+  const { data: position, isLoading: positionLoading } = usePosition(positionId);
+  const { data: categories, isLoading: categoriesLoading } = useCategoriesByPosition(positionId);
+  const isLoading = positionLoading || categoriesLoading;
+  const categoryCount = (categories == null ? void 0 : categories.length) ?? 0;
+  const hasCategories = !categoriesLoading && categoryCount > 0;
+  const showEmpty = !isLoading && !positionLoading && !hasCategories && !!position;
+  const sortedCategories = (categories ?? []).map((c2) => ({ raw: c2, view: toCategoryView(c2) })).sort((a2, b2) => a2.view.sortOrder - b2.view.sortOrder);
+  const positionView = position ? toPositionView(position) : null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { variant: "muted", className: "py-10 sm:py-12", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "nav",
+        {
+          className: "mb-6 flex items-center gap-1.5 text-sm text-muted-foreground",
+          "aria-label": "Breadcrumb",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "ghost",
+                size: "sm",
+                className: "gap-1.5",
+                "data-ocid": "position.breadcrumb_home",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/", "data-ocid": "position.breadcrumb_home_link", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
+                  " Home"
+                ] })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3.5 text-muted-foreground/60" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "font-medium text-foreground",
+                "data-ocid": "position.breadcrumb_current",
+                children: positionLoading ? "Loading…" : (positionView == null ? void 0 : positionView.name) ?? "Position"
+              }
+            )
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-3" }),
+          " Position"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl", children: positionLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Skeleton,
+          {
+            className: "h-10 w-48",
+            "data-ocid": "position.title.loading_state"
+          }
+        ) : (positionView == null ? void 0 : positionView.name) ?? "Position" }),
+        (positionView == null ? void 0 : positionView.description) ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-2xl text-muted-foreground", children: positionView.description }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-muted-foreground", children: isLoading ? "Loading categories…" : `${categoryCount} ${categoryCount === 1 ? "category" : "categories"}` })
+      ] }) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-40" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: ["skel-1", "skel-2", "skel-3", "skel-4", "skel-5", "skel-6"].map(
+        (skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Skeleton,
+          {
+            className: "aspect-[4/3] w-full rounded-xl",
+            "data-ocid": `position.category.loading_state.${i + 1}`
+          },
+          skel
+        )
+      ) })
+    ] }) : !position ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
+        "data-ocid": "position.error_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Position not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "The position you're looking for doesn't exist or has been removed." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              asChild: true,
+              variant: "outline",
+              "data-ocid": "position.error_state.back_button",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/", "data-ocid": "position.error_state.back_link", children: "Back to home" })
+            }
+          )
+        ]
+      }
+    ) : showEmpty ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      EmptyState,
+      {
+        ocid: "position.category.empty_state",
+        title: "No categories in this position yet",
+        description: "This position doesn't have any categories published yet. Check back soon — the kitchen is always adding new collections.",
+        backLabel: "Back to home"
+      }
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-5", "data-ocid": "position.category.section", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-5 text-primary" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Categories" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
+          categoryCount,
+          " ",
+          categoryCount === 1 ? "category" : "categories"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: sortedCategories.map(({ raw }, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        motion.div,
+        {
+          initial: { opacity: 0, y: 16 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, margin: "-80px" },
+          transition: {
+            duration: 0.4,
+            ease: "easeOut",
+            delay: index2 * 0.08
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryCard, { category: raw, index: index2 })
+        },
+        String(raw.id)
+      )) })
     ] }) })
   ] });
 }
@@ -54421,40 +54932,44 @@ function RecipeCardPage() {
     ) })
   ] });
 }
-function CategoryCard({
-  category,
+function PositionCard({
+  position,
   index: index2
 }) {
-  const coverUrl = blobUrl(category.coverPhoto);
-  const count2 = Number(category.itemCount);
+  const count2 = position.categoryCount;
+  const hasCover = position.coverUrl && position.coverUrl.length > 0;
+  const initial = position.name.trim().charAt(0).toUpperCase();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     Link,
     {
-      to: "/category/$id",
-      params: { id: String(category.id) },
+      to: "/position/$id",
+      params: { id: String(position.id) },
       className: "group block focus-visible:outline-none",
-      "data-ocid": `home.category.item.${index2 + 1}`,
-      "aria-label": `Browse ${category.name} category`,
+      "data-ocid": `home.position.item.${index2 + 1}`,
+      "aria-label": `Browse ${position.name} position`,
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[4/3] overflow-hidden bg-muted", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
+          hasCover ? /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
             {
-              src: coverUrl,
-              alt: category.name,
+              src: position.coverUrl,
+              alt: position.name,
               loading: "lazy",
               className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             }
+          ) : (
+            // Tasteful placeholder tile for positions without a cover photo.
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-full items-center justify-center bg-gradient-to-br from-muted to-muted/60", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20 transition-smooth group-hover:scale-105", children: initial ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-3xl font-semibold", children: initial }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-9" }) }) })
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 bg-primary px-4 py-3 text-primary-foreground", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-1", children: category.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-1", children: position.name }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-3" }),
             count2,
             " ",
-            count2 === 1 ? "dish" : "dishes"
+            count2 === 1 ? "category" : "categories"
           ] })
         ] })
       ] })
@@ -54462,7 +54977,9 @@ function CategoryCard({
   );
 }
 function StorefrontHomePage() {
-  const { data: categories, isLoading } = useCategories();
+  const { data: positions, isLoading } = usePositions();
+  const views = (positions ?? []).map(toPositionView);
+  const count2 = views.length;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-20 sm:py-28", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
       motion.div,
@@ -54484,10 +55001,10 @@ function StorefrontHomePage() {
             " ",
             "studio"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mx-auto mt-5 max-w-xl text-lg text-muted-foreground", children: "Browse categories and dishes, follow step-by-step recipe cards, and train your kitchen staff — all in one warm, editorial space." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mx-auto mt-5 max-w-xl text-lg text-muted-foreground", children: "Browse training positions and their dishes, follow step-by-step recipe cards, and train your kitchen staff — all in one warm, editorial space." }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, size: "lg", "data-ocid": "home.explore_button", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "#categories", "data-ocid": "home.explore_link", children: [
-              "Explore the menu",
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, size: "lg", "data-ocid": "home.explore_button", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "#positions", "data-ocid": "home.explore_link", children: [
+              "Explore positions",
               /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "size-4" })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -54504,16 +55021,17 @@ function StorefrontHomePage() {
         ]
       }
     ) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { id: "categories", variant: "muted", className: "py-20 sm:py-24", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { id: "positions", variant: "muted", className: "py-20 sm:py-24", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl", children: "Browse by category" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-muted-foreground", children: "Tap a category to see every dish, its recipe, and training flow." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl", children: "Training positions" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-2 text-muted-foreground", children: "Tap a position to see its categories, recipes, and training flow." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-sm text-muted-foreground", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-4 text-primary" }),
-          categories ? categories.length : 0,
-          " categories"
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-4 text-primary" }),
+          count2,
+          " ",
+          count2 === 1 ? "position" : "positions"
         ] })
       ] }),
       isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3", children: ["skel-1", "skel-2", "skel-3", "skel-4", "skel-5", "skel-6"].map(
@@ -54521,11 +55039,11 @@ function StorefrontHomePage() {
           Skeleton,
           {
             className: "aspect-[4/3] w-full rounded-xl",
-            "data-ocid": `home.category.loading_state.${i + 1}`
+            "data-ocid": `home.position.loading_state.${i + 1}`
           },
           skel
         )
-      ) }) : categories && categories.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3", children: categories.map((category, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ) }) : count2 > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3", children: views.map((position, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         motion.div,
         {
           initial: { opacity: 0, y: 16 },
@@ -54536,19 +55054,19 @@ function StorefrontHomePage() {
             ease: "easeOut",
             delay: index2 * 0.08
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryCard, { category, index: index2 })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(PositionCard, { position, index: index2 })
         },
-        String(category.id)
+        String(position.id)
       )) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
           className: "mx-auto flex max-w-md flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-background px-6 py-14 text-center",
-          "data-ocid": "home.category.empty_state",
+          "data-ocid": "home.position.empty_state",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-7" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-7" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-xl font-semibold tracking-tight", children: "No categories yet" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "The kitchen hasn't published any menu categories yet. Please check back soon." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-xl font-semibold tracking-tight", children: "No positions yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "The kitchen hasn't published any training positions yet. Please check back soon." })
             ] })
           ]
         }
@@ -55836,41 +56354,1351 @@ function Label$1({
     }
   );
 }
+function clamp(value, [min2, max2]) {
+  return Math.min(max2, Math.max(min2, value));
+}
+function usePrevious(value) {
+  const ref = reactExports.useRef({ value, previous: value });
+  return reactExports.useMemo(() => {
+    if (ref.current.value !== value) {
+      ref.current.previous = ref.current.value;
+      ref.current.value = value;
+    }
+    return ref.current.previous;
+  }, [value]);
+}
+var VISUALLY_HIDDEN_STYLES = Object.freeze({
+  // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
+  position: "absolute",
+  border: 0,
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0, 0, 0, 0)",
+  whiteSpace: "nowrap",
+  wordWrap: "normal"
+});
+var NAME$1 = "VisuallyHidden";
+var VisuallyHidden = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.span,
+      {
+        ...props,
+        ref: forwardedRef,
+        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style }
+      }
+    );
+  }
+);
+VisuallyHidden.displayName = NAME$1;
+var OPEN_KEYS = [" ", "Enter", "ArrowUp", "ArrowDown"];
+var SELECTION_KEYS = [" ", "Enter"];
+var SELECT_NAME = "Select";
+var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
+var [createSelectContext] = createContextScope(SELECT_NAME, [
+  createCollectionScope,
+  createPopperScope
+]);
+var usePopperScope = createPopperScope();
+var [SelectProvider, useSelectContext] = createSelectContext(SELECT_NAME);
+var [SelectNativeOptionsProvider, useSelectNativeOptionsContext] = createSelectContext(SELECT_NAME);
+var Select$1 = (props) => {
+  const {
+    __scopeSelect,
+    children,
+    open: openProp,
+    defaultOpen,
+    onOpenChange,
+    value: valueProp,
+    defaultValue,
+    onValueChange,
+    dir,
+    name,
+    autoComplete,
+    disabled,
+    required,
+    form
+  } = props;
+  const popperScope = usePopperScope(__scopeSelect);
+  const [trigger, setTrigger] = reactExports.useState(null);
+  const [valueNode, setValueNode] = reactExports.useState(null);
+  const [valueNodeHasChildren, setValueNodeHasChildren] = reactExports.useState(false);
+  const direction = useDirection(dir);
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: defaultOpen ?? false,
+    onChange: onOpenChange,
+    caller: SELECT_NAME
+  });
+  const [value, setValue] = useControllableState({
+    prop: valueProp,
+    defaultProp: defaultValue,
+    onChange: onValueChange,
+    caller: SELECT_NAME
+  });
+  const triggerPointerDownPosRef = reactExports.useRef(null);
+  const isFormControl = trigger ? form || !!trigger.closest("form") : true;
+  const [nativeOptionsSet, setNativeOptionsSet] = reactExports.useState(/* @__PURE__ */ new Set());
+  const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$4, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    SelectProvider,
+    {
+      required,
+      scope: __scopeSelect,
+      trigger,
+      onTriggerChange: setTrigger,
+      valueNode,
+      onValueNodeChange: setValueNode,
+      valueNodeHasChildren,
+      onValueNodeHasChildrenChange: setValueNodeHasChildren,
+      contentId: useId(),
+      value,
+      onValueChange: setValue,
+      open,
+      onOpenChange: setOpen,
+      dir: direction,
+      triggerPointerDownPosRef,
+      disabled,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          SelectNativeOptionsProvider,
+          {
+            scope: props.__scopeSelect,
+            onNativeOptionAdd: reactExports.useCallback((option) => {
+              setNativeOptionsSet((prev) => new Set(prev).add(option));
+            }, []),
+            onNativeOptionRemove: reactExports.useCallback((option) => {
+              setNativeOptionsSet((prev) => {
+                const optionsSet = new Set(prev);
+                optionsSet.delete(option);
+                return optionsSet;
+              });
+            }, []),
+            children
+          }
+        ) }),
+        isFormControl ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          SelectBubbleInput,
+          {
+            "aria-hidden": true,
+            required,
+            tabIndex: -1,
+            name,
+            autoComplete,
+            value,
+            onChange: (event) => setValue(event.target.value),
+            disabled,
+            form,
+            children: [
+              value === void 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "" }) : null,
+              Array.from(nativeOptionsSet)
+            ]
+          },
+          nativeSelectKey
+        ) : null
+      ]
+    }
+  ) });
+};
+Select$1.displayName = SELECT_NAME;
+var TRIGGER_NAME$2 = "SelectTrigger";
+var SelectTrigger$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, disabled = false, ...triggerProps } = props;
+    const popperScope = usePopperScope(__scopeSelect);
+    const context = useSelectContext(TRIGGER_NAME$2, __scopeSelect);
+    const isDisabled = context.disabled || disabled;
+    const composedRefs = useComposedRefs$1(forwardedRef, context.onTriggerChange);
+    const getItems = useCollection(__scopeSelect);
+    const pointerTypeRef = reactExports.useRef("touch");
+    const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
+      const enabledItems = getItems().filter((item) => !item.disabled);
+      const currentItem = enabledItems.find((item) => item.value === context.value);
+      const nextItem = findNextItem(enabledItems, search, currentItem);
+      if (nextItem !== void 0) {
+        context.onValueChange(nextItem.value);
+      }
+    });
+    const handleOpen = (pointerEvent) => {
+      if (!isDisabled) {
+        context.onOpenChange(true);
+        resetTypeahead();
+      }
+      if (pointerEvent) {
+        context.triggerPointerDownPosRef.current = {
+          x: Math.round(pointerEvent.pageX),
+          y: Math.round(pointerEvent.pageY)
+        };
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Anchor, { asChild: true, ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.button,
+      {
+        type: "button",
+        role: "combobox",
+        "aria-controls": context.contentId,
+        "aria-expanded": context.open,
+        "aria-required": context.required,
+        "aria-autocomplete": "none",
+        dir: context.dir,
+        "data-state": context.open ? "open" : "closed",
+        disabled: isDisabled,
+        "data-disabled": isDisabled ? "" : void 0,
+        "data-placeholder": shouldShowPlaceholder(context.value) ? "" : void 0,
+        ...triggerProps,
+        ref: composedRefs,
+        onClick: composeEventHandlers(triggerProps.onClick, (event) => {
+          event.currentTarget.focus();
+          if (pointerTypeRef.current !== "mouse") {
+            handleOpen(event);
+          }
+        }),
+        onPointerDown: composeEventHandlers(triggerProps.onPointerDown, (event) => {
+          pointerTypeRef.current = event.pointerType;
+          const target = event.target;
+          if (target.hasPointerCapture(event.pointerId)) {
+            target.releasePointerCapture(event.pointerId);
+          }
+          if (event.button === 0 && event.ctrlKey === false && event.pointerType === "mouse") {
+            handleOpen(event);
+            event.preventDefault();
+          }
+        }),
+        onKeyDown: composeEventHandlers(triggerProps.onKeyDown, (event) => {
+          const isTypingAhead = searchRef.current !== "";
+          const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+          if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+          if (isTypingAhead && event.key === " ") return;
+          if (OPEN_KEYS.includes(event.key)) {
+            handleOpen();
+            event.preventDefault();
+          }
+        })
+      }
+    ) });
+  }
+);
+SelectTrigger$1.displayName = TRIGGER_NAME$2;
+var VALUE_NAME = "SelectValue";
+var SelectValue$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, className, style: style2, children, placeholder = "", ...valueProps } = props;
+    const context = useSelectContext(VALUE_NAME, __scopeSelect);
+    const { onValueNodeHasChildrenChange } = context;
+    const hasChildren = children !== void 0;
+    const composedRefs = useComposedRefs$1(forwardedRef, context.onValueNodeChange);
+    useLayoutEffect2(() => {
+      onValueNodeHasChildrenChange(hasChildren);
+    }, [onValueNodeHasChildrenChange, hasChildren]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.span,
+      {
+        ...valueProps,
+        ref: composedRefs,
+        style: { pointerEvents: "none" },
+        children: shouldShowPlaceholder(context.value) ? /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: placeholder }) : children
+      }
+    );
+  }
+);
+SelectValue$1.displayName = VALUE_NAME;
+var ICON_NAME = "SelectIcon";
+var SelectIcon = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, children, ...iconProps } = props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
+  }
+);
+SelectIcon.displayName = ICON_NAME;
+var PORTAL_NAME$1 = "SelectPortal";
+var SelectPortal = (props) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$3, { asChild: true, ...props });
+};
+SelectPortal.displayName = PORTAL_NAME$1;
+var CONTENT_NAME$2 = "SelectContent";
+var SelectContent$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const context = useSelectContext(CONTENT_NAME$2, props.__scopeSelect);
+    const [fragment, setFragment] = reactExports.useState();
+    useLayoutEffect2(() => {
+      setFragment(new DocumentFragment());
+    }, []);
+    if (!context.open) {
+      const frag = fragment;
+      return frag ? reactDomExports.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentProvider, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: props.children }) }) }),
+        frag
+      ) : null;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentImpl, { ...props, ref: forwardedRef });
+  }
+);
+SelectContent$1.displayName = CONTENT_NAME$2;
+var CONTENT_MARGIN = 10;
+var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME$2);
+var CONTENT_IMPL_NAME = "SelectContentImpl";
+var Slot = /* @__PURE__ */ createSlot("SelectContent.RemoveScroll");
+var SelectContentImpl = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeSelect,
+      position = "item-aligned",
+      onCloseAutoFocus,
+      onEscapeKeyDown,
+      onPointerDownOutside,
+      //
+      // PopperContent props
+      side,
+      sideOffset,
+      align,
+      alignOffset,
+      arrowPadding,
+      collisionBoundary,
+      collisionPadding,
+      sticky,
+      hideWhenDetached,
+      avoidCollisions,
+      //
+      ...contentProps
+    } = props;
+    const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
+    const [content, setContent] = reactExports.useState(null);
+    const [viewport, setViewport] = reactExports.useState(null);
+    const composedRefs = useComposedRefs$1(forwardedRef, (node) => setContent(node));
+    const [selectedItem, setSelectedItem] = reactExports.useState(null);
+    const [selectedItemText, setSelectedItemText] = reactExports.useState(
+      null
+    );
+    const getItems = useCollection(__scopeSelect);
+    const [isPositioned, setIsPositioned] = reactExports.useState(false);
+    const firstValidItemFoundRef = reactExports.useRef(false);
+    reactExports.useEffect(() => {
+      if (content) return hideOthers(content);
+    }, [content]);
+    useFocusGuards();
+    const focusFirst2 = reactExports.useCallback(
+      (candidates) => {
+        const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
+        const [lastItem] = restItems.slice(-1);
+        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+        for (const candidate of candidates) {
+          if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
+          candidate == null ? void 0 : candidate.scrollIntoView({ block: "nearest" });
+          if (candidate === firstItem && viewport) viewport.scrollTop = 0;
+          if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
+          candidate == null ? void 0 : candidate.focus();
+          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+        }
+      },
+      [getItems, viewport]
+    );
+    const focusSelectedItem = reactExports.useCallback(
+      () => focusFirst2([selectedItem, content]),
+      [focusFirst2, selectedItem, content]
+    );
+    reactExports.useEffect(() => {
+      if (isPositioned) {
+        focusSelectedItem();
+      }
+    }, [isPositioned, focusSelectedItem]);
+    const { onOpenChange, triggerPointerDownPosRef } = context;
+    reactExports.useEffect(() => {
+      if (content) {
+        let pointerMoveDelta = { x: 0, y: 0 };
+        const handlePointerMove = (event) => {
+          var _a2, _b2;
+          pointerMoveDelta = {
+            x: Math.abs(Math.round(event.pageX) - (((_a2 = triggerPointerDownPosRef.current) == null ? void 0 : _a2.x) ?? 0)),
+            y: Math.abs(Math.round(event.pageY) - (((_b2 = triggerPointerDownPosRef.current) == null ? void 0 : _b2.y) ?? 0))
+          };
+        };
+        const handlePointerUp = (event) => {
+          if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
+            event.preventDefault();
+          } else {
+            if (!content.contains(event.target)) {
+              onOpenChange(false);
+            }
+          }
+          document.removeEventListener("pointermove", handlePointerMove);
+          triggerPointerDownPosRef.current = null;
+        };
+        if (triggerPointerDownPosRef.current !== null) {
+          document.addEventListener("pointermove", handlePointerMove);
+          document.addEventListener("pointerup", handlePointerUp, { capture: true, once: true });
+        }
+        return () => {
+          document.removeEventListener("pointermove", handlePointerMove);
+          document.removeEventListener("pointerup", handlePointerUp, { capture: true });
+        };
+      }
+    }, [content, onOpenChange, triggerPointerDownPosRef]);
+    reactExports.useEffect(() => {
+      const close = () => onOpenChange(false);
+      window.addEventListener("blur", close);
+      window.addEventListener("resize", close);
+      return () => {
+        window.removeEventListener("blur", close);
+        window.removeEventListener("resize", close);
+      };
+    }, [onOpenChange]);
+    const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
+      const enabledItems = getItems().filter((item) => !item.disabled);
+      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+      const nextItem = findNextItem(enabledItems, search, currentItem);
+      if (nextItem) {
+        setTimeout(() => nextItem.ref.current.focus());
+      }
+    });
+    const itemRefCallback = reactExports.useCallback(
+      (node, value, disabled) => {
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== void 0 && context.value === value;
+        if (isSelectedItem || isFirstValidItem) {
+          setSelectedItem(node);
+          if (isFirstValidItem) firstValidItemFoundRef.current = true;
+        }
+      },
+      [context.value]
+    );
+    const handleItemLeave = reactExports.useCallback(() => content == null ? void 0 : content.focus(), [content]);
+    const itemTextRefCallback = reactExports.useCallback(
+      (node, value, disabled) => {
+        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+        const isSelectedItem = context.value !== void 0 && context.value === value;
+        if (isSelectedItem || isFirstValidItem) {
+          setSelectedItemText(node);
+        }
+      },
+      [context.value]
+    );
+    const SelectPosition = position === "popper" ? SelectPopperPosition : SelectItemAlignedPosition;
+    const popperContentProps = SelectPosition === SelectPopperPosition ? {
+      side,
+      sideOffset,
+      align,
+      alignOffset,
+      arrowPadding,
+      collisionBoundary,
+      collisionPadding,
+      sticky,
+      hideWhenDetached,
+      avoidCollisions
+    } : {};
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SelectContentProvider,
+      {
+        scope: __scopeSelect,
+        content,
+        viewport,
+        onViewportChange: setViewport,
+        itemRefCallback,
+        selectedItem,
+        onItemLeave: handleItemLeave,
+        itemTextRefCallback,
+        focusSelectedItem,
+        selectedItemText,
+        position,
+        isPositioned,
+        searchRef,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, { as: Slot, allowPinchZoom: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          FocusScope,
+          {
+            asChild: true,
+            trapped: context.open,
+            onMountAutoFocus: (event) => {
+              event.preventDefault();
+            },
+            onUnmountAutoFocus: composeEventHandlers(onCloseAutoFocus, (event) => {
+              var _a2;
+              (_a2 = context.trigger) == null ? void 0 : _a2.focus({ preventScroll: true });
+              event.preventDefault();
+            }),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DismissableLayer,
+              {
+                asChild: true,
+                disableOutsidePointerEvents: true,
+                onEscapeKeyDown,
+                onPointerDownOutside,
+                onFocusOutside: (event) => event.preventDefault(),
+                onDismiss: () => context.onOpenChange(false),
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  SelectPosition,
+                  {
+                    role: "listbox",
+                    id: context.contentId,
+                    "data-state": context.open ? "open" : "closed",
+                    dir: context.dir,
+                    onContextMenu: (event) => event.preventDefault(),
+                    ...contentProps,
+                    ...popperContentProps,
+                    onPlaced: () => setIsPositioned(true),
+                    ref: composedRefs,
+                    style: {
+                      // flex layout so we can place the scroll buttons properly
+                      display: "flex",
+                      flexDirection: "column",
+                      // reset the outline by default as the content MAY get focused
+                      outline: "none",
+                      ...contentProps.style
+                    },
+                    onKeyDown: composeEventHandlers(contentProps.onKeyDown, (event) => {
+                      const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                      if (event.key === "Tab") event.preventDefault();
+                      if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+                      if (["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
+                        const items = getItems().filter((item) => !item.disabled);
+                        let candidateNodes = items.map((item) => item.ref.current);
+                        if (["ArrowUp", "End"].includes(event.key)) {
+                          candidateNodes = candidateNodes.slice().reverse();
+                        }
+                        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+                          const currentElement = event.target;
+                          const currentIndex = candidateNodes.indexOf(currentElement);
+                          candidateNodes = candidateNodes.slice(currentIndex + 1);
+                        }
+                        setTimeout(() => focusFirst2(candidateNodes));
+                        event.preventDefault();
+                      }
+                    })
+                  }
+                )
+              }
+            )
+          }
+        ) })
+      }
+    );
+  }
+);
+SelectContentImpl.displayName = CONTENT_IMPL_NAME;
+var ITEM_ALIGNED_POSITION_NAME = "SelectItemAlignedPosition";
+var SelectItemAlignedPosition = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeSelect, onPlaced, ...popperProps } = props;
+  const context = useSelectContext(CONTENT_NAME$2, __scopeSelect);
+  const contentContext = useSelectContentContext(CONTENT_NAME$2, __scopeSelect);
+  const [contentWrapper, setContentWrapper] = reactExports.useState(null);
+  const [content, setContent] = reactExports.useState(null);
+  const composedRefs = useComposedRefs$1(forwardedRef, (node) => setContent(node));
+  const getItems = useCollection(__scopeSelect);
+  const shouldExpandOnScrollRef = reactExports.useRef(false);
+  const shouldRepositionRef = reactExports.useRef(true);
+  const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
+  const position = reactExports.useCallback(() => {
+    if (context.trigger && context.valueNode && contentWrapper && content && viewport && selectedItem && selectedItemText) {
+      const triggerRect = context.trigger.getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+      const valueNodeRect = context.valueNode.getBoundingClientRect();
+      const itemTextRect = selectedItemText.getBoundingClientRect();
+      if (context.dir !== "rtl") {
+        const itemTextOffset = itemTextRect.left - contentRect.left;
+        const left = valueNodeRect.left - itemTextOffset;
+        const leftDelta = triggerRect.left - left;
+        const minContentWidth = triggerRect.width + leftDelta;
+        const contentWidth = Math.max(minContentWidth, contentRect.width);
+        const rightEdge = window.innerWidth - CONTENT_MARGIN;
+        const clampedLeft = clamp(left, [
+          CONTENT_MARGIN,
+          // Prevents the content from going off the starting edge of the
+          // viewport. It may still go off the ending edge, but this can be
+          // controlled by the user since they may want to manage overflow in a
+          // specific way.
+          // https://github.com/radix-ui/primitives/issues/2049
+          Math.max(CONTENT_MARGIN, rightEdge - contentWidth)
+        ]);
+        contentWrapper.style.minWidth = minContentWidth + "px";
+        contentWrapper.style.left = clampedLeft + "px";
+      } else {
+        const itemTextOffset = contentRect.right - itemTextRect.right;
+        const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
+        const rightDelta = window.innerWidth - triggerRect.right - right;
+        const minContentWidth = triggerRect.width + rightDelta;
+        const contentWidth = Math.max(minContentWidth, contentRect.width);
+        const leftEdge = window.innerWidth - CONTENT_MARGIN;
+        const clampedRight = clamp(right, [
+          CONTENT_MARGIN,
+          Math.max(CONTENT_MARGIN, leftEdge - contentWidth)
+        ]);
+        contentWrapper.style.minWidth = minContentWidth + "px";
+        contentWrapper.style.right = clampedRight + "px";
+      }
+      const items = getItems();
+      const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+      const itemsHeight = viewport.scrollHeight;
+      const contentStyles = window.getComputedStyle(content);
+      const contentBorderTopWidth = parseInt(contentStyles.borderTopWidth, 10);
+      const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
+      const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
+      const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
+      const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth;
+      const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
+      const viewportStyles = window.getComputedStyle(viewport);
+      const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
+      const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
+      const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
+      const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
+      const selectedItemHalfHeight = selectedItem.offsetHeight / 2;
+      const itemOffsetMiddle = selectedItem.offsetTop + selectedItemHalfHeight;
+      const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
+      const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
+      const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
+      if (willAlignWithoutTopOverflow) {
+        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
+        contentWrapper.style.bottom = "0px";
+        const viewportOffsetBottom = content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
+        const clampedTriggerMiddleToBottomEdge = Math.max(
+          triggerMiddleToBottomEdge,
+          selectedItemHalfHeight + // viewport might have padding bottom, include it to avoid a scrollable viewport
+          (isLastItem ? viewportPaddingBottom : 0) + viewportOffsetBottom + contentBorderBottomWidth
+        );
+        const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
+        contentWrapper.style.height = height + "px";
+      } else {
+        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
+        contentWrapper.style.top = "0px";
+        const clampedTopEdgeToTriggerMiddle = Math.max(
+          topEdgeToTriggerMiddle,
+          contentBorderTopWidth + viewport.offsetTop + // viewport might have padding top, include it to avoid a scrollable viewport
+          (isFirstItem ? viewportPaddingTop : 0) + selectedItemHalfHeight
+        );
+        const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
+        contentWrapper.style.height = height + "px";
+        viewport.scrollTop = contentTopToItemMiddle - topEdgeToTriggerMiddle + viewport.offsetTop;
+      }
+      contentWrapper.style.margin = `${CONTENT_MARGIN}px 0`;
+      contentWrapper.style.minHeight = minContentHeight + "px";
+      contentWrapper.style.maxHeight = availableHeight + "px";
+      onPlaced == null ? void 0 : onPlaced();
+      requestAnimationFrame(() => shouldExpandOnScrollRef.current = true);
+    }
+  }, [
+    getItems,
+    context.trigger,
+    context.valueNode,
+    contentWrapper,
+    content,
+    viewport,
+    selectedItem,
+    selectedItemText,
+    context.dir,
+    onPlaced
+  ]);
+  useLayoutEffect2(() => position(), [position]);
+  const [contentZIndex, setContentZIndex] = reactExports.useState();
+  useLayoutEffect2(() => {
+    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+  }, [content]);
+  const handleScrollButtonChange = reactExports.useCallback(
+    (node) => {
+      if (node && shouldRepositionRef.current === true) {
+        position();
+        focusSelectedItem == null ? void 0 : focusSelectedItem();
+        shouldRepositionRef.current = false;
+      }
+    },
+    [position, focusSelectedItem]
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SelectViewportProvider,
+    {
+      scope: __scopeSelect,
+      contentWrapper,
+      shouldExpandOnScrollRef,
+      onScrollButtonChange: handleScrollButtonChange,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          ref: setContentWrapper,
+          style: {
+            display: "flex",
+            flexDirection: "column",
+            position: "fixed",
+            zIndex: contentZIndex
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Primitive.div,
+            {
+              ...popperProps,
+              ref: composedRefs,
+              style: {
+                // When we get the height of the content, it includes borders. If we were to set
+                // the height without having `boxSizing: 'border-box'` it would be too big.
+                boxSizing: "border-box",
+                // We need to ensure the content doesn't get taller than the wrapper
+                maxHeight: "100%",
+                ...popperProps.style
+              }
+            }
+          )
+        }
+      )
+    }
+  );
+});
+SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
+var POPPER_POSITION_NAME = "SelectPopperPosition";
+var SelectPopperPosition = reactExports.forwardRef((props, forwardedRef) => {
+  const {
+    __scopeSelect,
+    align = "start",
+    collisionPadding = CONTENT_MARGIN,
+    ...popperProps
+  } = props;
+  const popperScope = usePopperScope(__scopeSelect);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Content$2,
+    {
+      ...popperScope,
+      ...popperProps,
+      ref: forwardedRef,
+      align,
+      collisionPadding,
+      style: {
+        // Ensure border-box for floating-ui calculations
+        boxSizing: "border-box",
+        ...popperProps.style,
+        // re-namespace exposed content custom properties
+        ...{
+          "--radix-select-content-transform-origin": "var(--radix-popper-transform-origin)",
+          "--radix-select-content-available-width": "var(--radix-popper-available-width)",
+          "--radix-select-content-available-height": "var(--radix-popper-available-height)",
+          "--radix-select-trigger-width": "var(--radix-popper-anchor-width)",
+          "--radix-select-trigger-height": "var(--radix-popper-anchor-height)"
+        }
+      }
+    }
+  );
+});
+SelectPopperPosition.displayName = POPPER_POSITION_NAME;
+var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME$2, {});
+var VIEWPORT_NAME = "SelectViewport";
+var SelectViewport = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, nonce, ...viewportProps } = props;
+    const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
+    const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
+    const composedRefs = useComposedRefs$1(forwardedRef, contentContext.onViewportChange);
+    const prevScrollTopRef = reactExports.useRef(0);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "style",
+        {
+          dangerouslySetInnerHTML: {
+            __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`
+          },
+          nonce
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive.div,
+        {
+          "data-radix-select-viewport": "",
+          role: "presentation",
+          ...viewportProps,
+          ref: composedRefs,
+          style: {
+            // we use position: 'relative' here on the `viewport` so that when we call
+            // `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
+            // (independent of the scrollUpButton).
+            position: "relative",
+            flex: 1,
+            // Viewport should only be scrollable in the vertical direction.
+            // This won't work in vertical writing modes, so we'll need to
+            // revisit this if/when that is supported
+            // https://developer.chrome.com/blog/vertical-form-controls
+            overflow: "hidden auto",
+            ...viewportProps.style
+          },
+          onScroll: composeEventHandlers(viewportProps.onScroll, (event) => {
+            const viewport = event.currentTarget;
+            const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
+            if ((shouldExpandOnScrollRef == null ? void 0 : shouldExpandOnScrollRef.current) && contentWrapper) {
+              const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
+              if (scrolledBy > 0) {
+                const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+                const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
+                const cssHeight = parseFloat(contentWrapper.style.height);
+                const prevHeight = Math.max(cssMinHeight, cssHeight);
+                if (prevHeight < availableHeight) {
+                  const nextHeight = prevHeight + scrolledBy;
+                  const clampedNextHeight = Math.min(availableHeight, nextHeight);
+                  const heightDiff = nextHeight - clampedNextHeight;
+                  contentWrapper.style.height = clampedNextHeight + "px";
+                  if (contentWrapper.style.bottom === "0px") {
+                    viewport.scrollTop = heightDiff > 0 ? heightDiff : 0;
+                    contentWrapper.style.justifyContent = "flex-end";
+                  }
+                }
+              }
+            }
+            prevScrollTopRef.current = viewport.scrollTop;
+          })
+        }
+      ) })
+    ] });
+  }
+);
+SelectViewport.displayName = VIEWPORT_NAME;
+var GROUP_NAME = "SelectGroup";
+var [SelectGroupContextProvider, useSelectGroupContext] = createSelectContext(GROUP_NAME);
+var SelectGroup = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...groupProps } = props;
+    const groupId = useId();
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
+  }
+);
+SelectGroup.displayName = GROUP_NAME;
+var LABEL_NAME = "SelectLabel";
+var SelectLabel = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...labelProps } = props;
+    const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
+  }
+);
+SelectLabel.displayName = LABEL_NAME;
+var ITEM_NAME = "SelectItem";
+var [SelectItemContextProvider, useSelectItemContext] = createSelectContext(ITEM_NAME);
+var SelectItem$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeSelect,
+      value,
+      disabled = false,
+      textValue: textValueProp,
+      ...itemProps
+    } = props;
+    const context = useSelectContext(ITEM_NAME, __scopeSelect);
+    const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
+    const isSelected = context.value === value;
+    const [textValue, setTextValue] = reactExports.useState(textValueProp ?? "");
+    const [isFocused, setIsFocused] = reactExports.useState(false);
+    const composedRefs = useComposedRefs$1(
+      forwardedRef,
+      (node) => {
+        var _a2;
+        return (_a2 = contentContext.itemRefCallback) == null ? void 0 : _a2.call(contentContext, node, value, disabled);
+      }
+    );
+    const textId = useId();
+    const pointerTypeRef = reactExports.useRef("touch");
+    const handleSelect = () => {
+      if (!disabled) {
+        context.onValueChange(value);
+        context.onOpenChange(false);
+      }
+    };
+    if (value === "") {
+      throw new Error(
+        "A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SelectItemContextProvider,
+      {
+        scope: __scopeSelect,
+        value,
+        disabled,
+        textId,
+        isSelected,
+        onItemTextChange: reactExports.useCallback((node) => {
+          setTextValue((prevTextValue) => prevTextValue || ((node == null ? void 0 : node.textContent) ?? "").trim());
+        }, []),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Collection.ItemSlot,
+          {
+            scope: __scopeSelect,
+            value,
+            disabled,
+            textValue,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive.div,
+              {
+                role: "option",
+                "aria-labelledby": textId,
+                "data-highlighted": isFocused ? "" : void 0,
+                "aria-selected": isSelected && isFocused,
+                "data-state": isSelected ? "checked" : "unchecked",
+                "aria-disabled": disabled || void 0,
+                "data-disabled": disabled ? "" : void 0,
+                tabIndex: disabled ? void 0 : -1,
+                ...itemProps,
+                ref: composedRefs,
+                onFocus: composeEventHandlers(itemProps.onFocus, () => setIsFocused(true)),
+                onBlur: composeEventHandlers(itemProps.onBlur, () => setIsFocused(false)),
+                onClick: composeEventHandlers(itemProps.onClick, () => {
+                  if (pointerTypeRef.current !== "mouse") handleSelect();
+                }),
+                onPointerUp: composeEventHandlers(itemProps.onPointerUp, () => {
+                  if (pointerTypeRef.current === "mouse") handleSelect();
+                }),
+                onPointerDown: composeEventHandlers(itemProps.onPointerDown, (event) => {
+                  pointerTypeRef.current = event.pointerType;
+                }),
+                onPointerMove: composeEventHandlers(itemProps.onPointerMove, (event) => {
+                  var _a2;
+                  pointerTypeRef.current = event.pointerType;
+                  if (disabled) {
+                    (_a2 = contentContext.onItemLeave) == null ? void 0 : _a2.call(contentContext);
+                  } else if (pointerTypeRef.current === "mouse") {
+                    event.currentTarget.focus({ preventScroll: true });
+                  }
+                }),
+                onPointerLeave: composeEventHandlers(itemProps.onPointerLeave, (event) => {
+                  var _a2;
+                  if (event.currentTarget === document.activeElement) {
+                    (_a2 = contentContext.onItemLeave) == null ? void 0 : _a2.call(contentContext);
+                  }
+                }),
+                onKeyDown: composeEventHandlers(itemProps.onKeyDown, (event) => {
+                  var _a2;
+                  const isTypingAhead = ((_a2 = contentContext.searchRef) == null ? void 0 : _a2.current) !== "";
+                  if (isTypingAhead && event.key === " ") return;
+                  if (SELECTION_KEYS.includes(event.key)) handleSelect();
+                  if (event.key === " ") event.preventDefault();
+                })
+              }
+            )
+          }
+        )
+      }
+    );
+  }
+);
+SelectItem$1.displayName = ITEM_NAME;
+var ITEM_TEXT_NAME = "SelectItemText";
+var SelectItemText = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, className, style: style2, ...itemTextProps } = props;
+    const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
+    const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
+    const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
+    const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
+    const [itemTextNode, setItemTextNode] = reactExports.useState(null);
+    const composedRefs = useComposedRefs$1(
+      forwardedRef,
+      (node) => setItemTextNode(node),
+      itemContext.onItemTextChange,
+      (node) => {
+        var _a2;
+        return (_a2 = contentContext.itemTextRefCallback) == null ? void 0 : _a2.call(contentContext, node, itemContext.value, itemContext.disabled);
+      }
+    );
+    const textContent = itemTextNode == null ? void 0 : itemTextNode.textContent;
+    const nativeOption = reactExports.useMemo(
+      () => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: itemContext.value, disabled: itemContext.disabled, children: textContent }, itemContext.value),
+      [itemContext.disabled, itemContext.value, textContent]
+    );
+    const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
+    useLayoutEffect2(() => {
+      onNativeOptionAdd(nativeOption);
+      return () => onNativeOptionRemove(nativeOption);
+    }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
+      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
+    ] });
+  }
+);
+SelectItemText.displayName = ITEM_TEXT_NAME;
+var ITEM_INDICATOR_NAME = "SelectItemIndicator";
+var SelectItemIndicator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...itemIndicatorProps } = props;
+    const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
+    return itemContext.isSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
+  }
+);
+SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
+var SCROLL_UP_BUTTON_NAME = "SelectScrollUpButton";
+var SelectScrollUpButton$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const contentContext = useSelectContentContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
+  const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
+  const [canScrollUp, setCanScrollUp] = reactExports.useState(false);
+  const composedRefs = useComposedRefs$1(forwardedRef, viewportContext.onScrollButtonChange);
+  useLayoutEffect2(() => {
+    if (contentContext.viewport && contentContext.isPositioned) {
+      let handleScroll2 = function() {
+        const canScrollUp2 = viewport.scrollTop > 0;
+        setCanScrollUp(canScrollUp2);
+      };
+      const viewport = contentContext.viewport;
+      handleScroll2();
+      viewport.addEventListener("scroll", handleScroll2);
+      return () => viewport.removeEventListener("scroll", handleScroll2);
+    }
+  }, [contentContext.viewport, contentContext.isPositioned]);
+  return canScrollUp ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SelectScrollButtonImpl,
+    {
+      ...props,
+      ref: composedRefs,
+      onAutoScroll: () => {
+        const { viewport, selectedItem } = contentContext;
+        if (viewport && selectedItem) {
+          viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight;
+        }
+      }
+    }
+  ) : null;
+});
+SelectScrollUpButton$1.displayName = SCROLL_UP_BUTTON_NAME;
+var SCROLL_DOWN_BUTTON_NAME = "SelectScrollDownButton";
+var SelectScrollDownButton$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const contentContext = useSelectContentContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
+  const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
+  const [canScrollDown, setCanScrollDown] = reactExports.useState(false);
+  const composedRefs = useComposedRefs$1(forwardedRef, viewportContext.onScrollButtonChange);
+  useLayoutEffect2(() => {
+    if (contentContext.viewport && contentContext.isPositioned) {
+      let handleScroll2 = function() {
+        const maxScroll = viewport.scrollHeight - viewport.clientHeight;
+        const canScrollDown2 = Math.ceil(viewport.scrollTop) < maxScroll;
+        setCanScrollDown(canScrollDown2);
+      };
+      const viewport = contentContext.viewport;
+      handleScroll2();
+      viewport.addEventListener("scroll", handleScroll2);
+      return () => viewport.removeEventListener("scroll", handleScroll2);
+    }
+  }, [contentContext.viewport, contentContext.isPositioned]);
+  return canScrollDown ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    SelectScrollButtonImpl,
+    {
+      ...props,
+      ref: composedRefs,
+      onAutoScroll: () => {
+        const { viewport, selectedItem } = contentContext;
+        if (viewport && selectedItem) {
+          viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight;
+        }
+      }
+    }
+  ) : null;
+});
+SelectScrollDownButton$1.displayName = SCROLL_DOWN_BUTTON_NAME;
+var SelectScrollButtonImpl = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
+  const contentContext = useSelectContentContext("SelectScrollButton", __scopeSelect);
+  const autoScrollTimerRef = reactExports.useRef(null);
+  const getItems = useCollection(__scopeSelect);
+  const clearAutoScrollTimer = reactExports.useCallback(() => {
+    if (autoScrollTimerRef.current !== null) {
+      window.clearInterval(autoScrollTimerRef.current);
+      autoScrollTimerRef.current = null;
+    }
+  }, []);
+  reactExports.useEffect(() => {
+    return () => clearAutoScrollTimer();
+  }, [clearAutoScrollTimer]);
+  useLayoutEffect2(() => {
+    var _a2;
+    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
+    (_a2 = activeItem == null ? void 0 : activeItem.ref.current) == null ? void 0 : _a2.scrollIntoView({ block: "nearest" });
+  }, [getItems]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Primitive.div,
+    {
+      "aria-hidden": true,
+      ...scrollIndicatorProps,
+      ref: forwardedRef,
+      style: { flexShrink: 0, ...scrollIndicatorProps.style },
+      onPointerDown: composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
+        if (autoScrollTimerRef.current === null) {
+          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        }
+      }),
+      onPointerMove: composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
+        var _a2;
+        (_a2 = contentContext.onItemLeave) == null ? void 0 : _a2.call(contentContext);
+        if (autoScrollTimerRef.current === null) {
+          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        }
+      }),
+      onPointerLeave: composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
+        clearAutoScrollTimer();
+      })
+    }
+  );
+});
+var SEPARATOR_NAME = "SelectSeparator";
+var SelectSeparator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...separatorProps } = props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
+  }
+);
+SelectSeparator.displayName = SEPARATOR_NAME;
+var ARROW_NAME = "SelectArrow";
+var SelectArrow = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeSelect, ...arrowProps } = props;
+    const popperScope = usePopperScope(__scopeSelect);
+    const context = useSelectContext(ARROW_NAME, __scopeSelect);
+    const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
+    return context.open && contentContext.position === "popper" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Arrow, { ...popperScope, ...arrowProps, ref: forwardedRef }) : null;
+  }
+);
+SelectArrow.displayName = ARROW_NAME;
+var BUBBLE_INPUT_NAME = "SelectBubbleInput";
+var SelectBubbleInput = reactExports.forwardRef(
+  ({ __scopeSelect, value, ...props }, forwardedRef) => {
+    const ref = reactExports.useRef(null);
+    const composedRefs = useComposedRefs$1(forwardedRef, ref);
+    const prevValue = usePrevious(value);
+    reactExports.useEffect(() => {
+      const select = ref.current;
+      if (!select) return;
+      const selectProto = window.HTMLSelectElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        selectProto,
+        "value"
+      );
+      const setValue = descriptor.set;
+      if (prevValue !== value && setValue) {
+        const event = new Event("change", { bubbles: true });
+        setValue.call(select, value);
+        select.dispatchEvent(event);
+      }
+    }, [prevValue, value]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.select,
+      {
+        ...props,
+        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style },
+        ref: composedRefs,
+        defaultValue: value
+      }
+    );
+  }
+);
+SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
+function shouldShowPlaceholder(value) {
+  return value === "" || value === void 0;
+}
+function useTypeaheadSearch(onSearchChange) {
+  const handleSearchChange = useCallbackRef$1(onSearchChange);
+  const searchRef = reactExports.useRef("");
+  const timerRef = reactExports.useRef(0);
+  const handleTypeaheadSearch = reactExports.useCallback(
+    (key) => {
+      const search = searchRef.current + key;
+      handleSearchChange(search);
+      (function updateSearch(value) {
+        searchRef.current = value;
+        window.clearTimeout(timerRef.current);
+        if (value !== "") timerRef.current = window.setTimeout(() => updateSearch(""), 1e3);
+      })(search);
+    },
+    [handleSearchChange]
+  );
+  const resetTypeahead = reactExports.useCallback(() => {
+    searchRef.current = "";
+    window.clearTimeout(timerRef.current);
+  }, []);
+  reactExports.useEffect(() => {
+    return () => window.clearTimeout(timerRef.current);
+  }, []);
+  return [searchRef, handleTypeaheadSearch, resetTypeahead];
+}
+function findNextItem(items, search, currentItem) {
+  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+  const normalizedSearch = isRepeated ? search[0] : search;
+  const currentItemIndex = currentItem ? items.indexOf(currentItem) : -1;
+  let wrappedItems = wrapArray(items, Math.max(currentItemIndex, 0));
+  const excludeCurrentItem = normalizedSearch.length === 1;
+  if (excludeCurrentItem) wrappedItems = wrappedItems.filter((v2) => v2 !== currentItem);
+  const nextItem = wrappedItems.find(
+    (item) => item.textValue.toLowerCase().startsWith(normalizedSearch.toLowerCase())
+  );
+  return nextItem !== currentItem ? nextItem : void 0;
+}
+function wrapArray(array, startIndex) {
+  return array.map((_2, index2) => array[(startIndex + index2) % array.length]);
+}
+var Root2$2 = Select$1;
+var Trigger$1 = SelectTrigger$1;
+var Value = SelectValue$1;
+var Icon = SelectIcon;
+var Portal = SelectPortal;
+var Content2$1 = SelectContent$1;
+var Viewport = SelectViewport;
+var Item = SelectItem$1;
+var ItemText = SelectItemText;
+var ItemIndicator = SelectItemIndicator;
+var ScrollUpButton = SelectScrollUpButton$1;
+var ScrollDownButton = SelectScrollDownButton$1;
+function Select({
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$2, { "data-slot": "select", ...props });
+}
+function SelectValue({
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Value, { "data-slot": "select-value", ...props });
+}
+function SelectTrigger({
+  className,
+  size: size2 = "default",
+  children,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    Trigger$1,
+    {
+      "data-slot": "select-trigger",
+      "data-size": size2,
+      className: cn(
+        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      ...props,
+      children: [
+        children,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4 opacity-50" }) })
+      ]
+    }
+  );
+}
+function SelectContent({
+  className,
+  children,
+  position = "popper",
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    Content2$1,
+    {
+      "data-slot": "select-content",
+      className: cn(
+        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
+        position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+        className
+      ),
+      position,
+      ...props,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollUpButton, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Viewport,
+          {
+            className: cn(
+              "p-1",
+              position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
+            ),
+            children
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollDownButton, {})
+      ]
+    }
+  ) });
+}
+function SelectItem({
+  className,
+  children,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    Item,
+    {
+      "data-slot": "select-item",
+      className: cn(
+        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        className
+      ),
+      ...props,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute right-2 flex size-3.5 items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ItemIndicator, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4" }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ItemText, { children })
+      ]
+    }
+  );
+}
+function SelectScrollUpButton({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ScrollUpButton,
+    {
+      "data-slot": "select-scroll-up-button",
+      className: cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-4" })
+    }
+  );
+}
+function SelectScrollDownButton({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ScrollDownButton,
+    {
+      "data-slot": "select-scroll-down-button",
+      className: cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4" })
+    }
+  );
+}
 function CategoryFormDialog({
   open,
   onOpenChange,
   category
 }) {
+  var _a2;
   const isEdit = !!category;
   const createMut = useCreateCategory();
   const updateMut = useUpdateCategory();
+  const { data: positions } = usePositions();
+  const sortedPositions = (positions ?? []).map(toPositionView).sort((a2, b2) => a2.sortOrder - b2.sortOrder);
+  const [positionId, setPositionId] = reactExports.useState(null);
   const [name, setName] = reactExports.useState("");
   const [photo, setPhoto] = reactExports.useState(null);
   const [touched, setTouched] = reactExports.useState(false);
+  const defaultPositionId = ((_a2 = sortedPositions[0]) == null ? void 0 : _a2.id) ?? null;
   reactExports.useEffect(() => {
     if (!open) return;
+    setPositionId((category == null ? void 0 : category.positionId) ?? defaultPositionId);
     setName((category == null ? void 0 : category.name) ?? "");
     setPhoto((category == null ? void 0 : category.coverPhoto) ?? null);
     setTouched(false);
-  }, [open, category]);
+  }, [open, category, defaultPositionId]);
+  const positionError = touched && positionId === null;
   const nameError = touched && name.trim().length === 0;
   const photoError = touched && !photo;
-  const canSubmit = name.trim().length > 0 && !!photo;
+  const canSubmit = positionId !== null && name.trim().length > 0 && !!photo;
   const pending = createMut.isPending || updateMut.isPending;
   async function onSubmit(e) {
     e.preventDefault();
     setTouched(true);
-    if (!canSubmit || !photo) return;
+    if (!canSubmit || !photo || positionId === null) return;
     try {
       if (isEdit && category) {
         await updateMut.mutateAsync({
           id: category.id,
+          positionId,
           name: name.trim(),
           coverPhoto: photo
         });
         ue.success("Category updated");
       } else {
         await createMut.mutateAsync({
+          positionId,
           name: name.trim(),
           coverPhoto: photo
         });
@@ -55887,9 +57715,46 @@ function CategoryFormDialog({
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "category.dialog", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit category" : "New category" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the name and cover photo for this category." : "Add a new menu category with a name and a cover photo." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the position, name, and cover photo for this category." : "Add a new menu category under a position, with a name and a cover photo." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "category.position.label", children: "Position" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Select,
+          {
+            value: positionId !== null ? String(positionId) : void 0,
+            onValueChange: (v2) => setPositionId(BigInt(v2)),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SelectTrigger,
+                {
+                  "aria-invalid": positionError,
+                  "data-ocid": "category.position.select",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select a position" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { "data-ocid": "category.position.dropdown_menu", children: sortedPositions.map((p2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SelectItem,
+                {
+                  value: String(p2.id),
+                  "data-ocid": `category.position.option.${i + 1}`,
+                  children: p2.name
+                },
+                String(p2.id)
+              )) })
+            ]
+          }
+        ),
+        positionError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "text-xs text-destructive",
+            "data-ocid": "category.position.field_error",
+            children: "Please choose a position."
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "category-name", "data-ocid": "category.name.label", children: "Name" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -55972,7 +57837,7 @@ var AlertDialog$1 = (props) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$2, { ...dialogScope, ...alertDialogProps, modal: true });
 };
 AlertDialog$1.displayName = ROOT_NAME;
-var TRIGGER_NAME$2 = "AlertDialogTrigger";
+var TRIGGER_NAME$1 = "AlertDialogTrigger";
 var AlertDialogTrigger = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeAlertDialog, ...triggerProps } = props;
@@ -55980,14 +57845,14 @@ var AlertDialogTrigger = reactExports.forwardRef(
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Trigger$2, { ...dialogScope, ...triggerProps, ref: forwardedRef });
   }
 );
-AlertDialogTrigger.displayName = TRIGGER_NAME$2;
-var PORTAL_NAME$1 = "AlertDialogPortal";
+AlertDialogTrigger.displayName = TRIGGER_NAME$1;
+var PORTAL_NAME = "AlertDialogPortal";
 var AlertDialogPortal$1 = (props) => {
   const { __scopeAlertDialog, ...portalProps } = props;
   const dialogScope = useDialogScope(__scopeAlertDialog);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$1, { ...dialogScope, ...portalProps });
 };
-AlertDialogPortal$1.displayName = PORTAL_NAME$1;
+AlertDialogPortal$1.displayName = PORTAL_NAME;
 var OVERLAY_NAME = "AlertDialogOverlay";
 var AlertDialogOverlay$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
@@ -55997,8 +57862,8 @@ var AlertDialogOverlay$1 = reactExports.forwardRef(
   }
 );
 AlertDialogOverlay$1.displayName = OVERLAY_NAME;
-var CONTENT_NAME$2 = "AlertDialogContent";
-var [AlertDialogContentProvider, useAlertDialogContentContext] = createAlertDialogContext(CONTENT_NAME$2);
+var CONTENT_NAME$1 = "AlertDialogContent";
+var [AlertDialogContentProvider, useAlertDialogContentContext] = createAlertDialogContext(CONTENT_NAME$1);
 var Slottable = /* @__PURE__ */ createSlottable("AlertDialogContent");
 var AlertDialogContent$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
@@ -56010,7 +57875,7 @@ var AlertDialogContent$1 = reactExports.forwardRef(
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       WarningProvider,
       {
-        contentName: CONTENT_NAME$2,
+        contentName: CONTENT_NAME$1,
         titleName: TITLE_NAME,
         docsSlug: "alert-dialog",
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogContentProvider, { scope: __scopeAlertDialog, cancelRef, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -56037,7 +57902,7 @@ var AlertDialogContent$1 = reactExports.forwardRef(
     );
   }
 );
-AlertDialogContent$1.displayName = CONTENT_NAME$2;
+AlertDialogContent$1.displayName = CONTENT_NAME$1;
 var TITLE_NAME = "AlertDialogTitle";
 var AlertDialogTitle$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
@@ -56075,11 +57940,11 @@ var AlertDialogCancel$1 = reactExports.forwardRef(
 );
 AlertDialogCancel$1.displayName = CANCEL_NAME;
 var DescriptionWarning = ({ contentRef }) => {
-  const MESSAGE = `\`${CONTENT_NAME$2}\` requires a description for the component to be accessible for screen reader users.
+  const MESSAGE = `\`${CONTENT_NAME$1}\` requires a description for the component to be accessible for screen reader users.
 
-You can add a description to the \`${CONTENT_NAME$2}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+You can add a description to the \`${CONTENT_NAME$1}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
 
-Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME$2}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
+Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME$1}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
 
 For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
   reactExports.useEffect(() => {
@@ -56091,10 +57956,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/alert-
   }, [MESSAGE, contentRef]);
   return null;
 };
-var Root2$2 = AlertDialog$1;
+var Root2$1 = AlertDialog$1;
 var Portal2 = AlertDialogPortal$1;
 var Overlay2 = AlertDialogOverlay$1;
-var Content2$1 = AlertDialogContent$1;
+var Content2 = AlertDialogContent$1;
 var Action = AlertDialogAction$1;
 var Cancel = AlertDialogCancel$1;
 var Title2 = AlertDialogTitle$1;
@@ -56102,7 +57967,7 @@ var Description2 = AlertDialogDescription$1;
 function AlertDialog({
   ...props
 }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$2, { "data-slot": "alert-dialog", ...props });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$1, { "data-slot": "alert-dialog", ...props });
 }
 function AlertDialogPortal({
   ...props
@@ -56132,7 +57997,7 @@ function AlertDialogContent({
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogPortal, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogOverlay, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Content2$1,
+      Content2,
       {
         "data-slot": "alert-dialog-content",
         className: cn(
@@ -57407,1307 +59272,6 @@ function RecipeEditor({
       )
     ] })
   ] });
-}
-function clamp(value, [min2, max2]) {
-  return Math.min(max2, Math.max(min2, value));
-}
-function usePrevious(value) {
-  const ref = reactExports.useRef({ value, previous: value });
-  return reactExports.useMemo(() => {
-    if (ref.current.value !== value) {
-      ref.current.previous = ref.current.value;
-      ref.current.value = value;
-    }
-    return ref.current.previous;
-  }, [value]);
-}
-var VISUALLY_HIDDEN_STYLES = Object.freeze({
-  // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
-  position: "absolute",
-  border: 0,
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: "hidden",
-  clip: "rect(0, 0, 0, 0)",
-  whiteSpace: "nowrap",
-  wordWrap: "normal"
-});
-var NAME$1 = "VisuallyHidden";
-var VisuallyHidden = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive.span,
-      {
-        ...props,
-        ref: forwardedRef,
-        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style }
-      }
-    );
-  }
-);
-VisuallyHidden.displayName = NAME$1;
-var OPEN_KEYS = [" ", "Enter", "ArrowUp", "ArrowDown"];
-var SELECTION_KEYS = [" ", "Enter"];
-var SELECT_NAME = "Select";
-var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
-var [createSelectContext] = createContextScope(SELECT_NAME, [
-  createCollectionScope,
-  createPopperScope
-]);
-var usePopperScope = createPopperScope();
-var [SelectProvider, useSelectContext] = createSelectContext(SELECT_NAME);
-var [SelectNativeOptionsProvider, useSelectNativeOptionsContext] = createSelectContext(SELECT_NAME);
-var Select$1 = (props) => {
-  const {
-    __scopeSelect,
-    children,
-    open: openProp,
-    defaultOpen,
-    onOpenChange,
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    dir,
-    name,
-    autoComplete,
-    disabled,
-    required,
-    form
-  } = props;
-  const popperScope = usePopperScope(__scopeSelect);
-  const [trigger, setTrigger] = reactExports.useState(null);
-  const [valueNode, setValueNode] = reactExports.useState(null);
-  const [valueNodeHasChildren, setValueNodeHasChildren] = reactExports.useState(false);
-  const direction = useDirection(dir);
-  const [open, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen ?? false,
-    onChange: onOpenChange,
-    caller: SELECT_NAME
-  });
-  const [value, setValue] = useControllableState({
-    prop: valueProp,
-    defaultProp: defaultValue,
-    onChange: onValueChange,
-    caller: SELECT_NAME
-  });
-  const triggerPointerDownPosRef = reactExports.useRef(null);
-  const isFormControl = trigger ? form || !!trigger.closest("form") : true;
-  const [nativeOptionsSet, setNativeOptionsSet] = reactExports.useState(/* @__PURE__ */ new Set());
-  const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$4, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    SelectProvider,
-    {
-      required,
-      scope: __scopeSelect,
-      trigger,
-      onTriggerChange: setTrigger,
-      valueNode,
-      onValueNodeChange: setValueNode,
-      valueNodeHasChildren,
-      onValueNodeHasChildrenChange: setValueNodeHasChildren,
-      contentId: useId(),
-      value,
-      onValueChange: setValue,
-      open,
-      onOpenChange: setOpen,
-      dir: direction,
-      triggerPointerDownPosRef,
-      disabled,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Provider, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          SelectNativeOptionsProvider,
-          {
-            scope: props.__scopeSelect,
-            onNativeOptionAdd: reactExports.useCallback((option) => {
-              setNativeOptionsSet((prev) => new Set(prev).add(option));
-            }, []),
-            onNativeOptionRemove: reactExports.useCallback((option) => {
-              setNativeOptionsSet((prev) => {
-                const optionsSet = new Set(prev);
-                optionsSet.delete(option);
-                return optionsSet;
-              });
-            }, []),
-            children
-          }
-        ) }),
-        isFormControl ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          SelectBubbleInput,
-          {
-            "aria-hidden": true,
-            required,
-            tabIndex: -1,
-            name,
-            autoComplete,
-            value,
-            onChange: (event) => setValue(event.target.value),
-            disabled,
-            form,
-            children: [
-              value === void 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "" }) : null,
-              Array.from(nativeOptionsSet)
-            ]
-          },
-          nativeSelectKey
-        ) : null
-      ]
-    }
-  ) });
-};
-Select$1.displayName = SELECT_NAME;
-var TRIGGER_NAME$1 = "SelectTrigger";
-var SelectTrigger$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, disabled = false, ...triggerProps } = props;
-    const popperScope = usePopperScope(__scopeSelect);
-    const context = useSelectContext(TRIGGER_NAME$1, __scopeSelect);
-    const isDisabled = context.disabled || disabled;
-    const composedRefs = useComposedRefs$1(forwardedRef, context.onTriggerChange);
-    const getItems = useCollection(__scopeSelect);
-    const pointerTypeRef = reactExports.useRef("touch");
-    const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
-      const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.value === context.value);
-      const nextItem = findNextItem(enabledItems, search, currentItem);
-      if (nextItem !== void 0) {
-        context.onValueChange(nextItem.value);
-      }
-    });
-    const handleOpen = (pointerEvent) => {
-      if (!isDisabled) {
-        context.onOpenChange(true);
-        resetTypeahead();
-      }
-      if (pointerEvent) {
-        context.triggerPointerDownPosRef.current = {
-          x: Math.round(pointerEvent.pageX),
-          y: Math.round(pointerEvent.pageY)
-        };
-      }
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Anchor, { asChild: true, ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive.button,
-      {
-        type: "button",
-        role: "combobox",
-        "aria-controls": context.contentId,
-        "aria-expanded": context.open,
-        "aria-required": context.required,
-        "aria-autocomplete": "none",
-        dir: context.dir,
-        "data-state": context.open ? "open" : "closed",
-        disabled: isDisabled,
-        "data-disabled": isDisabled ? "" : void 0,
-        "data-placeholder": shouldShowPlaceholder(context.value) ? "" : void 0,
-        ...triggerProps,
-        ref: composedRefs,
-        onClick: composeEventHandlers(triggerProps.onClick, (event) => {
-          event.currentTarget.focus();
-          if (pointerTypeRef.current !== "mouse") {
-            handleOpen(event);
-          }
-        }),
-        onPointerDown: composeEventHandlers(triggerProps.onPointerDown, (event) => {
-          pointerTypeRef.current = event.pointerType;
-          const target = event.target;
-          if (target.hasPointerCapture(event.pointerId)) {
-            target.releasePointerCapture(event.pointerId);
-          }
-          if (event.button === 0 && event.ctrlKey === false && event.pointerType === "mouse") {
-            handleOpen(event);
-            event.preventDefault();
-          }
-        }),
-        onKeyDown: composeEventHandlers(triggerProps.onKeyDown, (event) => {
-          const isTypingAhead = searchRef.current !== "";
-          const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-          if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-          if (isTypingAhead && event.key === " ") return;
-          if (OPEN_KEYS.includes(event.key)) {
-            handleOpen();
-            event.preventDefault();
-          }
-        })
-      }
-    ) });
-  }
-);
-SelectTrigger$1.displayName = TRIGGER_NAME$1;
-var VALUE_NAME = "SelectValue";
-var SelectValue$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, className, style: style2, children, placeholder = "", ...valueProps } = props;
-    const context = useSelectContext(VALUE_NAME, __scopeSelect);
-    const { onValueNodeHasChildrenChange } = context;
-    const hasChildren = children !== void 0;
-    const composedRefs = useComposedRefs$1(forwardedRef, context.onValueNodeChange);
-    useLayoutEffect2(() => {
-      onValueNodeHasChildrenChange(hasChildren);
-    }, [onValueNodeHasChildrenChange, hasChildren]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive.span,
-      {
-        ...valueProps,
-        ref: composedRefs,
-        style: { pointerEvents: "none" },
-        children: shouldShowPlaceholder(context.value) ? /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: placeholder }) : children
-      }
-    );
-  }
-);
-SelectValue$1.displayName = VALUE_NAME;
-var ICON_NAME = "SelectIcon";
-var SelectIcon = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, children, ...iconProps } = props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
-  }
-);
-SelectIcon.displayName = ICON_NAME;
-var PORTAL_NAME = "SelectPortal";
-var SelectPortal = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$3, { asChild: true, ...props });
-};
-SelectPortal.displayName = PORTAL_NAME;
-var CONTENT_NAME$1 = "SelectContent";
-var SelectContent$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const context = useSelectContext(CONTENT_NAME$1, props.__scopeSelect);
-    const [fragment, setFragment] = reactExports.useState();
-    useLayoutEffect2(() => {
-      setFragment(new DocumentFragment());
-    }, []);
-    if (!context.open) {
-      const frag = fragment;
-      return frag ? reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentProvider, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: props.__scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: props.children }) }) }),
-        frag
-      ) : null;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContentImpl, { ...props, ref: forwardedRef });
-  }
-);
-SelectContent$1.displayName = CONTENT_NAME$1;
-var CONTENT_MARGIN = 10;
-var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME$1);
-var CONTENT_IMPL_NAME = "SelectContentImpl";
-var Slot = /* @__PURE__ */ createSlot("SelectContent.RemoveScroll");
-var SelectContentImpl = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeSelect,
-      position = "item-aligned",
-      onCloseAutoFocus,
-      onEscapeKeyDown,
-      onPointerDownOutside,
-      //
-      // PopperContent props
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      arrowPadding,
-      collisionBoundary,
-      collisionPadding,
-      sticky,
-      hideWhenDetached,
-      avoidCollisions,
-      //
-      ...contentProps
-    } = props;
-    const context = useSelectContext(CONTENT_NAME$1, __scopeSelect);
-    const [content, setContent] = reactExports.useState(null);
-    const [viewport, setViewport] = reactExports.useState(null);
-    const composedRefs = useComposedRefs$1(forwardedRef, (node) => setContent(node));
-    const [selectedItem, setSelectedItem] = reactExports.useState(null);
-    const [selectedItemText, setSelectedItemText] = reactExports.useState(
-      null
-    );
-    const getItems = useCollection(__scopeSelect);
-    const [isPositioned, setIsPositioned] = reactExports.useState(false);
-    const firstValidItemFoundRef = reactExports.useRef(false);
-    reactExports.useEffect(() => {
-      if (content) return hideOthers(content);
-    }, [content]);
-    useFocusGuards();
-    const focusFirst2 = reactExports.useCallback(
-      (candidates) => {
-        const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
-        const [lastItem] = restItems.slice(-1);
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
-        for (const candidate of candidates) {
-          if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
-          candidate == null ? void 0 : candidate.scrollIntoView({ block: "nearest" });
-          if (candidate === firstItem && viewport) viewport.scrollTop = 0;
-          if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
-          candidate == null ? void 0 : candidate.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
-        }
-      },
-      [getItems, viewport]
-    );
-    const focusSelectedItem = reactExports.useCallback(
-      () => focusFirst2([selectedItem, content]),
-      [focusFirst2, selectedItem, content]
-    );
-    reactExports.useEffect(() => {
-      if (isPositioned) {
-        focusSelectedItem();
-      }
-    }, [isPositioned, focusSelectedItem]);
-    const { onOpenChange, triggerPointerDownPosRef } = context;
-    reactExports.useEffect(() => {
-      if (content) {
-        let pointerMoveDelta = { x: 0, y: 0 };
-        const handlePointerMove = (event) => {
-          var _a2, _b2;
-          pointerMoveDelta = {
-            x: Math.abs(Math.round(event.pageX) - (((_a2 = triggerPointerDownPosRef.current) == null ? void 0 : _a2.x) ?? 0)),
-            y: Math.abs(Math.round(event.pageY) - (((_b2 = triggerPointerDownPosRef.current) == null ? void 0 : _b2.y) ?? 0))
-          };
-        };
-        const handlePointerUp = (event) => {
-          if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
-            event.preventDefault();
-          } else {
-            if (!content.contains(event.target)) {
-              onOpenChange(false);
-            }
-          }
-          document.removeEventListener("pointermove", handlePointerMove);
-          triggerPointerDownPosRef.current = null;
-        };
-        if (triggerPointerDownPosRef.current !== null) {
-          document.addEventListener("pointermove", handlePointerMove);
-          document.addEventListener("pointerup", handlePointerUp, { capture: true, once: true });
-        }
-        return () => {
-          document.removeEventListener("pointermove", handlePointerMove);
-          document.removeEventListener("pointerup", handlePointerUp, { capture: true });
-        };
-      }
-    }, [content, onOpenChange, triggerPointerDownPosRef]);
-    reactExports.useEffect(() => {
-      const close = () => onOpenChange(false);
-      window.addEventListener("blur", close);
-      window.addEventListener("resize", close);
-      return () => {
-        window.removeEventListener("blur", close);
-        window.removeEventListener("resize", close);
-      };
-    }, [onOpenChange]);
-    const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
-      const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
-      const nextItem = findNextItem(enabledItems, search, currentItem);
-      if (nextItem) {
-        setTimeout(() => nextItem.ref.current.focus());
-      }
-    });
-    const itemRefCallback = reactExports.useCallback(
-      (node, value, disabled) => {
-        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
-        const isSelectedItem = context.value !== void 0 && context.value === value;
-        if (isSelectedItem || isFirstValidItem) {
-          setSelectedItem(node);
-          if (isFirstValidItem) firstValidItemFoundRef.current = true;
-        }
-      },
-      [context.value]
-    );
-    const handleItemLeave = reactExports.useCallback(() => content == null ? void 0 : content.focus(), [content]);
-    const itemTextRefCallback = reactExports.useCallback(
-      (node, value, disabled) => {
-        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
-        const isSelectedItem = context.value !== void 0 && context.value === value;
-        if (isSelectedItem || isFirstValidItem) {
-          setSelectedItemText(node);
-        }
-      },
-      [context.value]
-    );
-    const SelectPosition = position === "popper" ? SelectPopperPosition : SelectItemAlignedPosition;
-    const popperContentProps = SelectPosition === SelectPopperPosition ? {
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      arrowPadding,
-      collisionBoundary,
-      collisionPadding,
-      sticky,
-      hideWhenDetached,
-      avoidCollisions
-    } : {};
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SelectContentProvider,
-      {
-        scope: __scopeSelect,
-        content,
-        viewport,
-        onViewportChange: setViewport,
-        itemRefCallback,
-        selectedItem,
-        onItemLeave: handleItemLeave,
-        itemTextRefCallback,
-        focusSelectedItem,
-        selectedItemText,
-        position,
-        isPositioned,
-        searchRef,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, { as: Slot, allowPinchZoom: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          FocusScope,
-          {
-            asChild: true,
-            trapped: context.open,
-            onMountAutoFocus: (event) => {
-              event.preventDefault();
-            },
-            onUnmountAutoFocus: composeEventHandlers(onCloseAutoFocus, (event) => {
-              var _a2;
-              (_a2 = context.trigger) == null ? void 0 : _a2.focus({ preventScroll: true });
-              event.preventDefault();
-            }),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DismissableLayer,
-              {
-                asChild: true,
-                disableOutsidePointerEvents: true,
-                onEscapeKeyDown,
-                onPointerDownOutside,
-                onFocusOutside: (event) => event.preventDefault(),
-                onDismiss: () => context.onOpenChange(false),
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  SelectPosition,
-                  {
-                    role: "listbox",
-                    id: context.contentId,
-                    "data-state": context.open ? "open" : "closed",
-                    dir: context.dir,
-                    onContextMenu: (event) => event.preventDefault(),
-                    ...contentProps,
-                    ...popperContentProps,
-                    onPlaced: () => setIsPositioned(true),
-                    ref: composedRefs,
-                    style: {
-                      // flex layout so we can place the scroll buttons properly
-                      display: "flex",
-                      flexDirection: "column",
-                      // reset the outline by default as the content MAY get focused
-                      outline: "none",
-                      ...contentProps.style
-                    },
-                    onKeyDown: composeEventHandlers(contentProps.onKeyDown, (event) => {
-                      const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-                      if (event.key === "Tab") event.preventDefault();
-                      if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-                      if (["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
-                        const items = getItems().filter((item) => !item.disabled);
-                        let candidateNodes = items.map((item) => item.ref.current);
-                        if (["ArrowUp", "End"].includes(event.key)) {
-                          candidateNodes = candidateNodes.slice().reverse();
-                        }
-                        if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-                          const currentElement = event.target;
-                          const currentIndex = candidateNodes.indexOf(currentElement);
-                          candidateNodes = candidateNodes.slice(currentIndex + 1);
-                        }
-                        setTimeout(() => focusFirst2(candidateNodes));
-                        event.preventDefault();
-                      }
-                    })
-                  }
-                )
-              }
-            )
-          }
-        ) })
-      }
-    );
-  }
-);
-SelectContentImpl.displayName = CONTENT_IMPL_NAME;
-var ITEM_ALIGNED_POSITION_NAME = "SelectItemAlignedPosition";
-var SelectItemAlignedPosition = reactExports.forwardRef((props, forwardedRef) => {
-  const { __scopeSelect, onPlaced, ...popperProps } = props;
-  const context = useSelectContext(CONTENT_NAME$1, __scopeSelect);
-  const contentContext = useSelectContentContext(CONTENT_NAME$1, __scopeSelect);
-  const [contentWrapper, setContentWrapper] = reactExports.useState(null);
-  const [content, setContent] = reactExports.useState(null);
-  const composedRefs = useComposedRefs$1(forwardedRef, (node) => setContent(node));
-  const getItems = useCollection(__scopeSelect);
-  const shouldExpandOnScrollRef = reactExports.useRef(false);
-  const shouldRepositionRef = reactExports.useRef(true);
-  const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
-  const position = reactExports.useCallback(() => {
-    if (context.trigger && context.valueNode && contentWrapper && content && viewport && selectedItem && selectedItemText) {
-      const triggerRect = context.trigger.getBoundingClientRect();
-      const contentRect = content.getBoundingClientRect();
-      const valueNodeRect = context.valueNode.getBoundingClientRect();
-      const itemTextRect = selectedItemText.getBoundingClientRect();
-      if (context.dir !== "rtl") {
-        const itemTextOffset = itemTextRect.left - contentRect.left;
-        const left = valueNodeRect.left - itemTextOffset;
-        const leftDelta = triggerRect.left - left;
-        const minContentWidth = triggerRect.width + leftDelta;
-        const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const rightEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedLeft = clamp(left, [
-          CONTENT_MARGIN,
-          // Prevents the content from going off the starting edge of the
-          // viewport. It may still go off the ending edge, but this can be
-          // controlled by the user since they may want to manage overflow in a
-          // specific way.
-          // https://github.com/radix-ui/primitives/issues/2049
-          Math.max(CONTENT_MARGIN, rightEdge - contentWidth)
-        ]);
-        contentWrapper.style.minWidth = minContentWidth + "px";
-        contentWrapper.style.left = clampedLeft + "px";
-      } else {
-        const itemTextOffset = contentRect.right - itemTextRect.right;
-        const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
-        const rightDelta = window.innerWidth - triggerRect.right - right;
-        const minContentWidth = triggerRect.width + rightDelta;
-        const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const leftEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedRight = clamp(right, [
-          CONTENT_MARGIN,
-          Math.max(CONTENT_MARGIN, leftEdge - contentWidth)
-        ]);
-        contentWrapper.style.minWidth = minContentWidth + "px";
-        contentWrapper.style.right = clampedRight + "px";
-      }
-      const items = getItems();
-      const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-      const itemsHeight = viewport.scrollHeight;
-      const contentStyles = window.getComputedStyle(content);
-      const contentBorderTopWidth = parseInt(contentStyles.borderTopWidth, 10);
-      const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
-      const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
-      const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
-      const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth;
-      const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
-      const viewportStyles = window.getComputedStyle(viewport);
-      const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
-      const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
-      const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
-      const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
-      const selectedItemHalfHeight = selectedItem.offsetHeight / 2;
-      const itemOffsetMiddle = selectedItem.offsetTop + selectedItemHalfHeight;
-      const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
-      const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
-      const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
-      if (willAlignWithoutTopOverflow) {
-        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
-        contentWrapper.style.bottom = "0px";
-        const viewportOffsetBottom = content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
-        const clampedTriggerMiddleToBottomEdge = Math.max(
-          triggerMiddleToBottomEdge,
-          selectedItemHalfHeight + // viewport might have padding bottom, include it to avoid a scrollable viewport
-          (isLastItem ? viewportPaddingBottom : 0) + viewportOffsetBottom + contentBorderBottomWidth
-        );
-        const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
-        contentWrapper.style.height = height + "px";
-      } else {
-        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
-        contentWrapper.style.top = "0px";
-        const clampedTopEdgeToTriggerMiddle = Math.max(
-          topEdgeToTriggerMiddle,
-          contentBorderTopWidth + viewport.offsetTop + // viewport might have padding top, include it to avoid a scrollable viewport
-          (isFirstItem ? viewportPaddingTop : 0) + selectedItemHalfHeight
-        );
-        const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
-        contentWrapper.style.height = height + "px";
-        viewport.scrollTop = contentTopToItemMiddle - topEdgeToTriggerMiddle + viewport.offsetTop;
-      }
-      contentWrapper.style.margin = `${CONTENT_MARGIN}px 0`;
-      contentWrapper.style.minHeight = minContentHeight + "px";
-      contentWrapper.style.maxHeight = availableHeight + "px";
-      onPlaced == null ? void 0 : onPlaced();
-      requestAnimationFrame(() => shouldExpandOnScrollRef.current = true);
-    }
-  }, [
-    getItems,
-    context.trigger,
-    context.valueNode,
-    contentWrapper,
-    content,
-    viewport,
-    selectedItem,
-    selectedItemText,
-    context.dir,
-    onPlaced
-  ]);
-  useLayoutEffect2(() => position(), [position]);
-  const [contentZIndex, setContentZIndex] = reactExports.useState();
-  useLayoutEffect2(() => {
-    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-  }, [content]);
-  const handleScrollButtonChange = reactExports.useCallback(
-    (node) => {
-      if (node && shouldRepositionRef.current === true) {
-        position();
-        focusSelectedItem == null ? void 0 : focusSelectedItem();
-        shouldRepositionRef.current = false;
-      }
-    },
-    [position, focusSelectedItem]
-  );
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SelectViewportProvider,
-    {
-      scope: __scopeSelect,
-      contentWrapper,
-      shouldExpandOnScrollRef,
-      onScrollButtonChange: handleScrollButtonChange,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          ref: setContentWrapper,
-          style: {
-            display: "flex",
-            flexDirection: "column",
-            position: "fixed",
-            zIndex: contentZIndex
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Primitive.div,
-            {
-              ...popperProps,
-              ref: composedRefs,
-              style: {
-                // When we get the height of the content, it includes borders. If we were to set
-                // the height without having `boxSizing: 'border-box'` it would be too big.
-                boxSizing: "border-box",
-                // We need to ensure the content doesn't get taller than the wrapper
-                maxHeight: "100%",
-                ...popperProps.style
-              }
-            }
-          )
-        }
-      )
-    }
-  );
-});
-SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
-var POPPER_POSITION_NAME = "SelectPopperPosition";
-var SelectPopperPosition = reactExports.forwardRef((props, forwardedRef) => {
-  const {
-    __scopeSelect,
-    align = "start",
-    collisionPadding = CONTENT_MARGIN,
-    ...popperProps
-  } = props;
-  const popperScope = usePopperScope(__scopeSelect);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Content$2,
-    {
-      ...popperScope,
-      ...popperProps,
-      ref: forwardedRef,
-      align,
-      collisionPadding,
-      style: {
-        // Ensure border-box for floating-ui calculations
-        boxSizing: "border-box",
-        ...popperProps.style,
-        // re-namespace exposed content custom properties
-        ...{
-          "--radix-select-content-transform-origin": "var(--radix-popper-transform-origin)",
-          "--radix-select-content-available-width": "var(--radix-popper-available-width)",
-          "--radix-select-content-available-height": "var(--radix-popper-available-height)",
-          "--radix-select-trigger-width": "var(--radix-popper-anchor-width)",
-          "--radix-select-trigger-height": "var(--radix-popper-anchor-height)"
-        }
-      }
-    }
-  );
-});
-SelectPopperPosition.displayName = POPPER_POSITION_NAME;
-var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME$1, {});
-var VIEWPORT_NAME = "SelectViewport";
-var SelectViewport = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, nonce, ...viewportProps } = props;
-    const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
-    const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
-    const composedRefs = useComposedRefs$1(forwardedRef, contentContext.onViewportChange);
-    const prevScrollTopRef = reactExports.useRef(0);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "style",
-        {
-          dangerouslySetInnerHTML: {
-            __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`
-          },
-          nonce
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive.div,
-        {
-          "data-radix-select-viewport": "",
-          role: "presentation",
-          ...viewportProps,
-          ref: composedRefs,
-          style: {
-            // we use position: 'relative' here on the `viewport` so that when we call
-            // `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
-            // (independent of the scrollUpButton).
-            position: "relative",
-            flex: 1,
-            // Viewport should only be scrollable in the vertical direction.
-            // This won't work in vertical writing modes, so we'll need to
-            // revisit this if/when that is supported
-            // https://developer.chrome.com/blog/vertical-form-controls
-            overflow: "hidden auto",
-            ...viewportProps.style
-          },
-          onScroll: composeEventHandlers(viewportProps.onScroll, (event) => {
-            const viewport = event.currentTarget;
-            const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
-            if ((shouldExpandOnScrollRef == null ? void 0 : shouldExpandOnScrollRef.current) && contentWrapper) {
-              const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
-              if (scrolledBy > 0) {
-                const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-                const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
-                const cssHeight = parseFloat(contentWrapper.style.height);
-                const prevHeight = Math.max(cssMinHeight, cssHeight);
-                if (prevHeight < availableHeight) {
-                  const nextHeight = prevHeight + scrolledBy;
-                  const clampedNextHeight = Math.min(availableHeight, nextHeight);
-                  const heightDiff = nextHeight - clampedNextHeight;
-                  contentWrapper.style.height = clampedNextHeight + "px";
-                  if (contentWrapper.style.bottom === "0px") {
-                    viewport.scrollTop = heightDiff > 0 ? heightDiff : 0;
-                    contentWrapper.style.justifyContent = "flex-end";
-                  }
-                }
-              }
-            }
-            prevScrollTopRef.current = viewport.scrollTop;
-          })
-        }
-      ) })
-    ] });
-  }
-);
-SelectViewport.displayName = VIEWPORT_NAME;
-var GROUP_NAME = "SelectGroup";
-var [SelectGroupContextProvider, useSelectGroupContext] = createSelectContext(GROUP_NAME);
-var SelectGroup = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...groupProps } = props;
-    const groupId = useId();
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
-  }
-);
-SelectGroup.displayName = GROUP_NAME;
-var LABEL_NAME = "SelectLabel";
-var SelectLabel = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...labelProps } = props;
-    const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
-  }
-);
-SelectLabel.displayName = LABEL_NAME;
-var ITEM_NAME = "SelectItem";
-var [SelectItemContextProvider, useSelectItemContext] = createSelectContext(ITEM_NAME);
-var SelectItem$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeSelect,
-      value,
-      disabled = false,
-      textValue: textValueProp,
-      ...itemProps
-    } = props;
-    const context = useSelectContext(ITEM_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
-    const isSelected = context.value === value;
-    const [textValue, setTextValue] = reactExports.useState(textValueProp ?? "");
-    const [isFocused, setIsFocused] = reactExports.useState(false);
-    const composedRefs = useComposedRefs$1(
-      forwardedRef,
-      (node) => {
-        var _a2;
-        return (_a2 = contentContext.itemRefCallback) == null ? void 0 : _a2.call(contentContext, node, value, disabled);
-      }
-    );
-    const textId = useId();
-    const pointerTypeRef = reactExports.useRef("touch");
-    const handleSelect = () => {
-      if (!disabled) {
-        context.onValueChange(value);
-        context.onOpenChange(false);
-      }
-    };
-    if (value === "") {
-      throw new Error(
-        "A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      SelectItemContextProvider,
-      {
-        scope: __scopeSelect,
-        value,
-        disabled,
-        textId,
-        isSelected,
-        onItemTextChange: reactExports.useCallback((node) => {
-          setTextValue((prevTextValue) => prevTextValue || ((node == null ? void 0 : node.textContent) ?? "").trim());
-        }, []),
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Collection.ItemSlot,
-          {
-            scope: __scopeSelect,
-            value,
-            disabled,
-            textValue,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Primitive.div,
-              {
-                role: "option",
-                "aria-labelledby": textId,
-                "data-highlighted": isFocused ? "" : void 0,
-                "aria-selected": isSelected && isFocused,
-                "data-state": isSelected ? "checked" : "unchecked",
-                "aria-disabled": disabled || void 0,
-                "data-disabled": disabled ? "" : void 0,
-                tabIndex: disabled ? void 0 : -1,
-                ...itemProps,
-                ref: composedRefs,
-                onFocus: composeEventHandlers(itemProps.onFocus, () => setIsFocused(true)),
-                onBlur: composeEventHandlers(itemProps.onBlur, () => setIsFocused(false)),
-                onClick: composeEventHandlers(itemProps.onClick, () => {
-                  if (pointerTypeRef.current !== "mouse") handleSelect();
-                }),
-                onPointerUp: composeEventHandlers(itemProps.onPointerUp, () => {
-                  if (pointerTypeRef.current === "mouse") handleSelect();
-                }),
-                onPointerDown: composeEventHandlers(itemProps.onPointerDown, (event) => {
-                  pointerTypeRef.current = event.pointerType;
-                }),
-                onPointerMove: composeEventHandlers(itemProps.onPointerMove, (event) => {
-                  var _a2;
-                  pointerTypeRef.current = event.pointerType;
-                  if (disabled) {
-                    (_a2 = contentContext.onItemLeave) == null ? void 0 : _a2.call(contentContext);
-                  } else if (pointerTypeRef.current === "mouse") {
-                    event.currentTarget.focus({ preventScroll: true });
-                  }
-                }),
-                onPointerLeave: composeEventHandlers(itemProps.onPointerLeave, (event) => {
-                  var _a2;
-                  if (event.currentTarget === document.activeElement) {
-                    (_a2 = contentContext.onItemLeave) == null ? void 0 : _a2.call(contentContext);
-                  }
-                }),
-                onKeyDown: composeEventHandlers(itemProps.onKeyDown, (event) => {
-                  var _a2;
-                  const isTypingAhead = ((_a2 = contentContext.searchRef) == null ? void 0 : _a2.current) !== "";
-                  if (isTypingAhead && event.key === " ") return;
-                  if (SELECTION_KEYS.includes(event.key)) handleSelect();
-                  if (event.key === " ") event.preventDefault();
-                })
-              }
-            )
-          }
-        )
-      }
-    );
-  }
-);
-SelectItem$1.displayName = ITEM_NAME;
-var ITEM_TEXT_NAME = "SelectItemText";
-var SelectItemText = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, className, style: style2, ...itemTextProps } = props;
-    const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
-    const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
-    const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
-    const [itemTextNode, setItemTextNode] = reactExports.useState(null);
-    const composedRefs = useComposedRefs$1(
-      forwardedRef,
-      (node) => setItemTextNode(node),
-      itemContext.onItemTextChange,
-      (node) => {
-        var _a2;
-        return (_a2 = contentContext.itemTextRefCallback) == null ? void 0 : _a2.call(contentContext, node, itemContext.value, itemContext.disabled);
-      }
-    );
-    const textContent = itemTextNode == null ? void 0 : itemTextNode.textContent;
-    const nativeOption = reactExports.useMemo(
-      () => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: itemContext.value, disabled: itemContext.disabled, children: textContent }, itemContext.value),
-      [itemContext.disabled, itemContext.value, textContent]
-    );
-    const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
-    useLayoutEffect2(() => {
-      onNativeOptionAdd(nativeOption);
-      return () => onNativeOptionRemove(nativeOption);
-    }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
-      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
-    ] });
-  }
-);
-SelectItemText.displayName = ITEM_TEXT_NAME;
-var ITEM_INDICATOR_NAME = "SelectItemIndicator";
-var SelectItemIndicator = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...itemIndicatorProps } = props;
-    const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
-    return itemContext.isSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
-  }
-);
-SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
-var SCROLL_UP_BUTTON_NAME = "SelectScrollUpButton";
-var SelectScrollUpButton$1 = reactExports.forwardRef((props, forwardedRef) => {
-  const contentContext = useSelectContentContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
-  const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
-  const [canScrollUp, setCanScrollUp] = reactExports.useState(false);
-  const composedRefs = useComposedRefs$1(forwardedRef, viewportContext.onScrollButtonChange);
-  useLayoutEffect2(() => {
-    if (contentContext.viewport && contentContext.isPositioned) {
-      let handleScroll2 = function() {
-        const canScrollUp2 = viewport.scrollTop > 0;
-        setCanScrollUp(canScrollUp2);
-      };
-      const viewport = contentContext.viewport;
-      handleScroll2();
-      viewport.addEventListener("scroll", handleScroll2);
-      return () => viewport.removeEventListener("scroll", handleScroll2);
-    }
-  }, [contentContext.viewport, contentContext.isPositioned]);
-  return canScrollUp ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SelectScrollButtonImpl,
-    {
-      ...props,
-      ref: composedRefs,
-      onAutoScroll: () => {
-        const { viewport, selectedItem } = contentContext;
-        if (viewport && selectedItem) {
-          viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight;
-        }
-      }
-    }
-  ) : null;
-});
-SelectScrollUpButton$1.displayName = SCROLL_UP_BUTTON_NAME;
-var SCROLL_DOWN_BUTTON_NAME = "SelectScrollDownButton";
-var SelectScrollDownButton$1 = reactExports.forwardRef((props, forwardedRef) => {
-  const contentContext = useSelectContentContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
-  const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
-  const [canScrollDown, setCanScrollDown] = reactExports.useState(false);
-  const composedRefs = useComposedRefs$1(forwardedRef, viewportContext.onScrollButtonChange);
-  useLayoutEffect2(() => {
-    if (contentContext.viewport && contentContext.isPositioned) {
-      let handleScroll2 = function() {
-        const maxScroll = viewport.scrollHeight - viewport.clientHeight;
-        const canScrollDown2 = Math.ceil(viewport.scrollTop) < maxScroll;
-        setCanScrollDown(canScrollDown2);
-      };
-      const viewport = contentContext.viewport;
-      handleScroll2();
-      viewport.addEventListener("scroll", handleScroll2);
-      return () => viewport.removeEventListener("scroll", handleScroll2);
-    }
-  }, [contentContext.viewport, contentContext.isPositioned]);
-  return canScrollDown ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    SelectScrollButtonImpl,
-    {
-      ...props,
-      ref: composedRefs,
-      onAutoScroll: () => {
-        const { viewport, selectedItem } = contentContext;
-        if (viewport && selectedItem) {
-          viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight;
-        }
-      }
-    }
-  ) : null;
-});
-SelectScrollDownButton$1.displayName = SCROLL_DOWN_BUTTON_NAME;
-var SelectScrollButtonImpl = reactExports.forwardRef((props, forwardedRef) => {
-  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
-  const contentContext = useSelectContentContext("SelectScrollButton", __scopeSelect);
-  const autoScrollTimerRef = reactExports.useRef(null);
-  const getItems = useCollection(__scopeSelect);
-  const clearAutoScrollTimer = reactExports.useCallback(() => {
-    if (autoScrollTimerRef.current !== null) {
-      window.clearInterval(autoScrollTimerRef.current);
-      autoScrollTimerRef.current = null;
-    }
-  }, []);
-  reactExports.useEffect(() => {
-    return () => clearAutoScrollTimer();
-  }, [clearAutoScrollTimer]);
-  useLayoutEffect2(() => {
-    var _a2;
-    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
-    (_a2 = activeItem == null ? void 0 : activeItem.ref.current) == null ? void 0 : _a2.scrollIntoView({ block: "nearest" });
-  }, [getItems]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive.div,
-    {
-      "aria-hidden": true,
-      ...scrollIndicatorProps,
-      ref: forwardedRef,
-      style: { flexShrink: 0, ...scrollIndicatorProps.style },
-      onPointerDown: composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
-        }
-      }),
-      onPointerMove: composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
-        var _a2;
-        (_a2 = contentContext.onItemLeave) == null ? void 0 : _a2.call(contentContext);
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
-        }
-      }),
-      onPointerLeave: composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
-        clearAutoScrollTimer();
-      })
-    }
-  );
-});
-var SEPARATOR_NAME = "SelectSeparator";
-var SelectSeparator = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...separatorProps } = props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
-  }
-);
-SelectSeparator.displayName = SEPARATOR_NAME;
-var ARROW_NAME = "SelectArrow";
-var SelectArrow = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeSelect, ...arrowProps } = props;
-    const popperScope = usePopperScope(__scopeSelect);
-    const context = useSelectContext(ARROW_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
-    return context.open && contentContext.position === "popper" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Arrow, { ...popperScope, ...arrowProps, ref: forwardedRef }) : null;
-  }
-);
-SelectArrow.displayName = ARROW_NAME;
-var BUBBLE_INPUT_NAME = "SelectBubbleInput";
-var SelectBubbleInput = reactExports.forwardRef(
-  ({ __scopeSelect, value, ...props }, forwardedRef) => {
-    const ref = reactExports.useRef(null);
-    const composedRefs = useComposedRefs$1(forwardedRef, ref);
-    const prevValue = usePrevious(value);
-    reactExports.useEffect(() => {
-      const select = ref.current;
-      if (!select) return;
-      const selectProto = window.HTMLSelectElement.prototype;
-      const descriptor = Object.getOwnPropertyDescriptor(
-        selectProto,
-        "value"
-      );
-      const setValue = descriptor.set;
-      if (prevValue !== value && setValue) {
-        const event = new Event("change", { bubbles: true });
-        setValue.call(select, value);
-        select.dispatchEvent(event);
-      }
-    }, [prevValue, value]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive.select,
-      {
-        ...props,
-        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style },
-        ref: composedRefs,
-        defaultValue: value
-      }
-    );
-  }
-);
-SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
-function shouldShowPlaceholder(value) {
-  return value === "" || value === void 0;
-}
-function useTypeaheadSearch(onSearchChange) {
-  const handleSearchChange = useCallbackRef$1(onSearchChange);
-  const searchRef = reactExports.useRef("");
-  const timerRef = reactExports.useRef(0);
-  const handleTypeaheadSearch = reactExports.useCallback(
-    (key) => {
-      const search = searchRef.current + key;
-      handleSearchChange(search);
-      (function updateSearch(value) {
-        searchRef.current = value;
-        window.clearTimeout(timerRef.current);
-        if (value !== "") timerRef.current = window.setTimeout(() => updateSearch(""), 1e3);
-      })(search);
-    },
-    [handleSearchChange]
-  );
-  const resetTypeahead = reactExports.useCallback(() => {
-    searchRef.current = "";
-    window.clearTimeout(timerRef.current);
-  }, []);
-  reactExports.useEffect(() => {
-    return () => window.clearTimeout(timerRef.current);
-  }, []);
-  return [searchRef, handleTypeaheadSearch, resetTypeahead];
-}
-function findNextItem(items, search, currentItem) {
-  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-  const normalizedSearch = isRepeated ? search[0] : search;
-  const currentItemIndex = currentItem ? items.indexOf(currentItem) : -1;
-  let wrappedItems = wrapArray(items, Math.max(currentItemIndex, 0));
-  const excludeCurrentItem = normalizedSearch.length === 1;
-  if (excludeCurrentItem) wrappedItems = wrappedItems.filter((v2) => v2 !== currentItem);
-  const nextItem = wrappedItems.find(
-    (item) => item.textValue.toLowerCase().startsWith(normalizedSearch.toLowerCase())
-  );
-  return nextItem !== currentItem ? nextItem : void 0;
-}
-function wrapArray(array, startIndex) {
-  return array.map((_2, index2) => array[(startIndex + index2) % array.length]);
-}
-var Root2$1 = Select$1;
-var Trigger$1 = SelectTrigger$1;
-var Value = SelectValue$1;
-var Icon = SelectIcon;
-var Portal = SelectPortal;
-var Content2 = SelectContent$1;
-var Viewport = SelectViewport;
-var Item = SelectItem$1;
-var ItemText = SelectItemText;
-var ItemIndicator = SelectItemIndicator;
-var ScrollUpButton = SelectScrollUpButton$1;
-var ScrollDownButton = SelectScrollDownButton$1;
-function Select({
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$1, { "data-slot": "select", ...props });
-}
-function SelectValue({
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Value, { "data-slot": "select-value", ...props });
-}
-function SelectTrigger({
-  className,
-  size: size2 = "default",
-  children,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Trigger$1,
-    {
-      "data-slot": "select-trigger",
-      "data-size": size2,
-      className: cn(
-        "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      ),
-      ...props,
-      children: [
-        children,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Icon, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4 opacity-50" }) })
-      ]
-    }
-  );
-}
-function SelectContent({
-  className,
-  children,
-  position = "popper",
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Content2,
-    {
-      "data-slot": "select-content",
-      className: cn(
-        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
-        position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className
-      ),
-      position,
-      ...props,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollUpButton, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Viewport,
-          {
-            className: cn(
-              "p-1",
-              position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
-            ),
-            children
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(SelectScrollDownButton, {})
-      ]
-    }
-  ) });
-}
-function SelectItem({
-  className,
-  children,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Item,
-    {
-      "data-slot": "select-item",
-      className: cn(
-        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
-        className
-      ),
-      ...props,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute right-2 flex size-3.5 items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ItemIndicator, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-4" }) }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ItemText, { children })
-      ]
-    }
-  );
-}
-function SelectScrollUpButton({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    ScrollUpButton,
-    {
-      "data-slot": "select-scroll-up-button",
-      className: cn(
-        "flex cursor-default items-center justify-center py-1",
-        className
-      ),
-      ...props,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "size-4" })
-    }
-  );
-}
-function SelectScrollDownButton({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    ScrollDownButton,
-    {
-      "data-slot": "select-scroll-down-button",
-      className: cn(
-        "flex cursor-default items-center justify-center py-1",
-        className
-      ),
-      ...props,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-4" })
-    }
-  );
 }
 const NONE = "__none__";
 function SubCategorySelect({
@@ -60494,6 +61058,440 @@ function AdminItemsPage() {
     }
   );
 }
+function PositionFormDialog({
+  open,
+  onOpenChange,
+  position
+}) {
+  const isEdit = !!position;
+  const createMut = useCreatePosition();
+  const updateMut = useUpdatePosition();
+  const [name, setName] = reactExports.useState("");
+  const [description, setDescription] = reactExports.useState("");
+  const [photo, setPhoto] = reactExports.useState(null);
+  const [touched, setTouched] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    if (!open) return;
+    setName((position == null ? void 0 : position.name) ?? "");
+    setDescription((position == null ? void 0 : position.description) ?? "");
+    setPhoto((position == null ? void 0 : position.coverPhoto) ?? null);
+    setTouched(false);
+  }, [open, position]);
+  const nameError = touched && name.trim().length === 0;
+  const canSubmit = name.trim().length > 0;
+  const pending = createMut.isPending || updateMut.isPending;
+  async function onSubmit(e) {
+    e.preventDefault();
+    setTouched(true);
+    if (!canSubmit) return;
+    const trimmedDescription = description.trim().length > 0 ? description.trim() : null;
+    try {
+      if (isEdit && position) {
+        await updateMut.mutateAsync({
+          id: position.id,
+          name: name.trim(),
+          description: trimmedDescription,
+          coverPhoto: photo
+        });
+        ue.success("Position updated");
+      } else {
+        await createMut.mutateAsync({
+          name: name.trim(),
+          description: trimmedDescription,
+          coverPhoto: photo
+        });
+        ue.success("Position created");
+      }
+      onOpenChange(false);
+    } catch (err) {
+      ue.error(
+        isEdit ? "Could not update position" : "Could not create position"
+      );
+      console.error(err);
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "position.dialog", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit position" : "New position" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the name, description, and cover photo for this position." : "Add a new position to group your menu categories." })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "position-name", "data-ocid": "position.name.label", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Input,
+          {
+            id: "position-name",
+            value: name,
+            placeholder: "e.g. Bartender, Line Cook, Server",
+            autoFocus: true,
+            "aria-invalid": nameError,
+            onChange: (e) => setName(e.target.value),
+            onBlur: () => setTouched(true),
+            "data-ocid": "position.name.input"
+          }
+        ),
+        nameError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "text-xs text-destructive",
+            "data-ocid": "position.name.field_error",
+            children: "Name is required."
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Label$1,
+          {
+            htmlFor: "position-description",
+            "data-ocid": "position.description.label",
+            children: [
+              "Description",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-normal text-muted-foreground", children: "(optional)" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Textarea,
+          {
+            id: "position-description",
+            value: description,
+            placeholder: "A short summary of this role and its responsibilities.",
+            rows: 3,
+            onChange: (e) => setDescription(e.target.value),
+            "data-ocid": "position.description.input"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        PhotoUpload,
+        {
+          value: photo,
+          onChange: setPhoto,
+          label: "Cover photo (optional)",
+          hint: "Shown on the storefront position grid — leave blank to skip."
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: () => onOpenChange(false),
+            disabled: pending,
+            "data-ocid": "position.cancel_button",
+            children: "Cancel"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            type: "submit",
+            disabled: pending || !canSubmit,
+            "data-ocid": "position.save_button",
+            children: [
+              pending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              isEdit ? "Save changes" : "Create position"
+            ]
+          }
+        )
+      ] })
+    ] })
+  ] }) });
+}
+function PositionList({ positions, onEdit }) {
+  const deleteMut = useDeletePosition();
+  const sortMut = useSetPositionSortOrder();
+  const sorted = [...positions].sort((a2, b2) => a2.sortOrder - b2.sortOrder);
+  const [pendingDelete, setPendingDelete] = reactExports.useState(null);
+  const [blockedDelete, setBlockedDelete] = reactExports.useState(null);
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    try {
+      const blockingCount = await deleteMut.mutateAsync(
+        BigInt(pendingDelete.id)
+      );
+      const blocked = Number(blockingCount);
+      if (blocked > 0) {
+        setBlockedDelete({ position: pendingDelete, count: blocked });
+      } else {
+        ue.success("Position deleted");
+      }
+    } catch (err) {
+      ue.error("Could not delete position");
+      console.error(err);
+    } finally {
+      setPendingDelete(null);
+    }
+  }
+  async function move(index2, direction) {
+    const target = index2 + direction;
+    if (target < 0 || target >= sorted.length) return;
+    const a2 = sorted[index2];
+    const b2 = sorted[target];
+    try {
+      await sortMut.mutateAsync({
+        id: BigInt(a2.id),
+        sortOrder: BigInt(b2.sortOrder)
+      });
+      await sortMut.mutateAsync({
+        id: BigInt(b2.id),
+        sortOrder: BigInt(a2.sortOrder)
+      });
+    } catch (err) {
+      ue.error("Could not reorder position");
+      console.error(err);
+    }
+  }
+  if (sorted.length === 0) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/20 px-6 py-16 text-center",
+        "data-ocid": "position.empty_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-5" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "No positions yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Create your first position to start grouping menu categories on the storefront." })
+        ]
+      }
+    );
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "position.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center", children: "#" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16", children: "Photo" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Categories" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center", children: "Order" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sorted.map((pos, index2) => {
+        const isFirst = index2 === 0;
+        const isLast = index2 === sorted.length - 1;
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          TableRow,
+          {
+            "data-ocid": `position.row.${index2 + 1}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "text-center text-muted-foreground", children: index2 + 1 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-11 overflow-hidden rounded-md border border-border bg-muted/30", children: pos.coverUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: pos.coverUrl,
+                  alt: pos.name,
+                  className: "size-full object-cover",
+                  loading: "lazy"
+                }
+              ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-full items-center justify-center text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-4" }) }) }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "font-medium text-foreground", children: pos.name }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Badge,
+                {
+                  variant: "secondary",
+                  "data-ocid": `position.category_count.${index2 + 1}`,
+                  children: pos.categoryCount
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    disabled: isFirst || sortMut.isPending,
+                    onClick: () => move(index2, -1),
+                    "aria-label": `Move ${pos.name} up`,
+                    "data-ocid": `position.move_up.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, { className: "size-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    disabled: isLast || sortMut.isPending,
+                    onClick: () => move(index2, 1),
+                    "aria-label": `Move ${pos.name} down`,
+                    "data-ocid": `position.move_down.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, { className: "size-4" })
+                  }
+                )
+              ] }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    onClick: () => onEdit(pos),
+                    "aria-label": `Edit ${pos.name}`,
+                    "data-ocid": `position.edit_button.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8 text-destructive hover:bg-destructive/10 hover:text-destructive",
+                    disabled: deleteMut.isPending,
+                    onClick: () => setPendingDelete(pos),
+                    "aria-label": `Delete ${pos.name}`,
+                    "data-ocid": `position.delete_button.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-4" })
+                  }
+                )
+              ] }) })
+            ]
+          },
+          String(pos.id)
+        );
+      }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AlertDialog,
+      {
+        open: !!pendingDelete,
+        onOpenChange: (o) => !o && setPendingDelete(null),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogContent, { "data-ocid": "position.delete_dialog", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogTitle, { children: [
+              "Delete “",
+              pendingDelete == null ? void 0 : pendingDelete.name,
+              "”?"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: pendingDelete && pendingDelete.categoryCount > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              "This position currently has",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: pendingDelete.categoryCount }),
+              " categor",
+              pendingDelete.categoryCount === 1 ? "y" : "ies",
+              " assigned to it. You must reassign or remove its categories before it can be deleted."
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: "This position has no categories assigned. It will be removed from the storefront immediately." }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogCancel, { "data-ocid": "position.delete_cancel_button", children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              AlertDialogAction,
+              {
+                onClick: confirmDelete,
+                disabled: deleteMut.isPending,
+                className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                "data-ocid": "position.delete_confirm_button",
+                children: [
+                  deleteMut.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                  "Delete position"
+                ]
+              }
+            )
+          ] })
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AlertDialog,
+      {
+        open: !!blockedDelete,
+        onOpenChange: (o) => !o && setBlockedDelete(null),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogContent, { "data-ocid": "position.delete_blocked_dialog", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogTitle, { children: [
+              "Cannot delete “",
+              blockedDelete == null ? void 0 : blockedDelete.position.name,
+              "”"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: blockedDelete && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              "This position still has ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: blockedDelete.count }),
+              " ",
+              "categor",
+              blockedDelete.count === 1 ? "y" : "ies",
+              " assigned to it. Reassign or remove those categories first, then try again. The position was not deleted."
+            ] }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogFooter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogAction, { "data-ocid": "position.delete_blocked_close_button", children: "Got it" }) })
+        ] })
+      }
+    )
+  ] });
+}
+function AdminPositionsPage() {
+  const { data, isLoading, isError, error } = usePositions();
+  const [dialogOpen, setDialogOpen] = reactExports.useState(false);
+  const [editingId, setEditingId] = reactExports.useState(null);
+  function openCreate() {
+    setEditingId(null);
+    setDialogOpen(true);
+  }
+  function openEdit(position) {
+    setEditingId(BigInt(position.id));
+    setDialogOpen(true);
+  }
+  const positions = (data ?? []).map(toPositionView);
+  const editing = editingId !== null ? (data ?? []).find((p2) => p2.id === editingId) ?? null : null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Positions" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Create, reorder, and delete the positions that group your menu categories on the storefront." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openCreate, "data-ocid": "position.create_button", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+        " New position"
+      ] })
+    ] }),
+    isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "flex items-center justify-center rounded-lg border border-border bg-card py-20",
+        "data-ocid": "position.loading_state",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-6 animate-spin text-muted-foreground" })
+      }
+    ) : isError ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex flex-col items-center justify-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 py-16 text-center",
+        "data-ocid": "position.error_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-destructive", children: "Could not load positions" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-md text-sm text-muted-foreground", children: error instanceof Error ? error.message : "Please try again later." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              variant: "outline",
+              size: "sm",
+              onClick: () => window.location.reload(),
+              "data-ocid": "position.retry_button",
+              children: "Retry"
+            }
+          )
+        ]
+      }
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsx(PositionList, { positions, onEdit: openEdit }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PositionFormDialog,
+      {
+        open: dialogOpen,
+        onOpenChange: setDialogOpen,
+        position: editing
+      }
+    )
+  ] });
+}
 const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 function normalizeHex(raw) {
   const trimmed = raw.trim();
@@ -61431,6 +62429,11 @@ const trainingRoute = createRoute({
   path: "/item/$id/training",
   component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(TrainingPage, {}) })
 });
+const positionRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id",
+  component: PositionPage
+});
 const adminLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "admin-layout",
@@ -61445,6 +62448,11 @@ const adminCategoriesRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: "/admin/categories",
   component: AdminCategoriesPage
+});
+const adminPositionsRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/positions",
+  component: AdminPositionsPage
 });
 const adminItemsRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
@@ -61472,11 +62480,13 @@ const routeTree = rootRoute.addChildren([
     categoryRoute,
     subCategoryRoute,
     itemRoute,
-    trainingRoute
+    trainingRoute,
+    positionRoute
   ]),
   adminLayoutRoute.addChildren([
     adminDashboardRoute,
     adminCategoriesRoute,
+    adminPositionsRoute,
     adminItemsRoute,
     adminItemEditRoute,
     adminUsersRoute,

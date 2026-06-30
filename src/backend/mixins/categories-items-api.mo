@@ -8,8 +8,10 @@ import AccessControl "mo:caffeineai-authorization/access-control";
 import Types "../types/categories-items";
 import Common "../types/common";
 import Lib "../lib/categories-items";
+import CategoriesPositionsLib "../lib/positions";
 
 mixin (
+  positions : List.List<Types.Position>,
   categories : List.List<Types.Category>,
   subCategories : List.List<Types.SubCategory>,
   items : Map.Map<Common.ItemId, Types.MenuItem>,
@@ -69,26 +71,36 @@ mixin (
 
   // ---------- Admin: categories ----------
 
-  // Create a category with a name and cover photo. Admin-only.
-  public shared ({ caller }) func createCategory(name : Text, coverPhoto : Storage.ExternalBlob) : async Common.CategoryId {
+  // Create a category with a name and cover photo under a Position. Admin-only.
+  public shared ({ caller }) func createCategory(
+    positionId : Common.PositionId,
+    name : Text,
+    coverPhoto : Storage.ExternalBlob
+  ) : async Common.CategoryId {
     if (not AccessControl.hasPermission(accessControlState, caller, #admin)) {
       Runtime.trap("Unauthorized: admin role required");
     };
     if (not Lib.validateName(name)) {
       Runtime.trap("Category name must not be empty");
     };
+    // The referenced Position must exist.
+    switch (CategoriesPositionsLib.findPosition(positions, positionId)) {
+      case null Runtime.trap("Position not found");
+      case (?_) {};
+    };
     let id = state.nextCategoryId;
     let now = Int.abs(Time.now());
-    let sortOrder = categories.size();
-    let category = Lib.newCategory(id, name, coverPhoto, sortOrder, now);
-    categories.add(category);
+    let sortOrder = Lib.listCategoriesByPosition(categories, items, positionId).size();
+    let cat = Lib.newCategory(id, positionId, name, coverPhoto, sortOrder, now);
+    categories.add(cat);
     state.nextCategoryId := id + 1;
     id;
   };
 
-  // Edit a category's name and/or cover photo. Admin-only.
+  // Edit a category's name, cover photo, and/or Position. Admin-only.
   public shared ({ caller }) func updateCategory(
     id : Common.CategoryId,
+    positionId : Common.PositionId,
     name : Text,
     coverPhoto : Storage.ExternalBlob
   ) : async () {
@@ -98,22 +110,28 @@ mixin (
     if (not Lib.validateName(name)) {
       Runtime.trap("Category name must not be empty");
     };
+    // The referenced Position must exist.
+    switch (CategoriesPositionsLib.findPosition(positions, positionId)) {
+      case null Runtime.trap("Position not found");
+      case (?_) {};
+    };
     switch (Lib.findCategory(categories, id)) {
       case (?cat) {
-        // name and coverPhoto are immutable; reconstruct the record preserving var fields.
+        // name, coverPhoto, positionId are immutable; replace the record in
+        // the list while preserving sortOrder and timestamps.
         let updated : Types.Category = {
           id = cat.id;
-          name = name;
-          coverPhoto = coverPhoto;
+          positionId;
+          name;
+          coverPhoto;
           var sortOrder = cat.sortOrder;
           var createdAt = cat.createdAt;
           var updatedAt = Int.abs(Time.now());
         };
-        categories.mapInPlace(
-          func(c : Types.Category) : Types.Category {
-            if (c.id == id) { updated } else { c };
-          },
-        );
+        let kept = categories.filter(func(c : Types.Category) : Bool { c.id != id });
+        categories.clear();
+        categories.add(updated);
+        categories.addAll(kept.values());
       };
       case null Runtime.trap("Category not found");
     };

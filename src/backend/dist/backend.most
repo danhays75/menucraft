@@ -4,6 +4,11 @@ type AnyAccessControlState__1021952625 =
     var adminAssigned : Bool;
     userRoles : Map__222667396<Principal__871080897, AnyRole__459838729>
   };
+type AnyAccessControlState__564162505 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__222667396<Principal__871080897, AnyRole__725367181>
+  };
 type AnyAccessControlState__846822158 =
   {
     var adminAssigned : Bool;
@@ -18,6 +23,16 @@ type AnyCategory__546378695 =
     var sortOrder : Nat;
     var updatedAt : Nat
   };
+type AnyCategory__653160557 =
+  {
+    coverPhoto : AnyExternalBlob__414948987;
+    var createdAt : Nat;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
 type AnyCategory__812379711 =
   {
     coverPhoto : AnyExternalBlob__477178507;
@@ -28,9 +43,24 @@ type AnyCategory__812379711 =
     var updatedAt : Nat
   };
 type AnyExternalBlob__1041556916 = Blob;
+type AnyExternalBlob__414948987 = Blob;
 type AnyExternalBlob__477178507 = Blob;
 type AnyFontChoice__180407186 = {#monospace; #sansSerif; #serif; #systemFont};
+type AnyFontChoice__392477474 = {#monospace; #sansSerif; #serif; #systemFont};
 type AnyFontChoice__761133966 = {#monospace; #sansSerif; #serif; #systemFont};
+type AnyMenuItem__1012582222 =
+  {
+    categoryId : Nat;
+    var createdAt : Nat;
+    description : Text;
+    id : Nat;
+    var ingredients : [Text];
+    var instructions : [Text];
+    itemPhoto : AnyExternalBlob__414948987;
+    name : Text;
+    var subCategoryId : ?Nat;
+    var updatedAt : Nat
+  };
 type AnyMenuItem__1068430346 =
   {
     categoryId : Nat;
@@ -56,6 +86,15 @@ type AnyMenuItem__323188333 =
     var subCategoryId : ?Nat;
     var updatedAt : Nat
   };
+type AnyOldCategory__112940999 =
+  {
+    coverPhoto : AnyExternalBlob__414948987;
+    var createdAt : Nat;
+    id : Nat;
+    name : Text;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
 type AnyOldMenuItem__904553129 =
   {
     categoryId : Nat;
@@ -68,8 +107,19 @@ type AnyOldMenuItem__904553129 =
     name : Text;
     var updatedAt : Nat
   };
+type AnyPosition__970573521 =
+  {
+    coverPhoto : ?AnyExternalBlob__414948987;
+    var createdAt : Nat;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
 type AnyRole__459838729 = {#admin; #guest; #user};
 type AnyRole__481757906 = {#admin; #guest; #user};
+type AnyRole__725367181 = {#admin; #guest; #user};
 type AnySubCategory__517504942 =
   {
     coverPhoto : AnyExternalBlob__1041556916;
@@ -78,6 +128,24 @@ type AnySubCategory__517504942 =
     name : Text;
     parentCategoryId : Nat;
     var sortOrder : Nat;
+    var updatedAt : Nat
+  };
+type AnySubCategory__596553233 =
+  {
+    coverPhoto : AnyExternalBlob__414948987;
+    var createdAt : Nat;
+    id : Nat;
+    name : Text;
+    parentCategoryId : Nat;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
+type AnyTheme__438712298 =
+  {
+    var accentColor : Text;
+    var font : AnyFontChoice__392477474;
+    var logo : ?AnyExternalBlob__414948987;
+    var primaryColor : Text;
     var updatedAt : Nat
   };
 type AnyTheme__740202541 =
@@ -95,6 +163,17 @@ type AnyTheme__82121609 =
     var logo : ?AnyExternalBlob__477178507;
     var primaryColor : Text;
     var updatedAt : Nat
+  };
+type AnyTrainingStep__1056293506 =
+  {
+    var createdAt : Nat;
+    id : Nat;
+    itemId : Nat;
+    var order : Nat;
+    var photo : ?AnyExternalBlob__414948987;
+    var text : Text;
+    var updatedAt : Nat;
+    var video : ?AnyExternalBlob__414948987
   };
 type AnyTrainingStep__154836696 =
   {
@@ -118,6 +197,13 @@ type AnyTrainingStep__398198938 =
     var updatedAt : Nat;
     var video : ?AnyExternalBlob__1041556916
   };
+type AnyUserProfile__155761253 =
+  {
+    var createdAt : Nat;
+    var displayName : Text;
+    principal : Principal__871080897;
+    var role : AnyRole__725367181
+  };
 type AnyUserProfile__574867580 =
   {
     var createdAt : Nat;
@@ -140,6 +226,7 @@ type Category__826885892 =
     var createdAt : Timestamp__157245557;
     id : CategoryId__284655563;
     name : Text;
+    positionId : PositionId__809995169;
     var sortOrder : Nat;
     var updatedAt : Timestamp__157245557
   };
@@ -197,6 +284,26 @@ type NewActor__594375439 =
     var users :
       Map__222667396<Principal__871080897, AnyUserProfile__574867580>
   };
+type NewActor__637173900 =
+  {
+    var accessControlState : AnyAccessControlState__564162505;
+    var categories : List__560604548<AnyCategory__653160557>;
+    var items : Map__222667396<Nat, AnyMenuItem__1012582222>;
+    var positions : List__560604548<AnyPosition__970573521>;
+    var state :
+      {
+        var nextCategoryId : Nat;
+        var nextItemId : Nat;
+        var nextPositionId : Nat;
+        var nextSubCategoryId : Nat
+      };
+    var steps : List__560604548<AnyTrainingStep__1056293506>;
+    var subCategories : List__560604548<AnySubCategory__596553233>;
+    var theme : AnyTheme__438712298;
+    var trainingState : {var nextStepId : Nat};
+    var users :
+      Map__222667396<Principal__871080897, AnyUserProfile__155761253>
+  };
 type NewActor__721354561 =
   {
     var accessControlState : AnyAccessControlState__846822158;
@@ -223,6 +330,36 @@ type OldActor__491511655 =
     var trainingState : {var nextStepId : Nat};
     var users :
       Map__222667396<Principal__871080897, AnyUserProfile__574867580>
+  };
+type OldActor__88934355 =
+  {
+    var accessControlState : AnyAccessControlState__564162505;
+    var categories : List__560604548<AnyOldCategory__112940999>;
+    var items : Map__222667396<Nat, AnyMenuItem__1012582222>;
+    var state :
+      {
+        var nextCategoryId : Nat;
+        var nextItemId : Nat;
+        var nextSubCategoryId : Nat
+      };
+    var steps : List__560604548<AnyTrainingStep__1056293506>;
+    var subCategories : List__560604548<AnySubCategory__596553233>;
+    var theme : AnyTheme__438712298;
+    var trainingState : {var nextStepId : Nat};
+    var users :
+      Map__222667396<Principal__871080897, AnyUserProfile__155761253>
+  };
+type PositionId__406149913 = Nat;
+type PositionId__809995169 = PositionId__406149913;
+type Position__245301647 =
+  {
+    coverPhoto : ?ExternalBlob__365673026;
+    var createdAt : Timestamp__157245557;
+    description : ?Text;
+    id : PositionId__809995169;
+    name : Text;
+    var sortOrder : Nat;
+    var updatedAt : Timestamp__157245557
   };
 type Principal__224692764 = Principal;
 type Principal__808603310 = Principal__871080897;
@@ -265,7 +402,8 @@ type UserRole__686137147 = {#admin; #guest; #user};
 type UserRole__854305015 = UserRole__686137147;
 {
   "20260630_000000" : (_old : OldActor__196187416) -> NewActor__721354561;
-  "20260630_000100" : (old : OldActor__491511655) -> NewActor__594375439
+  "20260630_000100" : (old : OldActor__491511655) -> NewActor__594375439;
+  "20260630_000200" : (old : OldActor__88934355) -> NewActor__637173900
 }
 actor  {
   stable accessControlState :
@@ -284,10 +422,17 @@ actor  {
       var root : Node__1000929467<ItemId__833640393, MenuItem__255582736>;
       var size : Nat__1040412405
     };
+  stable positions :
+    {
+      var blockIndex : Nat__1040412405;
+      var blocks : [var [var ?Position__245301647]];
+      var elementIndex : Nat__1040412405
+    };
   stable state :
     {
       var nextCategoryId : CategoryId__14729845;
       var nextItemId : ItemId__833640393;
+      var nextPositionId : PositionId__406149913;
       var nextSubCategoryId : SubCategoryId__968378135
     };
   stable steps :

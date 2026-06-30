@@ -1,17 +1,22 @@
 // StorefrontHomePage — landing page: hero section + responsive grid of
-// CategoryCard components. Uses useCategories hook. Public — no login needed.
+// PositionCard tiles. Uses usePositions + toPositionView. Public — no login
+// needed. Positions are the top-level grouping (e.g. Bartender) above
+// categories; the home grid now surfaces them instead of categories.
 
-import { CategoryCard } from "@/components/CategoryCard";
 import { Section } from "@/components/Layout";
+import { PositionCard } from "@/components/PositionCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCategories } from "@/hooks/useQueries";
+import { usePositions } from "@/hooks/useQueries";
+import { toPositionView } from "@/types";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChefHat, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, Briefcase, ChefHat } from "lucide-react";
 import { motion } from "motion/react";
 
 export function StorefrontHomePage() {
-  const { data: categories, isLoading } = useCategories();
+  const { data: positions, isLoading } = usePositions();
+  const views = (positions ?? []).map(toPositionView);
+  const count = views.length;
 
   return (
     <>
@@ -33,13 +38,14 @@ export function StorefrontHomePage() {
             studio
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            Browse categories and dishes, follow step-by-step recipe cards, and
-            train your kitchen staff — all in one warm, editorial space.
+            Browse training positions and their dishes, follow step-by-step
+            recipe cards, and train your kitchen staff — all in one warm,
+            editorial space.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" data-ocid="home.explore_button">
-              <a href="#categories" data-ocid="home.explore_link">
-                Explore the menu
+              <a href="#positions" data-ocid="home.explore_link">
+                Explore positions
                 <ArrowRight className="size-4" />
               </a>
             </Button>
@@ -57,20 +63,20 @@ export function StorefrontHomePage() {
         </motion.div>
       </Section>
 
-      {/* Categories grid */}
-      <Section id="categories" variant="muted" className="py-20 sm:py-24">
+      {/* Positions grid */}
+      <Section id="positions" variant="muted" className="py-20 sm:py-24">
         <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-              Browse by category
+              Training positions
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Tap a category to see every dish, its recipe, and training flow.
+              Tap a position to see its categories, recipes, and training flow.
             </p>
           </div>
           <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-            <UtensilsCrossed className="size-4 text-primary" />
-            {categories ? categories.length : 0} categories
+            <Briefcase className="size-4 text-primary" />
+            {count} {count === 1 ? "position" : "positions"}
           </span>
         </div>
 
@@ -81,16 +87,16 @@ export function StorefrontHomePage() {
                 <Skeleton
                   key={skel}
                   className="aspect-[4/3] w-full rounded-xl"
-                  data-ocid={`home.category.loading_state.${i + 1}`}
+                  data-ocid={`home.position.loading_state.${i + 1}`}
                 />
               ),
             )}
           </div>
-        ) : categories && categories.length > 0 ? (
+        ) : count > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((category, index) => (
+            {views.map((position, index) => (
               <motion.div
-                key={String(category.id)}
+                key={String(position.id)}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
@@ -100,25 +106,25 @@ export function StorefrontHomePage() {
                   delay: index * 0.08,
                 }}
               >
-                <CategoryCard category={category} index={index} />
+                <PositionCard position={position} index={index} />
               </motion.div>
             ))}
           </div>
         ) : (
           <div
             className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-background px-6 py-14 text-center"
-            data-ocid="home.category.empty_state"
+            data-ocid="home.position.empty_state"
           >
             <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <UtensilsCrossed className="size-7" />
+              <Briefcase className="size-7" />
             </div>
             <div className="space-y-1.5">
               <h3 className="font-display text-xl font-semibold tracking-tight">
-                No categories yet
+                No positions yet
               </h3>
               <p className="text-sm text-muted-foreground">
-                The kitchen hasn't published any menu categories yet. Please
-                check back soon.
+                The kitchen hasn&apos;t published any training positions yet.
+                Please check back soon.
               </p>
             </div>
           </div>

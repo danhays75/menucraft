@@ -8,6 +8,7 @@ import Types "../types/categories-items";
 import Common "../types/common";
 
 module {
+  public type PositionId = Common.PositionId;
   public type CategoryId = Common.CategoryId;
   public type ItemId = Common.ItemId;
   public type SubCategoryId = Common.SubCategoryId;
@@ -15,9 +16,11 @@ module {
   public type SubCategory = Types.SubCategory;
   public type MenuItem = Types.MenuItem;
 
-  // Create a new category record. sortOrder defaults to the next position.
+  // Create a new category record under a Position. sortOrder defaults to the
+  // next position within that Position.
   public func newCategory(
     id : CategoryId,
+    positionId : PositionId,
     name : Text,
     coverPhoto : Storage.ExternalBlob,
     sortOrder : Nat,
@@ -25,6 +28,7 @@ module {
   ) : Category {
     {
       id;
+      positionId;
       name;
       coverPhoto;
       var sortOrder;
@@ -82,6 +86,7 @@ module {
   public func toPublicCategory(self : Category, itemCount : Nat) : Types.CategoryPublic {
     {
       id = self.id;
+      positionId = self.positionId;
       name = self.name;
       coverPhoto = self.coverPhoto;
       sortOrder = self.sortOrder;
@@ -246,6 +251,28 @@ module {
   ) : [Types.CategoryPublic] {
     let arr = categories.toArray();
     let publics = arr.map(
+      func(cat : Category) : Types.CategoryPublic {
+        toPublicCategory(cat, countItemsInCategory(items, cat.id));
+      },
+    );
+    publics.sort(func(a : Types.CategoryPublic, b : Types.CategoryPublic) : { #less; #equal; #greater } {
+      Nat.compare(a.sortOrder, b.sortOrder);
+    });
+  };
+
+  // List categories belonging to a Position, sorted by sortOrder, with item
+  // counts. Position-aware listing for the storefront home → Position →
+  // categories navigation.
+  public func listCategoriesByPosition(
+    categories : List.List<Category>,
+    items : Map.Map<ItemId, MenuItem>,
+    positionId : PositionId
+  ) : [Types.CategoryPublic] {
+    let arr = categories.toArray();
+    let filtered = arr.filter(
+      func(cat : Category) : Bool { cat.positionId == positionId },
+    );
+    let publics = filtered.map(
       func(cat : Category) : Types.CategoryPublic {
         toPublicCategory(cat, countItemsInCategory(items, cat.id));
       },

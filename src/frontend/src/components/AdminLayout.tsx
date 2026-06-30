@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
+  Briefcase,
   ChefHat,
   LayoutDashboard,
   ListOrdered,
@@ -26,6 +27,13 @@ const NAV = [
     icon: LayoutDashboard,
     ocid: "admin.nav.dashboard",
     end: true,
+  },
+  {
+    label: "Positions",
+    to: "/admin/positions",
+    icon: Briefcase,
+    ocid: "admin.nav.positions",
+    end: false,
   },
   {
     label: "Categories",

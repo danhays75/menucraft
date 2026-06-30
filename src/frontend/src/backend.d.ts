@@ -15,11 +15,13 @@ export class ExternalBlob {
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
 export type Timestamp = bigint;
+export type PositionId = bigint;
 export interface CategoryPublic {
     id: CategoryId;
     sortOrder: bigint;
     name: string;
     itemCount: bigint;
+    positionId: PositionId;
     coverPhoto: ExternalBlob;
 }
 export interface TrainingStepEdit {
@@ -36,6 +38,16 @@ export interface ThemePublic {
 }
 export type SubCategoryId = bigint;
 export type Principal = Principal;
+export interface PositionPublic {
+    id: PositionId;
+    sortOrder: bigint;
+    name: string;
+    createdAt: Timestamp;
+    description?: string;
+    coverPhoto?: ExternalBlob;
+    updatedAt: Timestamp;
+    categoryCount: bigint;
+}
 export interface UserProfilePublic {
     principal: Principal;
     displayName: string;
@@ -140,12 +152,14 @@ export enum UserRole {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignRole(user: Principal, role: UserRole): Promise<UserProfilePublic>;
-    createCategory(name: string, coverPhoto: ExternalBlob): Promise<CategoryId>;
+    createCategory(positionId: PositionId, name: string, coverPhoto: ExternalBlob): Promise<CategoryId>;
     createMenuItem(categoryId: CategoryId, subCategoryId: SubCategoryId | null, name: string, description: string, itemPhoto: ExternalBlob): Promise<ItemId>;
+    createPosition(name: string, description: string | null, coverPhoto: ExternalBlob | null): Promise<PositionId>;
     createSubCategory(parentCategoryId: CategoryId, name: string, coverPhoto: ExternalBlob): Promise<SubCategoryPublic>;
     createTrainingStep(itemId: ItemId, input: TrainingStepInput): Promise<TrainingStepPublic>;
     deleteCategory(id: CategoryId): Promise<bigint>;
     deleteMenuItem(id: ItemId): Promise<void>;
+    deletePosition(id: PositionId): Promise<bigint>;
     deleteSubCategory(id: SubCategoryId): Promise<{
         itemCount: bigint;
     }>;
@@ -154,12 +168,14 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfilePublic | null>;
     getCallerUserRole(): Promise<UserRole>;
     getMenuItem(itemId: ItemId): Promise<MenuItemPublic | null>;
+    getPosition(id: PositionId): Promise<PositionPublic | null>;
     getTheme(): Promise<ThemePublic>;
     getTrainingStep(stepId: bigint): Promise<TrainingStepPublic | null>;
     isCallerAdmin(): Promise<boolean>;
     listCategories(): Promise<Array<CategoryPublic>>;
     listItemsByCategory(categoryId: CategoryId): Promise<Array<MenuItemPublic>>;
     listItemsBySubCategory(subCategoryId: SubCategoryId): Promise<Array<MenuItemPublic>>;
+    listPositions(): Promise<Array<PositionPublic>>;
     listSubCategories(categoryId: CategoryId): Promise<Array<SubCategoryPublic>>;
     listTrainingSteps(itemId: ItemId): Promise<Array<TrainingStepPublic>>;
     listUsers(): Promise<Array<UserProfilePublic>>;
@@ -170,11 +186,13 @@ export interface backendInterface {
     searchItems(searchTerm: string): Promise<Array<MenuItemPublic>>;
     searchItemsInCategory(categoryId: CategoryId, searchTerm: string): Promise<Array<MenuItemPublic>>;
     setCategorySortOrder(id: CategoryId, sortOrder: bigint): Promise<void>;
+    setPositionSortOrder(id: PositionId, sortOrder: bigint): Promise<void>;
     setSubCategorySortOrder(id: SubCategoryId, sortOrder: bigint): Promise<void>;
-    updateCategory(id: CategoryId, name: string, coverPhoto: ExternalBlob): Promise<void>;
+    updateCategory(id: CategoryId, positionId: PositionId, name: string, coverPhoto: ExternalBlob): Promise<void>;
     updateLogo(logo: ExternalBlob | null): Promise<ThemePublic>;
     updateMenuItem(id: ItemId, categoryId: CategoryId, subCategoryId: SubCategoryId | null, name: string, description: string, itemPhoto: ExternalBlob): Promise<void>;
     updateMenuItemRecipe(id: ItemId, ingredients: Array<string>, instructions: Array<string>): Promise<void>;
+    updatePosition(id: PositionId, name: string, description: string | null, coverPhoto: ExternalBlob | null): Promise<void>;
     updateSubCategory(id: SubCategoryId, name: string, coverPhoto: ExternalBlob): Promise<SubCategoryPublic>;
     updateTheme(primaryColor: string | null, accentColor: string | null, font: FontChoice | null): Promise<ThemePublic>;
 }
