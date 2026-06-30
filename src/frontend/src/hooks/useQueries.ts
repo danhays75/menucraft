@@ -1,0 +1,578 @@
+// React Query hooks for every backend method. All data operations go through
+// the actor returned by useActor(createActor) — never localStorage or context.
+
+import { createActor } from "@/backend";
+import type {
+  CategoryId,
+  CategoryPublic,
+  ExternalBlob,
+  FontChoice,
+  ItemId,
+  MenuItemPublic,
+  SubCategoryId,
+  SubCategoryPublic,
+  ThemePublic,
+  TrainingStepEdit,
+  TrainingStepInput,
+  TrainingStepPublic,
+  UserProfilePublic,
+  UserRole,
+} from "@/backend";
+import { useActor } from "@caffeineai/core-infrastructure";
+import type { Principal } from "@icp-sdk/core/principal";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+/* ------------------------------------------------------------------ */
+/* Theme                                                               */
+/* ------------------------------------------------------------------ */
+
+export function useTheme() {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<ThemePublic>({
+    queryKey: ["theme"],
+    queryFn: async () => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.getTheme();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: Number.POSITIVE_INFINITY,
+  });
+}
+
+export function useUpdateTheme() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      primaryColor: string | null;
+      accentColor: string | null;
+      font: FontChoice | null;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.updateTheme(vars.primaryColor, vars.accentColor, vars.font);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["theme"] }),
+  });
+}
+
+export function useUpdateLogo() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (logo: ExternalBlob | null) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.updateLogo(logo);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["theme"] }),
+  });
+}
+
+export function useResetTheme() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.resetTheme();
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["theme"] }),
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Users                                                               */
+/* ------------------------------------------------------------------ */
+
+export function useUsers() {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<UserProfilePublic[]>({
+    queryKey: ["users"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.listUsers();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useUpdateUserName() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { principal: Principal; displayName: string }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.saveCallerUserProfile(vars.displayName);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] }),
+  });
+}
+
+export function useAssignRole() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { user: Principal; role: UserRole }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.assignRole(vars.user, vars.role);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] }),
+  });
+}
+
+export function useRevokeRole() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (user: Principal) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.revokeRole(user);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] }),
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Categories                                                          */
+/* ------------------------------------------------------------------ */
+
+export function useCategories() {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<CategoryPublic[]>({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.listCategories();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCategory(id: CategoryId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<CategoryPublic | null>({
+    queryKey: ["category", String(id)],
+    queryFn: async () => {
+      if (!actor || id === undefined) return null;
+      const all = await actor.listCategories();
+      return all.find((c) => c.id === id) ?? null;
+    },
+    enabled: !!actor && !isFetching && id !== undefined,
+  });
+}
+
+export function useCreateCategory() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { name: string; coverPhoto: ExternalBlob }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createCategory(vars.name, vars.coverPhoto);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+  });
+}
+
+export function useUpdateCategory() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: CategoryId;
+      name: string;
+      coverPhoto: ExternalBlob;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateCategory(vars.id, vars.name, vars.coverPhoto);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+  });
+}
+
+export function useDeleteCategory() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: CategoryId) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.deleteCategory(id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+  });
+}
+
+export function useSetCategorySortOrder() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { id: CategoryId; sortOrder: bigint }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.setCategorySortOrder(vars.id, vars.sortOrder);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Sub-categories                                                      */
+/* ------------------------------------------------------------------ */
+
+export function useSubCategories(categoryId: CategoryId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<SubCategoryPublic[]>({
+    queryKey: ["subcategories", String(categoryId)],
+    queryFn: async () => {
+      if (!actor || categoryId === undefined) return [];
+      return actor.listSubCategories(categoryId);
+    },
+    enabled: !!actor && !isFetching && categoryId !== undefined,
+  });
+}
+
+export function useItemsBySubCategory(
+  subCategoryId: SubCategoryId | undefined,
+) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<MenuItemPublic[]>({
+    queryKey: ["items", "subcategory", String(subCategoryId)],
+    queryFn: async () => {
+      if (!actor || subCategoryId === undefined) return [];
+      return actor.listItemsBySubCategory(subCategoryId);
+    },
+    enabled: !!actor && !isFetching && subCategoryId !== undefined,
+  });
+}
+
+export function useCreateSubCategory() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      parentCategoryId: CategoryId;
+      name: string;
+      coverPhoto: ExternalBlob;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createSubCategory(
+        vars.parentCategoryId,
+        vars.name,
+        vars.coverPhoto,
+      );
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["subcategories", String(vars.parentCategoryId)],
+      });
+    },
+  });
+}
+
+export function useUpdateSubCategory() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: SubCategoryId;
+      parentCategoryId: CategoryId;
+      name: string;
+      coverPhoto: ExternalBlob;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.updateSubCategory(vars.id, vars.name, vars.coverPhoto);
+    },
+    onSuccess: (_data, vars) => {
+      // Invalidate the parent's subcategory list plus a broad sweep in case
+      // the caller didn't pass the parent (covers all subcategory keys).
+      qc.invalidateQueries({
+        queryKey: ["subcategories", String(vars.parentCategoryId)],
+      });
+      qc.invalidateQueries({ queryKey: ["subcategories"] });
+    },
+  });
+}
+
+export function useDeleteSubCategory() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: SubCategoryId;
+      parentCategoryId: CategoryId;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.deleteSubCategory(vars.id);
+    },
+    onSuccess: (_data, vars) => {
+      // Item counts change on the parent category and its subcategory list;
+      // items get reassigned to the parent so its item list is stale too.
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["subcategories", String(vars.parentCategoryId)],
+      });
+      qc.invalidateQueries({
+        queryKey: ["items", "category", String(vars.parentCategoryId)],
+      });
+      qc.invalidateQueries({ queryKey: ["items", "subcategory"] });
+    },
+  });
+}
+
+export function useSetSubCategorySortOrder() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: SubCategoryId;
+      parentCategoryId: CategoryId;
+      sortOrder: bigint;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.setSubCategorySortOrder(vars.id, vars.sortOrder);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({
+        queryKey: ["subcategories", String(vars.parentCategoryId)],
+      });
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Menu items                                                          */
+/* ------------------------------------------------------------------ */
+
+export function useCategoryItems(categoryId: CategoryId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<MenuItemPublic[]>({
+    queryKey: ["items", "category", String(categoryId)],
+    queryFn: async () => {
+      if (!actor || categoryId === undefined) return [];
+      return actor.listItemsByCategory(categoryId);
+    },
+    enabled: !!actor && !isFetching && categoryId !== undefined,
+  });
+}
+
+export function useMenuItem(itemId: ItemId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<MenuItemPublic | null>({
+    queryKey: ["item", String(itemId)],
+    queryFn: async () => {
+      if (!actor || itemId === undefined) return null;
+      return actor.getMenuItem(itemId);
+    },
+    enabled: !!actor && !isFetching && itemId !== undefined,
+  });
+}
+
+export function useCreateMenuItem() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      categoryId: CategoryId;
+      subCategoryId?: SubCategoryId | null;
+      name: string;
+      description: string;
+      itemPhoto: ExternalBlob;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createMenuItem(
+        vars.categoryId,
+        vars.subCategoryId ?? null,
+        vars.name,
+        vars.description,
+        vars.itemPhoto,
+      );
+    },
+    onSuccess: (_data, vars) => {
+      const subId = vars.subCategoryId ?? null;
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["items", "category", String(vars.categoryId)],
+      });
+      if (subId !== null) {
+        qc.invalidateQueries({
+          queryKey: ["items", "subcategory", String(subId)],
+        });
+        qc.invalidateQueries({
+          queryKey: ["subcategories", String(vars.categoryId)],
+        });
+      }
+    },
+  });
+}
+
+export function useUpdateMenuItem() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: ItemId;
+      categoryId: CategoryId;
+      subCategoryId?: SubCategoryId | null;
+      name: string;
+      description: string;
+      itemPhoto: ExternalBlob;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateMenuItem(
+        vars.id,
+        vars.categoryId,
+        vars.subCategoryId ?? null,
+        vars.name,
+        vars.description,
+        vars.itemPhoto,
+      );
+    },
+    onSuccess: (_data, vars) => {
+      const subId = vars.subCategoryId ?? null;
+      qc.invalidateQueries({ queryKey: ["item", String(vars.id)] });
+      qc.invalidateQueries({
+        queryKey: ["items", "category", String(vars.categoryId)],
+      });
+      if (subId !== null) {
+        qc.invalidateQueries({
+          queryKey: ["items", "subcategory", String(subId)],
+        });
+      }
+      // Sweep all subcategory lists — an item moving into/out of a subcategory
+      // changes itemCount on potentially two subcategory lists.
+      qc.invalidateQueries({ queryKey: ["subcategories"] });
+    },
+  });
+}
+
+export function useUpdateMenuItemRecipe() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: ItemId;
+      ingredients: string[];
+      instructions: string[];
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateMenuItemRecipe(
+        vars.id,
+        vars.ingredients,
+        vars.instructions,
+      );
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["item", String(vars.id)] });
+    },
+  });
+}
+
+export function useDeleteMenuItem() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: ItemId;
+      categoryId: CategoryId;
+      subCategoryId?: SubCategoryId | null;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.deleteMenuItem(vars.id);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({
+        queryKey: ["items", "category", String(vars.categoryId)],
+      });
+      if (vars.subCategoryId) {
+        qc.invalidateQueries({
+          queryKey: ["items", "subcategory", String(vars.subCategoryId)],
+        });
+        qc.invalidateQueries({
+          queryKey: ["subcategories", String(vars.categoryId)],
+        });
+      }
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Training steps                                                      */
+/* ------------------------------------------------------------------ */
+
+export function useTrainingSteps(itemId: ItemId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<TrainingStepPublic[]>({
+    queryKey: ["training", String(itemId)],
+    queryFn: async () => {
+      if (!actor || itemId === undefined) return [];
+      return actor.listTrainingSteps(itemId);
+    },
+    enabled: !!actor && !isFetching && itemId !== undefined,
+  });
+}
+
+export function useAddTrainingStep() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      itemId: ItemId;
+      input: TrainingStepInput;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createTrainingStep(vars.itemId, vars.input);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["training", String(vars.itemId)] });
+    },
+  });
+}
+
+export function useUpdateTrainingStep() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      stepId: bigint;
+      itemId: ItemId;
+      edit: TrainingStepEdit;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.editTrainingStep(vars.stepId, vars.edit);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["training", String(vars.itemId)] });
+    },
+  });
+}
+
+export function useDeleteTrainingStep() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { stepId: bigint; itemId: ItemId }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.deleteTrainingStep(vars.stepId);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["training", String(vars.itemId)] });
+    },
+  });
+}
+
+export function useMoveTrainingStep() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      stepId: bigint;
+      newOrder: bigint;
+      itemId: ItemId;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.moveTrainingStep(vars.stepId, vars.newOrder);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["training", String(vars.itemId)] });
+    },
+  });
+}

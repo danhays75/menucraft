@@ -1,0 +1,196 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfilePublic = 
+ record {
+   createdAt: Timestamp;
+   displayName: text;
+   "principal": Principal;
+   role: UserRole;
+ };
+type TrainingStepPublic = 
+ record {
+   id: nat;
+   itemId: ItemId;
+   order: nat;
+   photo: opt ExternalBlob;
+   "text": text;
+   video: opt ExternalBlob;
+ };
+type TrainingStepInput = 
+ record {
+   photo: opt ExternalBlob;
+   "text": text;
+   video: opt ExternalBlob;
+ };
+type TrainingStepEdit = 
+ record {
+   photo: opt ExternalBlob;
+   "text": text;
+   video: opt ExternalBlob;
+ };
+type Timestamp = nat;
+type ThemePublic = 
+ record {
+   accentColor: text;
+   font: FontChoice;
+   logo: opt ExternalBlob;
+   primaryColor: text;
+   updatedAt: Timestamp;
+ };
+type SubCategoryPublic = 
+ record {
+   coverPhoto: ExternalBlob;
+   id: SubCategoryId;
+   itemCount: nat;
+   name: text;
+   parentCategoryId: CategoryId;
+   sortOrder: nat;
+ };
+type SubCategoryId = nat;
+type Result = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Principal = principal;
+type MenuItemPublic = 
+ record {
+   categoryId: CategoryId;
+   description: text;
+   id: ItemId;
+   ingredients: vec text;
+   instructions: vec text;
+   itemPhoto: ExternalBlob;
+   name: text;
+   subCategoryId: opt SubCategoryId;
+ };
+type ItemId = nat;
+type FontChoice = 
+ variant {
+   monospace;
+   sansSerif;
+   serif;
+   systemFont;
+ };
+type ExternalBlob = blob;
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type CategoryPublic = 
+ record {
+   coverPhoto: ExternalBlob;
+   id: CategoryId;
+   itemCount: nat;
+   name: text;
+   sortOrder: nat;
+ };
+type CategoryId = nat;
+service : {
+  __accessControlState: () -> (reserved) query;
+  __categories: () -> (reserved) query;
+  __items: () -> (reserved) query;
+  __state: () -> (reserved) query;
+  __steps: () -> (reserved) query;
+  __subCategories: () -> (reserved) query;
+  __theme: () -> (reserved) query;
+  __trainingState: () -> (reserved) query;
+  __users: () -> (reserved) query;
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  assignRole: (user: Principal, role: UserRole) -> (UserProfilePublic);
+  createCategory: (name: text, coverPhoto: ExternalBlob) -> (CategoryId);
+  createMenuItem: (categoryId: CategoryId, subCategoryId: opt SubCategoryId,
+   name: text, description: text, itemPhoto: ExternalBlob) -> (ItemId);
+  createSubCategory: (parentCategoryId: CategoryId, name: text, coverPhoto:
+   ExternalBlob) -> (SubCategoryPublic);
+  createTrainingStep: (itemId: ItemId, input: TrainingStepInput) ->
+   (TrainingStepPublic);
+  deleteCategory: (id: CategoryId) -> (nat);
+  deleteMenuItem: (id: ItemId) -> ();
+  deleteSubCategory: (id: SubCategoryId) -> (record {itemCount: nat;});
+  deleteTrainingStep: (stepId: nat) -> (bool);
+  editTrainingStep: (stepId: nat, edit: TrainingStepEdit) ->
+   (TrainingStepPublic);
+  getCallerUserProfile: () -> (opt UserProfilePublic) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getMenuItem: (itemId: ItemId) -> (opt MenuItemPublic) query;
+  getTheme: () -> (ThemePublic) query;
+  getTrainingStep: (stepId: nat) -> (opt TrainingStepPublic) query;
+  isCallerAdmin: () -> (bool) query;
+  listCategories: () -> (vec CategoryPublic) query;
+  listItemsByCategory: (categoryId: CategoryId) -> (vec MenuItemPublic) query;
+  listItemsBySubCategory: (subCategoryId: SubCategoryId) ->
+   (vec MenuItemPublic) query;
+  listSubCategories: (categoryId: CategoryId) ->
+   (vec SubCategoryPublic) query;
+  listTrainingSteps: (itemId: ItemId) -> (vec TrainingStepPublic) query;
+  listUsers: () -> (vec UserProfilePublic) query;
+  moveTrainingStep: (stepId: nat, newOrder: nat) -> (bool);
+  resetTheme: () -> (ThemePublic);
+  revokeRole: (user: Principal) -> (UserProfilePublic);
+  saveCallerUserProfile: (displayName: text) -> (UserProfilePublic);
+  searchItems: (searchTerm: text) -> (vec MenuItemPublic) query;
+  searchItemsInCategory: (categoryId: CategoryId, searchTerm: text) ->
+   (vec MenuItemPublic) query;
+  setCategorySortOrder: (id: CategoryId, sortOrder: nat) -> ();
+  setSubCategorySortOrder: (id: SubCategoryId, sortOrder: nat) -> ();
+  updateCategory: (id: CategoryId, name: text, coverPhoto: ExternalBlob) ->
+   ();
+  updateLogo: (logo: opt ExternalBlob) -> (ThemePublic);
+  updateMenuItem: (id: ItemId, categoryId: CategoryId, subCategoryId:
+   opt SubCategoryId, name: text, description: text, itemPhoto:
+   ExternalBlob) -> ();
+  updateMenuItemRecipe: (id: ItemId, ingredients: vec text, instructions:
+   vec text) -> ();
+  updateSubCategory: (id: SubCategoryId, name: text, coverPhoto:
+   ExternalBlob) -> (SubCategoryPublic);
+  updateTheme: (primaryColor: opt text, accentColor: opt text, font:
+   opt FontChoice) -> (ThemePublic);
+}

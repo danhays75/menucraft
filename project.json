@@ -1,0 +1,18 @@
+{
+  "overview": "MenuCraft is a restaurant training app for Bubba's 33 that lets staff browse the menu by category and sub-category, view recipe cards, and walk through step-by-step training.\"",
+  "features": [
+    "Browse menu by category and sub-category with cover photos",
+    "Drill down from category to sub-category to recipe card to training",
+    "Admin portal to manage categories, sub-categories, and menu items",
+    "Photo uploads for categories, sub-categories, and items",
+    "Step-by-step training flow for each menu item"
+  ],
+  "category": "productivity",
+  "tags": [
+    "restaurant",
+    "training",
+    "menu",
+    "bubbas-33"
+  ],
+  "last_updated": "2026-06-30T13:46:49.104Z"
+}

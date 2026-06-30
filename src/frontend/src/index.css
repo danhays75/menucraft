@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* MenuCraft fonts — Fraunces (display) + DM Sans (body).
+   Font files must be copied to src/frontend/public/assets/fonts/
+   from .opencode/skills/designing-with-oklch/fonts/ by the frontend agent. */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/fonts/DMSans.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    /* Token system is built on CSS custom properties so the admin
+       theme-customization feature can override --primary, --accent,
+       --font-display, --font-body at runtime via inline style on :root. */
+    --font-display: "Fraunces", serif;
+    --font-body: "DM Sans", sans-serif;
+    --font-mono: ui-monospace, monospace;
+    --radius: 0.625rem;
+
+    /* Warm Analog (light) — cream canvas, terracotta primary, sage accent.
+       Food photography pops against the warm neutral background. */
+    --background: 0.965 0.012 75;
+    --foreground: 0.2 0.025 50;
+    --card: 0.985 0.008 75;
+    --card-foreground: 0.2 0.025 50;
+    --popover: 0.99 0.006 75;
+    --popover-foreground: 0.2 0.025 50;
+
+    --primary: 0.55 0.14 32;
+    --primary-foreground: 0.98 0.012 75;
+
+    --secondary: 0.92 0.018 75;
+    --secondary-foreground: 0.3 0.03 50;
+    --muted: 0.93 0.015 75;
+    --muted-foreground: 0.5 0.02 50;
+
+    --accent: 0.5 0.09 160;
+    --accent-foreground: 0.98 0.01 160;
+
+    --destructive: 0.5 0.2 25;
+    --destructive-foreground: 0.98 0.012 25;
+
+    --success: 0.55 0.14 150;
+    --success-foreground: 0.98 0.01 150;
+    --warning: 0.7 0.15 80;
+    --warning-foreground: 0.2 0.03 80;
+
+    --border: 0.88 0.02 70;
+    --input: 0.88 0.02 70;
+    --ring: 0.55 0.14 32;
+
+    --chart-1: 0.55 0.14 32;
+    --chart-2: 0.5 0.09 160;
+    --chart-3: 0.7 0.15 80;
+    --chart-4: 0.55 0.2 25;
+    --chart-5: 0.6 0.12 260;
+
+    --sidebar: 0.985 0.008 75;
+    --sidebar-foreground: 0.2 0.025 50;
+    --sidebar-primary: 0.55 0.14 32;
+    --sidebar-primary-foreground: 0.98 0.012 75;
+    --sidebar-accent: 0.93 0.015 75;
+    --sidebar-accent-foreground: 0.3 0.03 50;
+    --sidebar-border: 0.88 0.02 70;
+    --sidebar-ring: 0.55 0.14 32;
+
+    /* Reusable gradient tokens for hero backgrounds and buttons. */
+    --gradient-primary: linear-gradient(
+      135deg,
+      oklch(0.55 0.14 32),
+      oklch(0.5 0.1 50)
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      oklch(0.985 0.008 75),
+      oklch(0.965 0.012 75)
+    );
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    /* Warm Night (dark) — warm charcoal, same terracotta primary, sage accent.
+       Tuned for readability, not just inverted lightness. */
+    --background: 0.16 0.012 55;
+    --foreground: 0.92 0.012 60;
+    --card: 0.2 0.015 55;
+    --card-foreground: 0.92 0.012 60;
+    --popover: 0.22 0.015 55;
+    --popover-foreground: 0.92 0.012 60;
+
+    --primary: 0.72 0.15 55;
+    --primary-foreground: 0.16 0.012 55;
+
+    --secondary: 0.24 0.018 55;
+    --secondary-foreground: 0.82 0.012 60;
+    --muted: 0.24 0.018 55;
+    --muted-foreground: 0.55 0.014 58;
+
+    --accent: 0.6 0.1 160;
+    --accent-foreground: 0.14 0.015 160;
+
+    --destructive: 0.6 0.19 25;
+    --destructive-foreground: 0.95 0.012 25;
+
+    --success: 0.6 0.14 150;
+    --success-foreground: 0.14 0.015 150;
+    --warning: 0.75 0.15 80;
+    --warning-foreground: 0.16 0.02 80;
+
+    --border: 0.3 0.018 55;
+    --input: 0.3 0.018 55;
+    --ring: 0.72 0.15 55;
+
+    --chart-1: 0.72 0.15 55;
+    --chart-2: 0.6 0.1 160;
+    --chart-3: 0.75 0.15 80;
+    --chart-4: 0.6 0.19 25;
+    --chart-5: 0.65 0.12 260;
+
+    --sidebar: 0.2 0.015 55;
+    --sidebar-foreground: 0.92 0.012 60;
+    --sidebar-primary: 0.72 0.15 55;
+    --sidebar-primary-foreground: 0.16 0.012 55;
+    --sidebar-accent: 0.24 0.018 55;
+    --sidebar-accent-foreground: 0.82 0.012 60;
+    --sidebar-border: 0.3 0.018 55;
+    --sidebar-ring: 0.72 0.15 55;
+
+    --gradient-primary: linear-gradient(
+      135deg,
+      oklch(0.72 0.15 55),
+      oklch(0.68 0.12 70)
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      oklch(0.2 0.015 55),
+      oklch(0.16 0.012 55)
+    );
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+  .bg-gradient-subtle {
+    background-image: var(--gradient-subtle);
+  }
+  .text-gradient-primary {
+    background-image: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
