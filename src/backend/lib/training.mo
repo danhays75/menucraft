@@ -74,51 +74,69 @@ module {
     };
   };
 
-  // Renumber the `order` field of each step in the list to match its index+1,
-  // preserving the current list order. Used after a deletion or reorder.
-  public func renumber(steps : List.List<TrainingStep>) : () {
-    steps.forEachEntry(func(idx : Nat, s : TrainingStep) : () {
-      s.order := idx + 1;
+  // Return a given item's steps as a mutable array sorted ascending by `order`.
+  // The elements are the same records held in `steps`, so mutating their
+  // `order` field in place updates the stored steps.
+  func sortedItemSteps(steps : List.List<TrainingStep>, itemId : ItemId) : [TrainingStep] {
+    let arr = steps.filter(func(s : TrainingStep) : Bool { s.itemId == itemId }).toArray();
+    arr.sort(func(a : TrainingStep, b : TrainingStep) : { #less; #equal; #greater } {
+      Nat.compare(a.order, b.order);
     });
   };
 
-  // Move a step to a new position. `newOrder` is 1-based. Other steps shift to
-  // make room. Returns true if the step was found and moved.
+  // Renumber the `order` field of a single item's steps to a contiguous 1-based
+  // sequence, preserving their current relative order. Steps belonging to other
+  // items are left untouched. Used after a deletion or reorder.
+  public func renumber(steps : List.List<TrainingStep>, itemId : ItemId) : () {
+    let sorted = sortedItemSteps(steps, itemId);
+    var n : Nat = 0;
+    for (s in sorted.values()) {
+      n += 1;
+      s.order := n;
+    };
+  };
+
+  // Move a step to a new position within its own item's sequence. `newOrder` is
+  // 1-based within that item. Other steps in the same item shift to make room;
+  // steps for other items are untouched. Returns true if the step was found and
+  // moved (or was already in place).
   public func moveTo(steps : List.List<TrainingStep>, stepId : Nat, newOrder : Nat) : Bool {
-    let arr = steps.toArray();
-    let size = arr.size();
-    if (size == 0) { return false };
-    let foundIdx = arr.findIndex(func(s : TrainingStep) : Bool { s.id == stepId });
-    switch (foundIdx) {
-      case null { return false };
-      case (?fromIdx) {
+    switch (steps.find(func(s : TrainingStep) : Bool { s.id == stepId })) {
+      case null { false };
+      case (?target) {
+        let sorted = sortedItemSteps(steps, target.itemId);
+        let size = sorted.size();
         if (newOrder < 1 or newOrder > size) { return false };
-        let toIdx = newOrder - 1;
-        if (fromIdx == toIdx) { return true };
-        let step = arr[fromIdx];
-        // Build a new ordered array with the step moved using a mutable array.
-        let newArr = Array.tabulate(
-          size,
-          func(i : Nat) : TrainingStep {
-            if (i == fromIdx) {
-              // Slot occupied by the moved step; pick the next non-skipped element.
-              if (toIdx < fromIdx) { arr[toIdx] } else { arr[toIdx - 1] };
-            } else if (i == toIdx) {
-              step;
-            } else if (toIdx < fromIdx and i >= toIdx and i < fromIdx) {
-              arr[i + 1];
-            } else if (toIdx > fromIdx and i > fromIdx and i <= toIdx) {
-              arr[i - 1];
-            } else {
-              arr[i];
+        let foundIdx = sorted.findIndex(func(s : TrainingStep) : Bool { s.id == stepId });
+        switch (foundIdx) {
+          case null { false };
+          case (?fromIdx) {
+            let toIdx = newOrder - 1;
+            if (fromIdx == toIdx) { return true };
+            let step = sorted[fromIdx];
+            // Remove the step from `fromIdx`, then insert it at `toIdx`. For a
+            // result slot i, map back into the removed sequence: slot i draws
+            // from removed index (i < toIdx ? i : i - 1), and the removed
+            // sequence skips `fromIdx` (index j maps to sorted[j < fromIdx ? j : j + 1]).
+            let reordered = Array.tabulate(
+              size,
+              func(i : Nat) : TrainingStep {
+                if (i == toIdx) {
+                  step;
+                } else {
+                  let j = if (i < toIdx) { i } else { i - 1 };
+                  if (j < fromIdx) { sorted[j] } else { sorted[j + 1] };
+                };
+              },
+            );
+            var n : Nat = 0;
+            for (s in reordered.values()) {
+              n += 1;
+              s.order := n;
             };
-          },
-        );
-        // Replace list contents and renumber.
-        steps.clear();
-        steps.addAll(newArr.values());
-        renumber(steps);
-        true;
+            true;
+          };
+        };
       };
     };
   };

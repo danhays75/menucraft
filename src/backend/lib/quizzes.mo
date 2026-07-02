@@ -178,49 +178,70 @@ module {
     };
   };
 
-  // Renumber the `order` field of each question in the list to match its
-  // index+1, preserving the current list order. Used after a deletion or
-  // reorder.
-  public func renumberQuestions(questions : List.List<Question>) : () {
-    questions.forEachEntry(func(idx : Nat, q : Question) : () {
-      q.order := idx + 1;
+  // Return a given quiz's questions as a mutable array sorted ascending by
+  // `order`. The elements are the same records held in `questions`, so mutating
+  // their `order` field in place updates the stored questions.
+  func sortedQuizQuestions(questions : List.List<Question>, quizId : QuizId) : [Question] {
+    let arr = questions.filter(func(q : Question) : Bool { q.quizId == quizId }).toArray();
+    arr.sort(func(a : Question, b : Question) : { #less; #equal; #greater } {
+      Nat.compare(a.order, b.order);
     });
   };
 
-  // Move a question to a new position (1-based). Other questions shift to
-  // make room. Returns true if the question was found and moved.
+  // Renumber the `order` field of a single quiz's questions to a contiguous
+  // 1-based sequence, preserving their current relative order. Questions
+  // belonging to other quizzes are left untouched. Used after a deletion or
+  // reorder.
+  public func renumberQuestions(questions : List.List<Question>, quizId : QuizId) : () {
+    let sorted = sortedQuizQuestions(questions, quizId);
+    var n : Nat = 0;
+    for (q in sorted.values()) {
+      n += 1;
+      q.order := n;
+    };
+  };
+
+  // Move a question to a new position within its own quiz's sequence. `newOrder`
+  // is 1-based within that quiz. Other questions in the same quiz shift to make
+  // room; questions for other quizzes are untouched. Returns true if the
+  // question was found and moved (or was already in place).
   public func moveQuestion(questions : List.List<Question>, id : QuestionId, newOrder : Nat) : Bool {
-    let arr = questions.toArray();
-    let size = arr.size();
-    if (size == 0) { return false };
-    let foundIdx = arr.findIndex(func(q : Question) : Bool { q.id == id });
-    switch (foundIdx) {
-      case null { return false };
-      case (?fromIdx) {
+    switch (questions.find(func(q : Question) : Bool { q.id == id })) {
+      case null { false };
+      case (?target) {
+        let sorted = sortedQuizQuestions(questions, target.quizId);
+        let size = sorted.size();
         if (newOrder < 1 or newOrder > size) { return false };
-        let toIdx = newOrder - 1;
-        if (fromIdx == toIdx) { return true };
-        let question = arr[fromIdx];
-        let newArr = Array.tabulate(
-          size,
-          func(i : Nat) : Question {
-            if (i == fromIdx) {
-              if (toIdx < fromIdx) { arr[toIdx] } else { arr[toIdx - 1] };
-            } else if (i == toIdx) {
-              question;
-            } else if (toIdx < fromIdx and i >= toIdx and i < fromIdx) {
-              arr[i + 1];
-            } else if (toIdx > fromIdx and i > fromIdx and i <= toIdx) {
-              arr[i - 1];
-            } else {
-              arr[i];
+        let foundIdx = sorted.findIndex(func(q : Question) : Bool { q.id == id });
+        switch (foundIdx) {
+          case null { false };
+          case (?fromIdx) {
+            let toIdx = newOrder - 1;
+            if (fromIdx == toIdx) { return true };
+            let question = sorted[fromIdx];
+            // Remove the question from `fromIdx`, then insert it at `toIdx`. For
+            // a result slot i, map back into the removed sequence: slot i draws
+            // from removed index (i < toIdx ? i : i - 1), and the removed
+            // sequence skips `fromIdx` (index j maps to sorted[j < fromIdx ? j : j + 1]).
+            let reordered = Array.tabulate(
+              size,
+              func(i : Nat) : Question {
+                if (i == toIdx) {
+                  question;
+                } else {
+                  let j = if (i < toIdx) { i } else { i - 1 };
+                  if (j < fromIdx) { sorted[j] } else { sorted[j + 1] };
+                };
+              },
+            );
+            var n : Nat = 0;
+            for (q in reordered.values()) {
+              n += 1;
+              q.order := n;
             };
-          },
-        );
-        questions.clear();
-        questions.addAll(newArr.values());
-        renumberQuestions(questions);
-        true;
+            true;
+          };
+        };
       };
     };
   };
