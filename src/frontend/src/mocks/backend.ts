@@ -7,13 +7,15 @@
 // Kept after QA — enables `VITE_USE_MOCK=true pnpm dev` for frontend-only
 // iteration without a running backend.
 
-import type { backendInterface } from "@/backend";
-import {
-  ExternalBlob,
-  FontChoice,
-  QuestionType,
-  UserRole,
-} from "@/backend";
+import type { backendInterface, ExternalBlob } from "@/backend";
+import { FontChoice, QuestionType, UserRole } from "@/backend";
+// ExternalBlob is imported as a value from `@caffeineai/object-storage` (the
+// package that owns the class) rather than `@/backend`, because `backend.ts`
+// only re-exports `ExternalBlob` as a type (`export type { ExternalBlob }`),
+// which Rollup correctly erases at runtime. Importing the value from the
+// source package keeps the runtime class available while the type still flows
+// through `@/backend` for actor compatibility.
+import { ExternalBlob as ExternalBlobCtor } from "@caffeineai/object-storage";
 import type { Principal } from "@icp-sdk/core/principal";
 
 /* ------------------------------------------------------------------ */
@@ -32,7 +34,7 @@ const PLACEHOLDER_PNG =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 function placeholderBlob(): ExternalBlob {
-  return ExternalBlob.fromURL(PLACEHOLDER_PNG);
+  return ExternalBlobCtor.fromURL(PLACEHOLDER_PNG);
 }
 
 /** A stable fake principal string for the mock admin user. */

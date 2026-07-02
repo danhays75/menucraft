@@ -2,72 +2,79 @@
 
 ## Direction
 
-Warm Kitchen Editorial — a photo-forward menu and staff training app with a terracotta-and-sage palette on warm cream, where food photography is the hero.
+Bubba's 33 Roadhouse — a bold red-and-black staff training app for a roadhouse kitchen, dark-first and mobile-first for staff on phones.
 
 ## Tone
 
-Editorial warmth: cream canvas, characterful serif headings, generous imagery — appetizing on the storefront, the same brand carried into a functional (not cold) admin.
+High-energy roadhouse grit: near-black canvas, fire-engine red primary, gold spark — condensed display type and uppercase labels that read like a neon sign at the door.
 
 ## Differentiation
 
-Food photos lead every card; the warm cream canvas makes plates pop, and the admin shares the identical warm identity so the back-office feels like the same kitchen.
+A pure-black top bar with the tall Anton wordmark, a red-to-deep-red gradient banner, and a circular B33 splash emblem — unmistakably a roadhouse, never a generic admin panel.
 
 ## Color Palette
 
-| Token      | OKLCH (light)    | OKLCH (dark)     | Role                                  |
-| ---------- | ---------------- | ---------------- | ------------------------------------- |
-| background | 0.965 0.012 75   | 0.16 0.012 55    | warm cream / warm charcoal canvas     |
-| foreground | 0.2 0.025 50     | 0.92 0.012 60    | deep warm ink / warm off-white text   |
-| card       | 0.985 0.008 75   | 0.2 0.015 55     | slightly lifted surface               |
-| primary    | 0.55 0.14 32     | 0.72 0.15 55     | terracotta / warm amber — CTAs, active |
-| accent     | 0.5 0.09 160     | 0.6 0.1 160      | muted sage — secondary highlights     |
-| muted       | 0.93 0.015 75    | 0.24 0.018 55    | quiet surfaces, captions               |
-| sidebar    | 0.985 0.008 75   | 0.2 0.015 55     | admin navigation surface               |
+| Token      | OKLCH            | Hex        | Role                                       |
+| ---------- | ---------------- | ---------- | ------------------------------------------ |
+| background | 0.14 0.005 70    | #141412    | near-black warm page canvas                |
+| foreground | 0.96 0.012 80    | #F5F1E8    | warm off-white headings/body text          |
+| card       | 0.2 0.005 75     | #1E1E1B    | lifted dark surface for cards/panels       |
+| primary    | 0.6 0.24 27      | #E4002B    | fire-engine red — CTAs, active, brand      |
+| primary-h  | 0.5 0.21 27      | #B00020    | hover/pressed deep red (gradient end)      |
+| accent     | 0.79 0.17 75     | #F2A900    | gold — secondary highlights, outline btns  |
+| muted      | 0.24 0.005 75    | —          | quiet surfaces                             |
+| muted-fg   | 0.66 0.008 80    | #9A9A92    | muted captions, meta text                  |
+| topbar     | 0 0 0            | #000000    | pure black header/admin sidebar            |
 
 ## Typography
 
-- Display: Fraunces — headings, category names, dish names, wordmark
-- Body: DM Sans — UI labels, body copy, table text, instructions
-- Scale: hero `text-5xl md:text-7xl font-bold tracking-tight`, h2 `text-3xl md:text-5xl font-bold tracking-tight`, label `text-sm font-semibold tracking-widest uppercase`, body `text-base lg:text-lg`
+- Display: Anton — wordmark, hero, position names (all-caps, tight tracking)
+- Heading: Oswald 600-700 — section headings, button labels, card titles (uppercase)
+- Body: Barlow — UI labels, body copy, table text, instructions
+- Scale: hero `text-5xl md:text-7xl font-display uppercase tracking-tight`, h2 `text-3xl md:text-5xl font-heading font-bold uppercase tracking-tight`, label `text-xs font-heading font-semibold tracking-widest uppercase`, body `text-base lg:text-lg font-body`
 
 ## Elevation & Depth
 
-Layered warmth: cards lift on `shadow-card`, hover to `shadow-elevated`; warm-tinted shadows (rgba 60,40,20) instead of default grey so depth reads as part of the kitchen palette.
+Layered darkness: cards lift on `shadow-card`, hover to `shadow-elevated`; neutral black-tinted shadows (rgba 0,0,0) instead of warm tints so depth reads on dark surfaces.
 
 ## Structural Zones
 
 | Zone          | Background         | Border              | Notes                                       |
 | ------------- | ------------------ | ------------------- | ------------------------------------------- |
-| Header        | `bg-card`          | `border-b`          | wordmark + staff login; sticky on storefront |
+| Top bar       | `bg-topbar` (#000) | `border-b border-border` | Anton wordmark + staff login; sticky        |
+| Hero/banner   | `bg-gradient-primary` | —               | red→deep-red gradient with B33 emblem       |
 | Content       | `bg-background`    | —                   | alternate `bg-muted/30` per section          |
-| Footer        | `bg-muted/40`      | `border-t`          | quiet copyright + brand                     |
-| Admin sidebar | `bg-sidebar`      | `border-r`          | vertical nav, terracotta active state        |
+| Footer        | `bg-topbar`        | `border-t`          | quiet copyright + roadhouse tagline          |
+| Admin sidebar | `bg-sidebar` (#000) | `border-r`        | vertical nav, red active state               |
 | Admin content | `bg-background`    | —                   | tables + forms on `bg-card` panels          |
+| Card          | `bg-card`          | `border`             | photo area + red footer bar with Oswald title |
 
 ## Spacing & Rhythm
 
-Generous: section gaps `py-16 md:py-24`, card padding `p-5 md:p-6`, grid gaps `gap-6`; micro-spacing `space-y-2` for ingredient/instruction lists.
+Mobile-first: section gaps `py-12 md:py-20`, card padding `p-4 md:p-6`, grid gaps `gap-4 md:gap-6`; micro-spacing `space-y-2` for ingredient/instruction lists.
 
 ## Component Patterns
 
-- Buttons: rounded-md, `bg-primary text-primary-foreground`, hover lifts shadow; sage accent for secondary actions
-- Cards: `rounded-xl bg-card shadow-card border`, image area dominates (16:10 category, square item)
-- Badges: `rounded-full bg-secondary text-secondary-foreground` for category tags; terracotta for "Training" pill
-- Recipe card: small square photo left, ingredients + numbered instructions right, prominent "Start Training" CTA
+- Buttons: `rounded-md`, `bg-primary text-primary-foreground`, Oswald uppercase labels; hover deepens via gradient; gold outline button for secondary actions
+- Cards: `rounded-lg bg-card shadow-card border`, image area dominates (4:3 position), red `bg-primary` footer bar with Oswald name + Barlow category count
+- Badges: `rounded-full bg-secondary text-secondary-foreground` for category tags; `bg-primary` for "Training" pill; `bg-accent text-accent-foreground` for gold accents
+- Position card: 4:3 cover photo or initial-letter placeholder, red footer bar, "START TRAINING" CTA
 
 ## Motion
 
 - Entrance: cards `animate-fade-in` staggered; modal/recipe view `animate-scale-in`
 - Hover: card lifts (`shadow-elevated`) + image subtle scale over `transition-smooth`
-- Decorative: none — food photography carries the visual weight
+- Decorative: none — no animated route transitions, no sound effects (per doNotBuild)
 
 ## Constraints
 
 - All colors via OKLCH CSS custom properties; admin theme-customization overrides `--primary`, `--accent`, `--font-display`, `--font-body` at runtime on `:root`
 - No raw hex or named colors in components; tokens only
-- Both light and dark themes fully supported and contrast-tuned
-- Food photos are the focal element — never cover them with heavy overlays
+- Dark-first: `:root` and `.dark` carry the SAME roadhouse palette
+- Fonts: Anton + Oswald + Barlow only — explicitly NOT Inter, Roboto, Arial, or generic system fonts
+- Mobile-first: staff use phones; optimize for one-column layouts and thumb reach
+- Visual/branding pass only — no data-model, role, quiz, or logic changes
 
 ## Signature Detail
 
-Terracotta-tinted photo overlays on category cards that fade from transparent to a warm gradient bar holding the serif category name — a magazine-cover treatment that makes every category tile read like a cookbook cover.
+The pure-black top bar holding the tall all-caps Anton "BUBBA'S 33" wordmark with a gold accent dot — a neon-sign treatment that makes every screen read as the roadhouse door, paired with a circular B33 splash emblem in the hero.

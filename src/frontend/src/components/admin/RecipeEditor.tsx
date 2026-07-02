@@ -114,13 +114,13 @@ export function RecipeEditor({
     <div className="flex flex-col gap-8" data-ocid="recipe.editor">
       {/* Ingredients */}
       <section
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-3 border-t-2 border-t-primary/40 pt-4"
         data-ocid="recipe.ingredients.section"
       >
         <header className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <UtensilsCrossed className="size-4 text-primary" />
-            <h3 className="font-display text-base font-semibold">
+            <h3 className="font-heading text-base font-semibold uppercase tracking-wide">
               Ingredients
             </h3>
             <span className="text-xs text-muted-foreground">
@@ -207,12 +207,12 @@ export function RecipeEditor({
 
       {/* Instructions */}
       <section
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-3 border-t-2 border-t-primary/40 pt-4"
         data-ocid="recipe.instructions.section"
       >
         <header className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-display text-base font-semibold">
+            <h3 className="font-heading text-base font-semibold uppercase tracking-wide">
               Instructions
             </h3>
             <span className="text-xs text-muted-foreground">

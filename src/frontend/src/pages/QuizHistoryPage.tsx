@@ -148,10 +148,10 @@ export function QuizHistoryPage() {
         </nav>
 
         <div className="space-y-2">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
             <History className="size-3" /> Attempt history
           </span>
-          <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 className="font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl">
             {quizLoading ? (
               <Skeleton
                 className="h-10 w-56"
@@ -197,11 +197,11 @@ export function QuizHistoryPage() {
             className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
             data-ocid="quiz_history.error_state"
           >
-            <div className="flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <div className="flex size-14 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive">
               <ClipboardList className="size-7" />
             </div>
             <div className="space-y-2">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
+              <h2 className="font-heading text-2xl font-semibold uppercase tracking-wide">
                 Quiz not found
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -233,28 +233,31 @@ export function QuizHistoryPage() {
         ) : (
           <section className="space-y-6" data-ocid="quiz_history.section">
             {/* Summary card — best score + pass status */}
-            <Card className="bg-muted/30" data-ocid="quiz_history.summary">
+            <Card
+              className="border-border bg-muted/30"
+              data-ocid="quiz_history.summary"
+            >
               <CardContent className="flex flex-wrap items-center justify-between gap-4 py-5">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Best score
                   </p>
-                  <p className="font-display text-2xl font-semibold tracking-tight">
+                  <p className="font-heading text-2xl font-bold uppercase tracking-wide">
                     {bestPercentage}%
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Passing threshold
                   </p>
-                  <p className="flex items-center gap-1.5 font-display text-2xl font-semibold tracking-tight">
+                  <p className="flex items-center gap-1.5 font-heading text-2xl font-bold uppercase tracking-wide">
                     <Target className="size-4 text-accent" />
                     {quizView?.passingPercentage ?? 0}%
                   </p>
                 </div>
                 <Badge
                   variant={hasPassed ? "default" : "secondary"}
-                  className="gap-1 px-3 py-1 text-sm"
+                  className="gap-1 px-3 py-1 text-sm font-semibold uppercase tracking-wider"
                   data-ocid="quiz_history.summary.status"
                 >
                   {hasPassed ? (
@@ -274,7 +277,7 @@ export function QuizHistoryPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2.5">
                 <History className="size-5 text-primary" />
-                <h2 className="font-display text-xl font-semibold tracking-tight">
+                <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
                   Your attempts
                 </h2>
                 <span className="text-sm text-muted-foreground">
@@ -302,13 +305,13 @@ export function QuizHistoryPage() {
                         {/* Left — attempt number + timestamp */}
                         <div className="flex items-center gap-3 min-w-0">
                           <span
-                            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary"
+                            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary/10 font-heading text-sm font-bold text-primary"
                             data-ocid={`quiz_history.attempt.number.${index + 1}`}
                           >
                             {attemptCount - index}
                           </span>
                           <div className="min-w-0 space-y-0.5">
-                            <p className="font-medium leading-tight">
+                            <p className="font-semibold leading-tight">
                               Attempt {attemptCount - index}
                             </p>
                             <p
@@ -326,7 +329,7 @@ export function QuizHistoryPage() {
                             className="text-right"
                             data-ocid={`quiz_history.attempt.score.${index + 1}`}
                           >
-                            <p className="font-display text-lg font-semibold leading-tight tracking-tight">
+                            <p className="font-heading text-lg font-bold uppercase leading-tight tracking-wide">
                               {attempt.score}/{attempt.total}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -335,7 +338,7 @@ export function QuizHistoryPage() {
                           </div>
                           <Badge
                             variant={attempt.passed ? "default" : "destructive"}
-                            className="gap-1"
+                            className="gap-1 font-semibold uppercase tracking-wider"
                             data-ocid={`quiz_history.attempt.status.${index + 1}`}
                           >
                             {attempt.passed ? (

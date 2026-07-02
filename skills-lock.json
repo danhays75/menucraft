@@ -95,6 +95,16 @@
       "source": "caffeinelabs/skills",
       "sourceType": "github",
       "computedHash": "3fc3f0077fc47897203d7f6b85ff5a742f337e40c29504c85a60d8ace12e7522"
+    },
+    "connector-googlemail": {
+      "source": "caffeinelabs/skills",
+      "sourceType": "github",
+      "computedHash": "875f9c192dacae900b6a97d094240c0501b1127104e5cf52a1df2c375c82fbcf"
+    },
+    "extension-querying-oql": {
+      "source": "caffeinelabs/skills",
+      "sourceType": "github",
+      "computedHash": "42b124e5d0fd199025b981f9e210d82e1ebadda0e5438ab0ac94f008c81b61d1"
     }
   }
 }

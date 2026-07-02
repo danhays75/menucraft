@@ -1,6 +1,7 @@
 // In-session progress indicator for the training flow. Shows "Step X of Y"
-// alongside a progress bar that fills as the user advances. Stateless — driven
-// entirely by the current/total props from TrainingPage.
+// alongside a progress bar that fills as the user advances. Dark roadhouse
+// styling: red step number, gold percent readout. Stateless — driven entirely
+// by the current/total props from TrainingPage.
 
 import { Progress } from "@/components/ui/progress";
 
@@ -25,7 +26,7 @@ export function TrainingProgress({
         <span className="text-sm font-medium text-foreground">
           Step{" "}
           <span
-            className="font-display text-lg text-primary"
+            className="font-heading text-lg font-bold uppercase tracking-wide text-primary"
             data-ocid="training.progress.current"
           >
             {clamped}
@@ -39,7 +40,7 @@ export function TrainingProgress({
           </span>
         </span>
         <span
-          className="text-xs font-medium tabular-nums text-muted-foreground"
+          className="text-xs font-semibold tabular-nums uppercase tracking-wider text-accent"
           data-ocid="training.progress.percent"
         >
           {percent}%

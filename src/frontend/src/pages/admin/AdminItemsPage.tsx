@@ -119,11 +119,11 @@ export function AdminItemsPage() {
       data-ocid="admin.items.page"
     >
       {/* Page header */}
-      <header className="flex flex-wrap items-end justify-between gap-3">
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <Package className="size-5 text-primary" />
-            <h1 className="font-display text-2xl font-semibold tracking-tight">
+            <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
               Menu items
             </h1>
           </div>

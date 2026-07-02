@@ -85,10 +85,10 @@ export function PositionQuizzesPage() {
         </nav>
 
         <div className="space-y-2">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
             <ClipboardList className="size-3" /> Quizzes
           </span>
-          <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+          <h1 className="font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl">
             {positionLoading ? (
               <Skeleton
                 className="h-10 w-56"
@@ -129,11 +129,11 @@ export function PositionQuizzesPage() {
             className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
             data-ocid="position_quizzes.error_state"
           >
-            <div className="flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <div className="flex size-14 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive">
               <ClipboardList className="size-7" />
             </div>
             <div className="space-y-2">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
+              <h2 className="font-heading text-2xl font-semibold uppercase tracking-wide">
                 Position not found
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -162,7 +162,7 @@ export function PositionQuizzesPage() {
           <section className="space-y-5" data-ocid="position_quizzes.section">
             <div className="flex items-center gap-2.5">
               <ClipboardList className="size-5 text-primary" />
-              <h2 className="font-display text-xl font-semibold tracking-tight">
+              <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
                 Available quizzes
               </h2>
               <span className="text-sm text-muted-foreground">

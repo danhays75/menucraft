@@ -114,42 +114,6 @@ reactJsxRuntime_production.jsxs = jsxProd;
   jsxRuntime.exports = reactJsxRuntime_production;
 }
 var jsxRuntimeExports = jsxRuntime.exports;
-let ExternalBlob$2 = class ExternalBlob {
-  constructor(directURL, blob) {
-    __publicField(this, "_blob");
-    __publicField(this, "directURL");
-    __publicField(this, "onProgress");
-    if (blob) {
-      this._blob = blob;
-    }
-    this.directURL = directURL;
-  }
-  static fromURL(url) {
-    return new ExternalBlob(url, null);
-  }
-  static fromBytes(blob) {
-    const url = URL.createObjectURL(new Blob([new Uint8Array(blob)], {
-      type: "application/octet-stream"
-    }));
-    return new ExternalBlob(url, blob);
-  }
-  async getBytes() {
-    if (this._blob) {
-      return this._blob;
-    }
-    const response = await fetch(this.directURL);
-    const blob = await response.blob();
-    this._blob = new Uint8Array(await blob.arrayBuffer());
-    return this._blob;
-  }
-  getDirectURL() {
-    return this.directURL;
-  }
-  withUploadProgress(onProgress) {
-    this.onProgress = onProgress;
-    return this;
-  }
-};
 var ReplicaRejectCode;
 (function(ReplicaRejectCode2) {
   ReplicaRejectCode2[ReplicaRejectCode2["SysFatal"] = 1] = "SysFatal";
@@ -11297,6 +11261,2328 @@ function _createActorMethod(actor, methodName, func, blsVerify2) {
   handler.withOptions = (options) => (...args) => caller(options, ...args);
   return handler;
 }
+const _ImmutableObjectStorageCreateCertificateResult = Record({
+  "method": Text,
+  "blob_hash": Text
+});
+const _ImmutableObjectStorageRefillInformation = Record({
+  "proposed_top_up_amount": Opt(Nat)
+});
+const _ImmutableObjectStorageRefillResult = Record({
+  "success": Opt(Bool),
+  "topped_up_amount": Opt(Nat)
+});
+const Error$1 = Variant({
+  "FrontendOriginsNotConfigured": Null,
+  "MixedSsoSources": Record({
+    "otherKeys": Vec(Text),
+    "ssoKeys": Vec(Text)
+  }),
+  "Stale": Record({ "ageNs": Nat }),
+  "MalformedCandid": Null,
+  "AmbiguousAttribute": Record({
+    "field": Text,
+    "sources": Vec(Text)
+  }),
+  "NoAttributes": Null,
+  "UnknownNonce": Null,
+  "UntrustedSsoSource": Record({ "domain": Text }),
+  "MissingField": Text,
+  "FrontendOriginMismatch": Record({
+    "got": Text,
+    "expected": Vec(Text)
+  })
+});
+const Result = Variant({ "ok": Null, "err": Error$1 });
+const UserRole$1 = Variant({
+  "admin": Null,
+  "user": Null,
+  "guest": Null
+});
+const Principal2 = Principal$1;
+const Timestamp = Nat;
+const UserProfilePublic = Record({
+  "principal": Principal2,
+  "displayName": Text,
+  "createdAt": Timestamp,
+  "role": UserRole$1
+});
+const PositionId = Nat;
+const ExternalBlob$1 = Vec(Nat8);
+const CategoryId = Nat;
+const SubCategoryId = Nat;
+const ItemId = Nat;
+const QuizId = Nat;
+const QuestionType$1 = Variant({
+  "multiple": Null,
+  "single": Null
+});
+const AnswerOptionInput = Record({
+  "text": Text,
+  "correct": Bool
+});
+const QuestionInput = Record({
+  "text": Text,
+  "questionType": QuestionType$1,
+  "options": Vec(AnswerOptionInput)
+});
+const QuestionId = Nat;
+const AnswerOption = Record({
+  "id": Nat,
+  "text": Text,
+  "correct": Bool
+});
+const QuestionPublic = Record({
+  "id": QuestionId,
+  "order": Nat,
+  "text": Text,
+  "questionType": QuestionType$1,
+  "quizId": QuizId,
+  "options": Vec(AnswerOption)
+});
+const QuizInput = Record({
+  "title": Text,
+  "description": Opt(Text),
+  "passingPercentage": Nat
+});
+const SubCategoryPublic = Record({
+  "id": SubCategoryId,
+  "sortOrder": Nat,
+  "name": Text,
+  "itemCount": Nat,
+  "parentCategoryId": CategoryId,
+  "coverPhoto": ExternalBlob$1
+});
+const TrainingStepInput = Record({
+  "video": Opt(ExternalBlob$1),
+  "text": Text,
+  "photo": Opt(ExternalBlob$1)
+});
+const TrainingStepPublic = Record({
+  "id": Nat,
+  "itemId": ItemId,
+  "order": Nat,
+  "video": Opt(ExternalBlob$1),
+  "text": Text,
+  "photo": Opt(ExternalBlob$1)
+});
+const TrainingStepEdit = Record({
+  "video": Opt(ExternalBlob$1),
+  "text": Text,
+  "photo": Opt(ExternalBlob$1)
+});
+const MenuItemPublic = Record({
+  "id": ItemId,
+  "categoryId": CategoryId,
+  "name": Text,
+  "description": Text,
+  "instructions": Vec(Text),
+  "subCategoryId": Opt(SubCategoryId),
+  "itemPhoto": ExternalBlob$1,
+  "ingredients": Vec(Text)
+});
+const PositionPublic = Record({
+  "id": PositionId,
+  "sortOrder": Nat,
+  "name": Text,
+  "createdAt": Timestamp,
+  "description": Opt(Text),
+  "coverPhoto": Opt(ExternalBlob$1),
+  "updatedAt": Timestamp,
+  "categoryCount": Nat
+});
+const QuizPublic = Record({
+  "id": QuizId,
+  "title": Text,
+  "createdAt": Timestamp,
+  "description": Opt(Text),
+  "positionId": PositionId,
+  "updatedAt": Timestamp,
+  "passingPercentage": Nat,
+  "questionCount": Nat
+});
+const FontChoice$1 = Variant({
+  "sansSerif": Null,
+  "monospace": Null,
+  "serif": Null,
+  "systemFont": Null
+});
+const ThemePublic = Record({
+  "font": FontChoice$1,
+  "primaryColor": Text,
+  "logo": Opt(ExternalBlob$1),
+  "accentColor": Text,
+  "updatedAt": Timestamp
+});
+const CategoryPublic = Record({
+  "id": CategoryId,
+  "sortOrder": Nat,
+  "name": Text,
+  "itemCount": Nat,
+  "positionId": PositionId,
+  "coverPhoto": ExternalBlob$1
+});
+const AttemptId = Nat;
+const AttemptAnswer = Record({
+  "questionId": QuestionId,
+  "selectedOptionIds": Vec(Nat)
+});
+const AttemptPublic = Record({
+  "id": AttemptId,
+  "maxScore": Nat,
+  "answers": Vec(AttemptAnswer),
+  "createdAt": Timestamp,
+  "score": Nat,
+  "quizId": QuizId,
+  "passed": Bool
+});
+const AttemptInput = Record({
+  "answers": Vec(AttemptAnswer),
+  "quizId": QuizId
+});
+const QuestionEdit = Record({
+  "text": Text,
+  "questionType": QuestionType$1,
+  "options": Vec(AnswerOptionInput)
+});
+const QuizEdit = Record({
+  "title": Text,
+  "description": Opt(Text),
+  "passingPercentage": Nat
+});
+Service({
+  "__accessControlState": Func([], [Reserved], ["query"]),
+  "__categories": Func([], [Reserved], ["query"]),
+  "__items": Func([], [Reserved], ["query"]),
+  "__positions": Func([], [Reserved], ["query"]),
+  "__quizAttempts": Func([], [Reserved], ["query"]),
+  "__quizQuestions": Func([], [Reserved], ["query"]),
+  "__quizState": Func([], [Reserved], ["query"]),
+  "__quizzes": Func([], [Reserved], ["query"]),
+  "__state": Func([], [Reserved], ["query"]),
+  "__steps": Func([], [Reserved], ["query"]),
+  "__subCategories": Func([], [Reserved], ["query"]),
+  "__theme": Func([], [Reserved], ["query"]),
+  "__trainingState": Func([], [Reserved], ["query"]),
+  "__users": Func([], [Reserved], ["query"]),
+  "_immutableObjectStorageBlobsAreLive": Func(
+    [Vec(Vec(Nat8))],
+    [Vec(Bool)],
+    ["query"]
+  ),
+  "_immutableObjectStorageBlobsToDelete": Func(
+    [],
+    [Vec(Vec(Nat8))],
+    ["query"]
+  ),
+  "_immutableObjectStorageConfirmBlobDeletion": Func(
+    [Vec(Vec(Nat8))],
+    [],
+    []
+  ),
+  "_immutableObjectStorageCreateCertificate": Func(
+    [Text],
+    [_ImmutableObjectStorageCreateCertificateResult],
+    []
+  ),
+  "_immutableObjectStorageRefillCashier": Func(
+    [Opt(_ImmutableObjectStorageRefillInformation)],
+    [_ImmutableObjectStorageRefillResult],
+    []
+  ),
+  "_immutableObjectStorageUpdateGatewayPrincipals": Func([], [], []),
+  "_initialize_access_control": Func([], [], []),
+  "_internet_identity_sign_in_finish": Func([], [Result], []),
+  "_internet_identity_sign_in_start": Func([], [Vec(Nat8)], []),
+  "assignCallerUserRole": Func([Principal$1, UserRole$1], [], []),
+  "assignRole": Func([Principal2, UserRole$1], [UserProfilePublic], []),
+  "createCategory": Func(
+    [PositionId, Text, ExternalBlob$1],
+    [CategoryId],
+    []
+  ),
+  "createMenuItem": Func(
+    [CategoryId, Opt(SubCategoryId), Text, Text, ExternalBlob$1],
+    [ItemId],
+    []
+  ),
+  "createPosition": Func(
+    [Text, Opt(Text), Opt(ExternalBlob$1)],
+    [PositionId],
+    []
+  ),
+  "createQuestion": Func([QuizId, QuestionInput], [QuestionPublic], []),
+  "createQuiz": Func([PositionId, QuizInput], [QuizId], []),
+  "createSubCategory": Func(
+    [CategoryId, Text, ExternalBlob$1],
+    [SubCategoryPublic],
+    []
+  ),
+  "createTrainingStep": Func(
+    [ItemId, TrainingStepInput],
+    [TrainingStepPublic],
+    []
+  ),
+  "deleteCategory": Func([CategoryId], [Nat], []),
+  "deleteMenuItem": Func([ItemId], [], []),
+  "deletePosition": Func([PositionId], [Nat], []),
+  "deleteQuestion": Func([QuestionId], [Bool], []),
+  "deleteQuiz": Func([QuizId], [Bool], []),
+  "deleteSubCategory": Func(
+    [SubCategoryId],
+    [Record({ "itemCount": Nat })],
+    []
+  ),
+  "deleteTrainingStep": Func([Nat], [Bool], []),
+  "editTrainingStep": Func(
+    [Nat, TrainingStepEdit],
+    [TrainingStepPublic],
+    []
+  ),
+  "getCallerUserProfile": Func(
+    [],
+    [Opt(UserProfilePublic)],
+    ["query"]
+  ),
+  "getCallerUserRole": Func([], [UserRole$1], ["query"]),
+  "getMenuItem": Func([ItemId], [Opt(MenuItemPublic)], ["query"]),
+  "getPosition": Func([PositionId], [Opt(PositionPublic)], ["query"]),
+  "getQuizWithQuestions": Func(
+    [QuizId],
+    [
+      Opt(
+        Record({
+          "quiz": QuizPublic,
+          "questions": Vec(QuestionPublic)
+        })
+      )
+    ],
+    ["query"]
+  ),
+  "getTheme": Func([], [ThemePublic], ["query"]),
+  "getTrainingStep": Func(
+    [Nat],
+    [Opt(TrainingStepPublic)],
+    ["query"]
+  ),
+  "isCallerAdmin": Func([], [Bool], ["query"]),
+  "listCategories": Func([], [Vec(CategoryPublic)], ["query"]),
+  "listItemsByCategory": Func(
+    [CategoryId],
+    [Vec(MenuItemPublic)],
+    ["query"]
+  ),
+  "listItemsBySubCategory": Func(
+    [SubCategoryId],
+    [Vec(MenuItemPublic)],
+    ["query"]
+  ),
+  "listMyQuizAttempts": Func(
+    [QuizId],
+    [Vec(AttemptPublic)],
+    ["query"]
+  ),
+  "listPositions": Func([], [Vec(PositionPublic)], ["query"]),
+  "listQuizzesByPosition": Func(
+    [PositionId],
+    [Vec(QuizPublic)],
+    ["query"]
+  ),
+  "listSubCategories": Func(
+    [CategoryId],
+    [Vec(SubCategoryPublic)],
+    ["query"]
+  ),
+  "listTrainingSteps": Func(
+    [ItemId],
+    [Vec(TrainingStepPublic)],
+    ["query"]
+  ),
+  "listUsers": Func([], [Vec(UserProfilePublic)], ["query"]),
+  "moveQuestion": Func([QuestionId, Nat], [Bool], []),
+  "moveTrainingStep": Func([Nat, Nat], [Bool], []),
+  "resetTheme": Func([], [ThemePublic], []),
+  "revokeRole": Func([Principal2], [UserProfilePublic], []),
+  "saveCallerUserProfile": Func([Text], [UserProfilePublic], []),
+  "searchItems": Func([Text], [Vec(MenuItemPublic)], ["query"]),
+  "searchItemsInCategory": Func(
+    [CategoryId, Text],
+    [Vec(MenuItemPublic)],
+    ["query"]
+  ),
+  "setCategorySortOrder": Func([CategoryId, Nat], [], []),
+  "setPositionSortOrder": Func([PositionId, Nat], [], []),
+  "setSubCategorySortOrder": Func([SubCategoryId, Nat], [], []),
+  "submitQuizAttempt": Func([AttemptInput], [AttemptPublic], []),
+  "updateCategory": Func(
+    [CategoryId, PositionId, Text, ExternalBlob$1],
+    [],
+    []
+  ),
+  "updateLogo": Func([Opt(ExternalBlob$1)], [ThemePublic], []),
+  "updateMenuItem": Func(
+    [
+      ItemId,
+      CategoryId,
+      Opt(SubCategoryId),
+      Text,
+      Text,
+      ExternalBlob$1
+    ],
+    [],
+    []
+  ),
+  "updateMenuItemRecipe": Func(
+    [ItemId, Vec(Text), Vec(Text)],
+    [],
+    []
+  ),
+  "updatePosition": Func(
+    [PositionId, Text, Opt(Text), Opt(ExternalBlob$1)],
+    [],
+    []
+  ),
+  "updateQuestion": Func([QuestionId, QuestionEdit], [QuestionPublic], []),
+  "updateQuiz": Func([QuizId, QuizEdit], [], []),
+  "updateSubCategory": Func(
+    [SubCategoryId, Text, ExternalBlob$1],
+    [SubCategoryPublic],
+    []
+  ),
+  "updateTheme": Func(
+    [Opt(Text), Opt(Text), Opt(FontChoice$1)],
+    [ThemePublic],
+    []
+  )
+});
+const idlFactory = ({ IDL: IDL2 }) => {
+  const _ImmutableObjectStorageCreateCertificateResult2 = IDL2.Record({
+    "method": IDL2.Text,
+    "blob_hash": IDL2.Text
+  });
+  const _ImmutableObjectStorageRefillInformation2 = IDL2.Record({
+    "proposed_top_up_amount": IDL2.Opt(IDL2.Nat)
+  });
+  const _ImmutableObjectStorageRefillResult2 = IDL2.Record({
+    "success": IDL2.Opt(IDL2.Bool),
+    "topped_up_amount": IDL2.Opt(IDL2.Nat)
+  });
+  const Error2 = IDL2.Variant({
+    "FrontendOriginsNotConfigured": IDL2.Null,
+    "MixedSsoSources": IDL2.Record({
+      "otherKeys": IDL2.Vec(IDL2.Text),
+      "ssoKeys": IDL2.Vec(IDL2.Text)
+    }),
+    "Stale": IDL2.Record({ "ageNs": IDL2.Nat }),
+    "MalformedCandid": IDL2.Null,
+    "AmbiguousAttribute": IDL2.Record({
+      "field": IDL2.Text,
+      "sources": IDL2.Vec(IDL2.Text)
+    }),
+    "NoAttributes": IDL2.Null,
+    "UnknownNonce": IDL2.Null,
+    "UntrustedSsoSource": IDL2.Record({ "domain": IDL2.Text }),
+    "MissingField": IDL2.Text,
+    "FrontendOriginMismatch": IDL2.Record({
+      "got": IDL2.Text,
+      "expected": IDL2.Vec(IDL2.Text)
+    })
+  });
+  const Result2 = IDL2.Variant({ "ok": IDL2.Null, "err": Error2 });
+  const UserRole2 = IDL2.Variant({
+    "admin": IDL2.Null,
+    "user": IDL2.Null,
+    "guest": IDL2.Null
+  });
+  const Principal3 = IDL2.Principal;
+  const Timestamp2 = IDL2.Nat;
+  const UserProfilePublic2 = IDL2.Record({
+    "principal": Principal3,
+    "displayName": IDL2.Text,
+    "createdAt": Timestamp2,
+    "role": UserRole2
+  });
+  const PositionId2 = IDL2.Nat;
+  const ExternalBlob2 = IDL2.Vec(IDL2.Nat8);
+  const CategoryId2 = IDL2.Nat;
+  const SubCategoryId2 = IDL2.Nat;
+  const ItemId2 = IDL2.Nat;
+  const QuizId2 = IDL2.Nat;
+  const QuestionType2 = IDL2.Variant({
+    "multiple": IDL2.Null,
+    "single": IDL2.Null
+  });
+  const AnswerOptionInput2 = IDL2.Record({
+    "text": IDL2.Text,
+    "correct": IDL2.Bool
+  });
+  const QuestionInput2 = IDL2.Record({
+    "text": IDL2.Text,
+    "questionType": QuestionType2,
+    "options": IDL2.Vec(AnswerOptionInput2)
+  });
+  const QuestionId2 = IDL2.Nat;
+  const AnswerOption2 = IDL2.Record({
+    "id": IDL2.Nat,
+    "text": IDL2.Text,
+    "correct": IDL2.Bool
+  });
+  const QuestionPublic2 = IDL2.Record({
+    "id": QuestionId2,
+    "order": IDL2.Nat,
+    "text": IDL2.Text,
+    "questionType": QuestionType2,
+    "quizId": QuizId2,
+    "options": IDL2.Vec(AnswerOption2)
+  });
+  const QuizInput2 = IDL2.Record({
+    "title": IDL2.Text,
+    "description": IDL2.Opt(IDL2.Text),
+    "passingPercentage": IDL2.Nat
+  });
+  const SubCategoryPublic2 = IDL2.Record({
+    "id": SubCategoryId2,
+    "sortOrder": IDL2.Nat,
+    "name": IDL2.Text,
+    "itemCount": IDL2.Nat,
+    "parentCategoryId": CategoryId2,
+    "coverPhoto": ExternalBlob2
+  });
+  const TrainingStepInput2 = IDL2.Record({
+    "video": IDL2.Opt(ExternalBlob2),
+    "text": IDL2.Text,
+    "photo": IDL2.Opt(ExternalBlob2)
+  });
+  const TrainingStepPublic2 = IDL2.Record({
+    "id": IDL2.Nat,
+    "itemId": ItemId2,
+    "order": IDL2.Nat,
+    "video": IDL2.Opt(ExternalBlob2),
+    "text": IDL2.Text,
+    "photo": IDL2.Opt(ExternalBlob2)
+  });
+  const TrainingStepEdit2 = IDL2.Record({
+    "video": IDL2.Opt(ExternalBlob2),
+    "text": IDL2.Text,
+    "photo": IDL2.Opt(ExternalBlob2)
+  });
+  const MenuItemPublic2 = IDL2.Record({
+    "id": ItemId2,
+    "categoryId": CategoryId2,
+    "name": IDL2.Text,
+    "description": IDL2.Text,
+    "instructions": IDL2.Vec(IDL2.Text),
+    "subCategoryId": IDL2.Opt(SubCategoryId2),
+    "itemPhoto": ExternalBlob2,
+    "ingredients": IDL2.Vec(IDL2.Text)
+  });
+  const PositionPublic2 = IDL2.Record({
+    "id": PositionId2,
+    "sortOrder": IDL2.Nat,
+    "name": IDL2.Text,
+    "createdAt": Timestamp2,
+    "description": IDL2.Opt(IDL2.Text),
+    "coverPhoto": IDL2.Opt(ExternalBlob2),
+    "updatedAt": Timestamp2,
+    "categoryCount": IDL2.Nat
+  });
+  const QuizPublic2 = IDL2.Record({
+    "id": QuizId2,
+    "title": IDL2.Text,
+    "createdAt": Timestamp2,
+    "description": IDL2.Opt(IDL2.Text),
+    "positionId": PositionId2,
+    "updatedAt": Timestamp2,
+    "passingPercentage": IDL2.Nat,
+    "questionCount": IDL2.Nat
+  });
+  const FontChoice2 = IDL2.Variant({
+    "sansSerif": IDL2.Null,
+    "monospace": IDL2.Null,
+    "serif": IDL2.Null,
+    "systemFont": IDL2.Null
+  });
+  const ThemePublic2 = IDL2.Record({
+    "font": FontChoice2,
+    "primaryColor": IDL2.Text,
+    "logo": IDL2.Opt(ExternalBlob2),
+    "accentColor": IDL2.Text,
+    "updatedAt": Timestamp2
+  });
+  const CategoryPublic2 = IDL2.Record({
+    "id": CategoryId2,
+    "sortOrder": IDL2.Nat,
+    "name": IDL2.Text,
+    "itemCount": IDL2.Nat,
+    "positionId": PositionId2,
+    "coverPhoto": ExternalBlob2
+  });
+  const AttemptId2 = IDL2.Nat;
+  const AttemptAnswer2 = IDL2.Record({
+    "questionId": QuestionId2,
+    "selectedOptionIds": IDL2.Vec(IDL2.Nat)
+  });
+  const AttemptPublic2 = IDL2.Record({
+    "id": AttemptId2,
+    "maxScore": IDL2.Nat,
+    "answers": IDL2.Vec(AttemptAnswer2),
+    "createdAt": Timestamp2,
+    "score": IDL2.Nat,
+    "quizId": QuizId2,
+    "passed": IDL2.Bool
+  });
+  const AttemptInput2 = IDL2.Record({
+    "answers": IDL2.Vec(AttemptAnswer2),
+    "quizId": QuizId2
+  });
+  const QuestionEdit2 = IDL2.Record({
+    "text": IDL2.Text,
+    "questionType": QuestionType2,
+    "options": IDL2.Vec(AnswerOptionInput2)
+  });
+  const QuizEdit2 = IDL2.Record({
+    "title": IDL2.Text,
+    "description": IDL2.Opt(IDL2.Text),
+    "passingPercentage": IDL2.Nat
+  });
+  return IDL2.Service({
+    "__accessControlState": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__categories": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__items": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__positions": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizAttempts": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizQuestions": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizState": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizzes": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__state": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__steps": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__subCategories": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__theme": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__trainingState": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__users": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "_immutableObjectStorageBlobsAreLive": IDL2.Func(
+      [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
+      [IDL2.Vec(IDL2.Bool)],
+      ["query"]
+    ),
+    "_immutableObjectStorageBlobsToDelete": IDL2.Func(
+      [],
+      [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
+      ["query"]
+    ),
+    "_immutableObjectStorageConfirmBlobDeletion": IDL2.Func(
+      [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
+      [],
+      []
+    ),
+    "_immutableObjectStorageCreateCertificate": IDL2.Func(
+      [IDL2.Text],
+      [_ImmutableObjectStorageCreateCertificateResult2],
+      []
+    ),
+    "_immutableObjectStorageRefillCashier": IDL2.Func(
+      [IDL2.Opt(_ImmutableObjectStorageRefillInformation2)],
+      [_ImmutableObjectStorageRefillResult2],
+      []
+    ),
+    "_immutableObjectStorageUpdateGatewayPrincipals": IDL2.Func([], [], []),
+    "_initialize_access_control": IDL2.Func([], [], []),
+    "_internet_identity_sign_in_finish": IDL2.Func([], [Result2], []),
+    "_internet_identity_sign_in_start": IDL2.Func([], [IDL2.Vec(IDL2.Nat8)], []),
+    "assignCallerUserRole": IDL2.Func([IDL2.Principal, UserRole2], [], []),
+    "assignRole": IDL2.Func([Principal3, UserRole2], [UserProfilePublic2], []),
+    "createCategory": IDL2.Func(
+      [PositionId2, IDL2.Text, ExternalBlob2],
+      [CategoryId2],
+      []
+    ),
+    "createMenuItem": IDL2.Func(
+      [CategoryId2, IDL2.Opt(SubCategoryId2), IDL2.Text, IDL2.Text, ExternalBlob2],
+      [ItemId2],
+      []
+    ),
+    "createPosition": IDL2.Func(
+      [IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(ExternalBlob2)],
+      [PositionId2],
+      []
+    ),
+    "createQuestion": IDL2.Func([QuizId2, QuestionInput2], [QuestionPublic2], []),
+    "createQuiz": IDL2.Func([PositionId2, QuizInput2], [QuizId2], []),
+    "createSubCategory": IDL2.Func(
+      [CategoryId2, IDL2.Text, ExternalBlob2],
+      [SubCategoryPublic2],
+      []
+    ),
+    "createTrainingStep": IDL2.Func(
+      [ItemId2, TrainingStepInput2],
+      [TrainingStepPublic2],
+      []
+    ),
+    "deleteCategory": IDL2.Func([CategoryId2], [IDL2.Nat], []),
+    "deleteMenuItem": IDL2.Func([ItemId2], [], []),
+    "deletePosition": IDL2.Func([PositionId2], [IDL2.Nat], []),
+    "deleteQuestion": IDL2.Func([QuestionId2], [IDL2.Bool], []),
+    "deleteQuiz": IDL2.Func([QuizId2], [IDL2.Bool], []),
+    "deleteSubCategory": IDL2.Func(
+      [SubCategoryId2],
+      [IDL2.Record({ "itemCount": IDL2.Nat })],
+      []
+    ),
+    "deleteTrainingStep": IDL2.Func([IDL2.Nat], [IDL2.Bool], []),
+    "editTrainingStep": IDL2.Func(
+      [IDL2.Nat, TrainingStepEdit2],
+      [TrainingStepPublic2],
+      []
+    ),
+    "getCallerUserProfile": IDL2.Func(
+      [],
+      [IDL2.Opt(UserProfilePublic2)],
+      ["query"]
+    ),
+    "getCallerUserRole": IDL2.Func([], [UserRole2], ["query"]),
+    "getMenuItem": IDL2.Func([ItemId2], [IDL2.Opt(MenuItemPublic2)], ["query"]),
+    "getPosition": IDL2.Func(
+      [PositionId2],
+      [IDL2.Opt(PositionPublic2)],
+      ["query"]
+    ),
+    "getQuizWithQuestions": IDL2.Func(
+      [QuizId2],
+      [
+        IDL2.Opt(
+          IDL2.Record({
+            "quiz": QuizPublic2,
+            "questions": IDL2.Vec(QuestionPublic2)
+          })
+        )
+      ],
+      ["query"]
+    ),
+    "getTheme": IDL2.Func([], [ThemePublic2], ["query"]),
+    "getTrainingStep": IDL2.Func(
+      [IDL2.Nat],
+      [IDL2.Opt(TrainingStepPublic2)],
+      ["query"]
+    ),
+    "isCallerAdmin": IDL2.Func([], [IDL2.Bool], ["query"]),
+    "listCategories": IDL2.Func([], [IDL2.Vec(CategoryPublic2)], ["query"]),
+    "listItemsByCategory": IDL2.Func(
+      [CategoryId2],
+      [IDL2.Vec(MenuItemPublic2)],
+      ["query"]
+    ),
+    "listItemsBySubCategory": IDL2.Func(
+      [SubCategoryId2],
+      [IDL2.Vec(MenuItemPublic2)],
+      ["query"]
+    ),
+    "listMyQuizAttempts": IDL2.Func(
+      [QuizId2],
+      [IDL2.Vec(AttemptPublic2)],
+      ["query"]
+    ),
+    "listPositions": IDL2.Func([], [IDL2.Vec(PositionPublic2)], ["query"]),
+    "listQuizzesByPosition": IDL2.Func(
+      [PositionId2],
+      [IDL2.Vec(QuizPublic2)],
+      ["query"]
+    ),
+    "listSubCategories": IDL2.Func(
+      [CategoryId2],
+      [IDL2.Vec(SubCategoryPublic2)],
+      ["query"]
+    ),
+    "listTrainingSteps": IDL2.Func(
+      [ItemId2],
+      [IDL2.Vec(TrainingStepPublic2)],
+      ["query"]
+    ),
+    "listUsers": IDL2.Func([], [IDL2.Vec(UserProfilePublic2)], ["query"]),
+    "moveQuestion": IDL2.Func([QuestionId2, IDL2.Nat], [IDL2.Bool], []),
+    "moveTrainingStep": IDL2.Func([IDL2.Nat, IDL2.Nat], [IDL2.Bool], []),
+    "resetTheme": IDL2.Func([], [ThemePublic2], []),
+    "revokeRole": IDL2.Func([Principal3], [UserProfilePublic2], []),
+    "saveCallerUserProfile": IDL2.Func([IDL2.Text], [UserProfilePublic2], []),
+    "searchItems": IDL2.Func([IDL2.Text], [IDL2.Vec(MenuItemPublic2)], ["query"]),
+    "searchItemsInCategory": IDL2.Func(
+      [CategoryId2, IDL2.Text],
+      [IDL2.Vec(MenuItemPublic2)],
+      ["query"]
+    ),
+    "setCategorySortOrder": IDL2.Func([CategoryId2, IDL2.Nat], [], []),
+    "setPositionSortOrder": IDL2.Func([PositionId2, IDL2.Nat], [], []),
+    "setSubCategorySortOrder": IDL2.Func([SubCategoryId2, IDL2.Nat], [], []),
+    "submitQuizAttempt": IDL2.Func([AttemptInput2], [AttemptPublic2], []),
+    "updateCategory": IDL2.Func(
+      [CategoryId2, PositionId2, IDL2.Text, ExternalBlob2],
+      [],
+      []
+    ),
+    "updateLogo": IDL2.Func([IDL2.Opt(ExternalBlob2)], [ThemePublic2], []),
+    "updateMenuItem": IDL2.Func(
+      [
+        ItemId2,
+        CategoryId2,
+        IDL2.Opt(SubCategoryId2),
+        IDL2.Text,
+        IDL2.Text,
+        ExternalBlob2
+      ],
+      [],
+      []
+    ),
+    "updateMenuItemRecipe": IDL2.Func(
+      [ItemId2, IDL2.Vec(IDL2.Text), IDL2.Vec(IDL2.Text)],
+      [],
+      []
+    ),
+    "updatePosition": IDL2.Func(
+      [PositionId2, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(ExternalBlob2)],
+      [],
+      []
+    ),
+    "updateQuestion": IDL2.Func(
+      [QuestionId2, QuestionEdit2],
+      [QuestionPublic2],
+      []
+    ),
+    "updateQuiz": IDL2.Func([QuizId2, QuizEdit2], [], []),
+    "updateSubCategory": IDL2.Func(
+      [SubCategoryId2, IDL2.Text, ExternalBlob2],
+      [SubCategoryPublic2],
+      []
+    ),
+    "updateTheme": IDL2.Func(
+      [IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text), IDL2.Opt(FontChoice2)],
+      [ThemePublic2],
+      []
+    )
+  });
+};
+function candid_some(value) {
+  return [
+    value
+  ];
+}
+function candid_none() {
+  return [];
+}
+function record_opt_to_undefined(arg) {
+  return arg == null ? void 0 : arg;
+}
+var FontChoice = /* @__PURE__ */ ((FontChoice2) => {
+  FontChoice2["sansSerif"] = "sansSerif";
+  FontChoice2["monospace"] = "monospace";
+  FontChoice2["serif"] = "serif";
+  FontChoice2["systemFont"] = "systemFont";
+  return FontChoice2;
+})(FontChoice || {});
+var QuestionType = /* @__PURE__ */ ((QuestionType2) => {
+  QuestionType2["multiple"] = "multiple";
+  QuestionType2["single"] = "single";
+  return QuestionType2;
+})(QuestionType || {});
+var UserRole = /* @__PURE__ */ ((UserRole2) => {
+  UserRole2["admin"] = "admin";
+  UserRole2["user"] = "user";
+  UserRole2["guest"] = "guest";
+  return UserRole2;
+})(UserRole || {});
+class Backend {
+  constructor(actor, _uploadFile, _downloadFile, processError2) {
+    this.actor = actor;
+    this._uploadFile = _uploadFile;
+    this._downloadFile = _downloadFile;
+    this.processError = processError2;
+  }
+  async __accessControlState() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__accessControlState();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__accessControlState();
+      return result;
+    }
+  }
+  async __categories() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__categories();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__categories();
+      return result;
+    }
+  }
+  async __items() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__items();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__items();
+      return result;
+    }
+  }
+  async __positions() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__positions();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__positions();
+      return result;
+    }
+  }
+  async __quizAttempts() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizAttempts();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizAttempts();
+      return result;
+    }
+  }
+  async __quizQuestions() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizQuestions();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizQuestions();
+      return result;
+    }
+  }
+  async __quizState() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizState();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizState();
+      return result;
+    }
+  }
+  async __quizzes() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizzes();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizzes();
+      return result;
+    }
+  }
+  async __state() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__state();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__state();
+      return result;
+    }
+  }
+  async __steps() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__steps();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__steps();
+      return result;
+    }
+  }
+  async __subCategories() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__subCategories();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__subCategories();
+      return result;
+    }
+  }
+  async __theme() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__theme();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__theme();
+      return result;
+    }
+  }
+  async __trainingState() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__trainingState();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__trainingState();
+      return result;
+    }
+  }
+  async __users() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__users();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__users();
+      return result;
+    }
+  }
+  async _immutableObjectStorageBlobsAreLive(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor._immutableObjectStorageBlobsAreLive(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._immutableObjectStorageBlobsAreLive(arg0);
+      return result;
+    }
+  }
+  async _immutableObjectStorageBlobsToDelete() {
+    if (this.processError) {
+      try {
+        const result = await this.actor._immutableObjectStorageBlobsToDelete();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._immutableObjectStorageBlobsToDelete();
+      return result;
+    }
+  }
+  async _immutableObjectStorageConfirmBlobDeletion(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor._immutableObjectStorageConfirmBlobDeletion(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._immutableObjectStorageConfirmBlobDeletion(arg0);
+      return result;
+    }
+  }
+  async _immutableObjectStorageCreateCertificate(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor._immutableObjectStorageCreateCertificate(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._immutableObjectStorageCreateCertificate(arg0);
+      return result;
+    }
+  }
+  async _immutableObjectStorageRefillCashier(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0));
+        return from_candid__ImmutableObjectStorageRefillResult_n4(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0));
+      return from_candid__ImmutableObjectStorageRefillResult_n4(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async _immutableObjectStorageUpdateGatewayPrincipals() {
+    if (this.processError) {
+      try {
+        const result = await this.actor._immutableObjectStorageUpdateGatewayPrincipals();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._immutableObjectStorageUpdateGatewayPrincipals();
+      return result;
+    }
+  }
+  async _initialize_access_control() {
+    if (this.processError) {
+      try {
+        const result = await this.actor._initialize_access_control();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._initialize_access_control();
+      return result;
+    }
+  }
+  async _internet_identity_sign_in_finish() {
+    if (this.processError) {
+      try {
+        const result = await this.actor._internet_identity_sign_in_finish();
+        return from_candid_Result_n8(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._internet_identity_sign_in_finish();
+      return from_candid_Result_n8(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async _internet_identity_sign_in_start() {
+    if (this.processError) {
+      try {
+        const result = await this.actor._internet_identity_sign_in_start();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor._internet_identity_sign_in_start();
+      return result;
+    }
+  }
+  async assignCallerUserRole(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
+      return result;
+    }
+  }
+  async assignRole(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.assignRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.assignRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async createCategory(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+      return result;
+    }
+  }
+  async createMenuItem(arg0, arg1, arg2, arg3, arg4) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createMenuItem(arg0, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg1), arg2, arg3, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg4));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createMenuItem(arg0, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg1), arg2, arg3, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg4));
+      return result;
+    }
+  }
+  async createPosition(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createPosition(arg0, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg2));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createPosition(arg0, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg2));
+      return result;
+    }
+  }
+  async createQuestion(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createQuestion(arg0, to_candid_QuestionInput_n22(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createQuestion(arg0, to_candid_QuestionInput_n22(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async createQuiz(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createQuiz(arg0, to_candid_QuizInput_n30(this._uploadFile, this._downloadFile, arg1));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createQuiz(arg0, to_candid_QuizInput_n30(this._uploadFile, this._downloadFile, arg1));
+      return result;
+    }
+  }
+  async createSubCategory(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+        return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+      return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async createTrainingStep(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n35(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n35(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async deleteCategory(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteCategory(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteCategory(arg0);
+      return result;
+    }
+  }
+  async deleteMenuItem(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteMenuItem(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteMenuItem(arg0);
+      return result;
+    }
+  }
+  async deletePosition(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deletePosition(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deletePosition(arg0);
+      return result;
+    }
+  }
+  async deleteQuestion(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteQuestion(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteQuestion(arg0);
+      return result;
+    }
+  }
+  async deleteQuiz(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteQuiz(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteQuiz(arg0);
+      return result;
+    }
+  }
+  async deleteSubCategory(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteSubCategory(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteSubCategory(arg0);
+      return result;
+    }
+  }
+  async deleteTrainingStep(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteTrainingStep(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteTrainingStep(arg0);
+      return result;
+    }
+  }
+  async editTrainingStep(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n40(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n40(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getCallerUserProfile() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getCallerUserProfile();
+        return from_candid_opt_n41(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getCallerUserProfile();
+      return from_candid_opt_n41(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getCallerUserRole() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getCallerUserRole();
+        return from_candid_UserRole_n16(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getCallerUserRole();
+      return from_candid_UserRole_n16(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getMenuItem(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getMenuItem(arg0);
+        return from_candid_opt_n42(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getMenuItem(arg0);
+      return from_candid_opt_n42(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getPosition(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getPosition(arg0);
+        return from_candid_opt_n46(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getPosition(arg0);
+      return from_candid_opt_n46(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getQuizWithQuestions(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getQuizWithQuestions(arg0);
+        return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getQuizWithQuestions(arg0);
+      return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getTheme() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getTheme();
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getTheme();
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getTrainingStep(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getTrainingStep(arg0);
+        return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getTrainingStep(arg0);
+      return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async isCallerAdmin() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.isCallerAdmin();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.isCallerAdmin();
+      return result;
+    }
+  }
+  async listCategories() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listCategories();
+        return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listCategories();
+      return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listItemsByCategory(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listItemsByCategory(arg0);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listItemsByCategory(arg0);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listItemsBySubCategory(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listItemsBySubCategory(arg0);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listItemsBySubCategory(arg0);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listMyQuizAttempts(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listMyQuizAttempts(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listMyQuizAttempts(arg0);
+      return result;
+    }
+  }
+  async listPositions() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listPositions();
+        return from_candid_vec_n64(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listPositions();
+      return from_candid_vec_n64(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listQuizzesByPosition(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listQuizzesByPosition(arg0);
+        return from_candid_vec_n65(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listQuizzesByPosition(arg0);
+      return from_candid_vec_n65(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listSubCategories(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listSubCategories(arg0);
+        return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listSubCategories(arg0);
+      return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listTrainingSteps(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listTrainingSteps(arg0);
+        return from_candid_vec_n67(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listTrainingSteps(arg0);
+      return from_candid_vec_n67(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listUsers() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listUsers();
+        return from_candid_vec_n68(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listUsers();
+      return from_candid_vec_n68(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async moveQuestion(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.moveQuestion(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.moveQuestion(arg0, arg1);
+      return result;
+    }
+  }
+  async moveTrainingStep(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.moveTrainingStep(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.moveTrainingStep(arg0, arg1);
+      return result;
+    }
+  }
+  async resetTheme() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.resetTheme();
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.resetTheme();
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async revokeRole(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.revokeRole(arg0);
+        return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.revokeRole(arg0);
+      return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async saveCallerUserProfile(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.saveCallerUserProfile(arg0);
+        return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.saveCallerUserProfile(arg0);
+      return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async searchItems(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.searchItems(arg0);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.searchItems(arg0);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async searchItemsInCategory(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.searchItemsInCategory(arg0, arg1);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.searchItemsInCategory(arg0, arg1);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async setCategorySortOrder(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.setCategorySortOrder(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.setCategorySortOrder(arg0, arg1);
+      return result;
+    }
+  }
+  async setPositionSortOrder(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.setPositionSortOrder(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.setPositionSortOrder(arg0, arg1);
+      return result;
+    }
+  }
+  async setSubCategorySortOrder(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.setSubCategorySortOrder(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.setSubCategorySortOrder(arg0, arg1);
+      return result;
+    }
+  }
+  async submitQuizAttempt(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.submitQuizAttempt(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.submitQuizAttempt(arg0);
+      return result;
+    }
+  }
+  async updateCategory(arg0, arg1, arg2, arg3) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateCategory(arg0, arg1, arg2, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg3));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateCategory(arg0, arg1, arg2, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg3));
+      return result;
+    }
+  }
+  async updateLogo(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async updateMenuItem(arg0, arg1, arg2, arg3, arg4, arg5) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateMenuItem(arg0, arg1, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg2), arg3, arg4, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg5));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateMenuItem(arg0, arg1, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg2), arg3, arg4, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg5));
+      return result;
+    }
+  }
+  async updateMenuItemRecipe(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateMenuItemRecipe(arg0, arg1, arg2);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateMenuItemRecipe(arg0, arg1, arg2);
+      return result;
+    }
+  }
+  async updatePosition(arg0, arg1, arg2, arg3) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg2), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg2), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
+      return result;
+    }
+  }
+  async updateQuestion(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateQuestion(arg0, to_candid_QuestionEdit_n69(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateQuestion(arg0, to_candid_QuestionEdit_n69(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async updateQuiz(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateQuiz(arg0, to_candid_QuizEdit_n70(this._uploadFile, this._downloadFile, arg1));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateQuiz(arg0, to_candid_QuizEdit_n70(this._uploadFile, this._downloadFile, arg1));
+      return result;
+    }
+  }
+  async updateSubCategory(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+        return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
+      return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async updateTheme(arg0, arg1, arg2) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n71(this._uploadFile, this._downloadFile, arg2));
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n71(this._uploadFile, this._downloadFile, arg2));
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
+    }
+  }
+}
+async function from_candid_CategoryPublic_n61(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n62(_uploadFile, _downloadFile, value);
+}
+function from_candid_Error_n10(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n11(_uploadFile, _downloadFile, value);
+}
+async function from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value) {
+  return await _downloadFile(value);
+}
+function from_candid_FontChoice_n57(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n58(_uploadFile, _downloadFile, value);
+}
+async function from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n44(_uploadFile, _downloadFile, value);
+}
+async function from_candid_PositionPublic_n47(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n48(_uploadFile, _downloadFile, value);
+}
+function from_candid_QuestionPublic_n26(_uploadFile, _downloadFile, value) {
+  return from_candid_record_n27(_uploadFile, _downloadFile, value);
+}
+function from_candid_QuestionType_n28(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n29(_uploadFile, _downloadFile, value);
+}
+function from_candid_QuizPublic_n52(_uploadFile, _downloadFile, value) {
+  return from_candid_record_n53(_uploadFile, _downloadFile, value);
+}
+function from_candid_Result_n8(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n9(_uploadFile, _downloadFile, value);
+}
+async function from_candid_SubCategoryPublic_n32(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n33(_uploadFile, _downloadFile, value);
+}
+async function from_candid_ThemePublic_n55(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n56(_uploadFile, _downloadFile, value);
+}
+async function from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n38(_uploadFile, _downloadFile, value);
+}
+function from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value) {
+  return from_candid_record_n15(_uploadFile, _downloadFile, value);
+}
+function from_candid_UserRole_n16(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n17(_uploadFile, _downloadFile, value);
+}
+function from_candid__ImmutableObjectStorageRefillResult_n4(_uploadFile, _downloadFile, value) {
+  return from_candid_record_n5(_uploadFile, _downloadFile, value);
+}
+async function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n41(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value[0]);
+}
+async function from_candid_opt_n42(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n45(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : value[0];
+}
+async function from_candid_opt_n46(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_PositionPublic_n47(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n49(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n50(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : from_candid_record_n51(_uploadFile, _downloadFile, value[0]);
+}
+async function from_candid_opt_n59(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n6(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n7(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n15(_uploadFile, _downloadFile, value) {
+  return {
+    principal: value.principal,
+    displayName: value.displayName,
+    createdAt: value.createdAt,
+    role: from_candid_UserRole_n16(_uploadFile, _downloadFile, value.role)
+  };
+}
+function from_candid_record_n27(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    order: value.order,
+    text: value.text,
+    questionType: from_candid_QuestionType_n28(_uploadFile, _downloadFile, value.questionType),
+    quizId: value.quizId,
+    options: value.options
+  };
+}
+async function from_candid_record_n33(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    sortOrder: value.sortOrder,
+    name: value.name,
+    itemCount: value.itemCount,
+    parentCategoryId: value.parentCategoryId,
+    coverPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.coverPhoto)
+  };
+}
+async function from_candid_record_n38(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    itemId: value.itemId,
+    order: value.order,
+    video: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.video)),
+    text: value.text,
+    photo: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.photo))
+  };
+}
+async function from_candid_record_n44(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    categoryId: value.categoryId,
+    name: value.name,
+    description: value.description,
+    instructions: value.instructions,
+    subCategoryId: record_opt_to_undefined(from_candid_opt_n45(_uploadFile, _downloadFile, value.subCategoryId)),
+    itemPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.itemPhoto),
+    ingredients: value.ingredients
+  };
+}
+async function from_candid_record_n48(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    sortOrder: value.sortOrder,
+    name: value.name,
+    createdAt: value.createdAt,
+    description: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.description)),
+    coverPhoto: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.coverPhoto)),
+    updatedAt: value.updatedAt,
+    categoryCount: value.categoryCount
+  };
+}
+function from_candid_record_n5(_uploadFile, _downloadFile, value) {
+  return {
+    success: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.success)),
+    topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
+  };
+}
+function from_candid_record_n51(_uploadFile, _downloadFile, value) {
+  return {
+    quiz: from_candid_QuizPublic_n52(_uploadFile, _downloadFile, value.quiz),
+    questions: from_candid_vec_n54(_uploadFile, _downloadFile, value.questions)
+  };
+}
+function from_candid_record_n53(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    title: value.title,
+    createdAt: value.createdAt,
+    description: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.description)),
+    positionId: value.positionId,
+    updatedAt: value.updatedAt,
+    passingPercentage: value.passingPercentage,
+    questionCount: value.questionCount
+  };
+}
+async function from_candid_record_n56(_uploadFile, _downloadFile, value) {
+  return {
+    font: from_candid_FontChoice_n57(_uploadFile, _downloadFile, value.font),
+    primaryColor: value.primaryColor,
+    logo: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.logo)),
+    accentColor: value.accentColor,
+    updatedAt: value.updatedAt
+  };
+}
+async function from_candid_record_n62(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    sortOrder: value.sortOrder,
+    name: value.name,
+    itemCount: value.itemCount,
+    positionId: value.positionId,
+    coverPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.coverPhoto)
+  };
+}
+function from_candid_variant_n11(_uploadFile, _downloadFile, value) {
+  return "FrontendOriginsNotConfigured" in value ? {
+    __kind__: "FrontendOriginsNotConfigured",
+    FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
+  } : "MixedSsoSources" in value ? {
+    __kind__: "MixedSsoSources",
+    MixedSsoSources: value.MixedSsoSources
+  } : "Stale" in value ? {
+    __kind__: "Stale",
+    Stale: value.Stale
+  } : "MalformedCandid" in value ? {
+    __kind__: "MalformedCandid",
+    MalformedCandid: value.MalformedCandid
+  } : "AmbiguousAttribute" in value ? {
+    __kind__: "AmbiguousAttribute",
+    AmbiguousAttribute: value.AmbiguousAttribute
+  } : "NoAttributes" in value ? {
+    __kind__: "NoAttributes",
+    NoAttributes: value.NoAttributes
+  } : "UnknownNonce" in value ? {
+    __kind__: "UnknownNonce",
+    UnknownNonce: value.UnknownNonce
+  } : "UntrustedSsoSource" in value ? {
+    __kind__: "UntrustedSsoSource",
+    UntrustedSsoSource: value.UntrustedSsoSource
+  } : "MissingField" in value ? {
+    __kind__: "MissingField",
+    MissingField: value.MissingField
+  } : "FrontendOriginMismatch" in value ? {
+    __kind__: "FrontendOriginMismatch",
+    FrontendOriginMismatch: value.FrontendOriginMismatch
+  } : value;
+}
+function from_candid_variant_n17(_uploadFile, _downloadFile, value) {
+  return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
+}
+function from_candid_variant_n29(_uploadFile, _downloadFile, value) {
+  return "multiple" in value ? "multiple" : "single" in value ? "single" : value;
+}
+function from_candid_variant_n58(_uploadFile, _downloadFile, value) {
+  return "sansSerif" in value ? "sansSerif" : "monospace" in value ? "monospace" : "serif" in value ? "serif" : "systemFont" in value ? "systemFont" : value;
+}
+function from_candid_variant_n9(_uploadFile, _downloadFile, value) {
+  return "ok" in value ? {
+    __kind__: "ok",
+    ok: value.ok
+  } : "err" in value ? {
+    __kind__: "err",
+    err: from_candid_Error_n10(_uploadFile, _downloadFile, value.err)
+  } : value;
+}
+function from_candid_vec_n54(_uploadFile, _downloadFile, value) {
+  return value.map((x2) => from_candid_QuestionPublic_n26(_uploadFile, _downloadFile, x2));
+}
+async function from_candid_vec_n60(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_CategoryPublic_n61(_uploadFile, _downloadFile, x2)));
+}
+async function from_candid_vec_n63(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, x2)));
+}
+async function from_candid_vec_n64(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_PositionPublic_n47(_uploadFile, _downloadFile, x2)));
+}
+function from_candid_vec_n65(_uploadFile, _downloadFile, value) {
+  return value.map((x2) => from_candid_QuizPublic_n52(_uploadFile, _downloadFile, x2));
+}
+async function from_candid_vec_n66(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_SubCategoryPublic_n32(_uploadFile, _downloadFile, x2)));
+}
+async function from_candid_vec_n67(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, x2)));
+}
+function from_candid_vec_n68(_uploadFile, _downloadFile, value) {
+  return value.map((x2) => from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, x2));
+}
+async function to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value) {
+  return await _uploadFile(value);
+}
+function to_candid_FontChoice_n72(_uploadFile, _downloadFile, value) {
+  return to_candid_variant_n73(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuestionEdit_n69(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n23(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuestionInput_n22(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n23(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuestionType_n24(_uploadFile, _downloadFile, value) {
+  return to_candid_variant_n25(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuizEdit_n70(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n31(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuizInput_n30(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n31(_uploadFile, _downloadFile, value);
+}
+async function to_candid_TrainingStepEdit_n40(_uploadFile, _downloadFile, value) {
+  return await to_candid_record_n36(_uploadFile, _downloadFile, value);
+}
+async function to_candid_TrainingStepInput_n35(_uploadFile, _downloadFile, value) {
+  return await to_candid_record_n36(_uploadFile, _downloadFile, value);
+}
+function to_candid_UserRole_n12(_uploadFile, _downloadFile, value) {
+  return to_candid_variant_n13(_uploadFile, _downloadFile, value);
+}
+function to_candid__ImmutableObjectStorageRefillInformation_n2(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n3(_uploadFile, _downloadFile, value);
+}
+function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n2(_uploadFile, _downloadFile, value));
+}
+function to_candid_opt_n19(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(value);
+}
+function to_candid_opt_n20(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(value);
+}
+async function to_candid_opt_n21(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value));
+}
+function to_candid_opt_n71(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(to_candid_FontChoice_n72(_uploadFile, _downloadFile, value));
+}
+function to_candid_record_n23(_uploadFile, _downloadFile, value) {
+  return {
+    text: value.text,
+    questionType: to_candid_QuestionType_n24(_uploadFile, _downloadFile, value.questionType),
+    options: value.options
+  };
+}
+function to_candid_record_n3(_uploadFile, _downloadFile, value) {
+  return {
+    proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
+  };
+}
+function to_candid_record_n31(_uploadFile, _downloadFile, value) {
+  return {
+    title: value.title,
+    description: value.description ? candid_some(value.description) : candid_none(),
+    passingPercentage: value.passingPercentage
+  };
+}
+async function to_candid_record_n36(_uploadFile, _downloadFile, value) {
+  return {
+    video: value.video ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.video)) : candid_none(),
+    text: value.text,
+    photo: value.photo ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.photo)) : candid_none()
+  };
+}
+function to_candid_variant_n13(_uploadFile, _downloadFile, value) {
+  return value == "admin" ? {
+    admin: null
+  } : value == "user" ? {
+    user: null
+  } : value == "guest" ? {
+    guest: null
+  } : value;
+}
+function to_candid_variant_n25(_uploadFile, _downloadFile, value) {
+  return value == "multiple" ? {
+    multiple: null
+  } : value == "single" ? {
+    single: null
+  } : value;
+}
+function to_candid_variant_n73(_uploadFile, _downloadFile, value) {
+  return value == "sansSerif" ? {
+    sansSerif: null
+  } : value == "monospace" ? {
+    monospace: null
+  } : value == "serif" ? {
+    serif: null
+  } : value == "systemFont" ? {
+    systemFont: null
+  } : value;
+}
+function createActor(canisterId, _uploadFile, _downloadFile, options = {}) {
+  const agent = options.agent || HttpAgent.createSync({
+    ...options.agentOptions
+  });
+  if (options.agent && options.agentOptions) {
+    console.warn("Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent.");
+  }
+  const actor = Actor.createActor(idlFactory, {
+    agent,
+    canisterId,
+    ...options.actorOptions
+  });
+  return new Backend(actor, _uploadFile, _downloadFile, options.processError);
+}
+class ExternalBlob {
+  constructor(directURL, blob) {
+    __publicField(this, "_blob");
+    __publicField(this, "directURL");
+    __publicField(this, "onProgress");
+    if (blob) {
+      this._blob = blob;
+    }
+    this.directURL = directURL;
+  }
+  static fromURL(url) {
+    return new ExternalBlob(url, null);
+  }
+  static fromBytes(blob) {
+    const url = URL.createObjectURL(new Blob([new Uint8Array(blob)], {
+      type: "application/octet-stream"
+    }));
+    return new ExternalBlob(url, blob);
+  }
+  async getBytes() {
+    if (this._blob) {
+      return this._blob;
+    }
+    const response = await fetch(this.directURL);
+    const blob = await response.blob();
+    this._blob = new Uint8Array(await blob.arrayBuffer());
+    return this._blob;
+  }
+  getDirectURL() {
+    return this.directURL;
+  }
+  withUploadProgress(onProgress) {
+    this.onProgress = onProgress;
+    return this;
+  }
+}
 const MAXIMUM_CONCURRENT_UPLOADS = 10;
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1e3;
@@ -11772,7 +14058,7 @@ async function createActorWithConfig(createActor2, options) {
     const hashWithPrefix = new TextDecoder().decode(new Uint8Array(bytes));
     const hash = hashWithPrefix.substring(MOTOKO_DEDUPLICATION_SENTINEL.length);
     const url = await storageClient.getDirectURL(hash);
-    return ExternalBlob$2.fromURL(url);
+    return ExternalBlob.fromURL(url);
   };
   return createActor2(config.backend_canister_id, uploadFile, downloadFile, actorOptions);
 }
@@ -17333,6 +19619,1112 @@ function useActor(createActor2) {
     actor: actorQuery.data || null,
     isFetching: actorQuery.isFetching
   };
+}
+function useAuth() {
+  const ii = useInternetIdentity();
+  const { actor, isFetching } = useActor(createActor);
+  const profileQuery = useQuery({
+    queryKey: ["auth", "profile", ii.isAuthenticated],
+    queryFn: async () => {
+      if (!actor || !ii.isAuthenticated) return null;
+      return actor.getCallerUserProfile();
+    },
+    enabled: !!actor && !isFetching && ii.isAuthenticated
+  });
+  const roleQuery = useQuery({
+    queryKey: ["auth", "role", ii.isAuthenticated],
+    queryFn: async () => {
+      if (!actor || !ii.isAuthenticated) return null;
+      try {
+        return await actor.getCallerUserRole();
+      } catch {
+        return null;
+      }
+    },
+    enabled: !!actor && !isFetching && ii.isAuthenticated
+  });
+  const role = roleQuery.data ?? null;
+  return {
+    isAuthenticated: ii.isAuthenticated,
+    isInitializing: ii.isInitializing,
+    isLoggingIn: ii.isLoggingIn,
+    login: ii.login,
+    clear: ii.clear,
+    profile: profileQuery.data ?? null,
+    role,
+    isAdmin: role === UserRole.admin,
+    isStaff: role === UserRole.admin || role === UserRole.user,
+    isLoadingProfile: profileQuery.isLoading && ii.isAuthenticated,
+    isLoadingRole: roleQuery.isLoading && ii.isAuthenticated
+  };
+}
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+const toCamelCase = (string) => string.replace(
+  /^([A-Z])|[\s-_]+(\w)/g,
+  (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
+);
+const toPascalCase = (string) => {
+  const camelCase = toCamelCase(string);
+  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
+};
+const mergeClasses = (...classes) => classes.filter((className, index2, array) => {
+  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index2;
+}).join(" ").trim();
+const hasA11yProp = (props) => {
+  for (const prop in props) {
+    if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
+      return true;
+    }
+  }
+};
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+var defaultAttributes = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 24,
+  height: 24,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+};
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Icon$1 = reactExports.forwardRef(
+  ({
+    color: color2 = "currentColor",
+    size: size2 = 24,
+    strokeWidth = 2,
+    absoluteStrokeWidth,
+    className = "",
+    children,
+    iconNode,
+    ...rest
+  }, ref) => reactExports.createElement(
+    "svg",
+    {
+      ref,
+      ...defaultAttributes,
+      width: size2,
+      height: size2,
+      stroke: color2,
+      strokeWidth: absoluteStrokeWidth ? Number(strokeWidth) * 24 / Number(size2) : strokeWidth,
+      className: mergeClasses("lucide", className),
+      ...!children && !hasA11yProp(rest) && { "aria-hidden": "true" },
+      ...rest
+    },
+    [
+      ...iconNode.map(([tag, attrs]) => reactExports.createElement(tag, attrs)),
+      ...Array.isArray(children) ? children : [children]
+    ]
+  )
+);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const createLucideIcon = (iconName, iconNode) => {
+  const Component2 = reactExports.forwardRef(
+    ({ className, ...props }, ref) => reactExports.createElement(Icon$1, {
+      ref,
+      iconNode,
+      className: mergeClasses(
+        `lucide-${toKebabCase(toPascalCase(iconName))}`,
+        `lucide-${iconName}`,
+        className
+      ),
+      ...props
+    })
+  );
+  Component2.displayName = toPascalCase(iconName);
+  return Component2;
+};
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$O = [
+  ["path", { d: "M12 5v14", key: "s699le" }],
+  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+];
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$O);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$N = [
+  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+];
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$N);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$M = [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
+];
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$M);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$L = [
+  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+  ["path", { d: "M12 19V5", key: "x0mq9r" }]
+];
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$L);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$K = [
+  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
+  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
+];
+const Briefcase = createLucideIcon("briefcase", __iconNode$K);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$J = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$J);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$I = [
+  [
+    "path",
+    {
+      d: "M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z",
+      key: "1qvrer"
+    }
+  ],
+  ["path", { d: "M6 17h12", key: "1jwigz" }]
+];
+const ChefHat = createLucideIcon("chef-hat", __iconNode$I);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$H = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$H);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$G = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$G);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$F = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$F);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$E = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+];
+const CircleCheck = createLucideIcon("circle-check", __iconNode$E);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$D = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
+];
+const CircleX = createLucideIcon("circle-x", __iconNode$D);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$C = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+const Circle = createLucideIcon("circle", __iconNode$C);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$B = [
+  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
+  [
+    "path",
+    {
+      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+      key: "116196"
+    }
+  ],
+  ["path", { d: "M12 11h4", key: "1jrz19" }],
+  ["path", { d: "M12 16h4", key: "n85exb" }],
+  ["path", { d: "M8 11h.01", key: "1dfujw" }],
+  ["path", { d: "M8 16h.01", key: "18s6g9" }]
+];
+const ClipboardList = createLucideIcon("clipboard-list", __iconNode$B);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$A = [
+  ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
+  ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
+];
+const Copy = createLucideIcon("copy", __iconNode$A);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$z = [
+  [
+    "path",
+    {
+      d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+      key: "1nclc0"
+    }
+  ],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+];
+const Eye = createLucideIcon("eye", __iconNode$z);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$y = [
+  [
+    "path",
+    {
+      d: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z",
+      key: "96xj49"
+    }
+  ]
+];
+const Flame = createLucideIcon("flame", __iconNode$y);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$x = [
+  [
+    "path",
+    {
+      d: "M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z",
+      key: "hod4my"
+    }
+  ],
+  [
+    "path",
+    {
+      d: "M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z",
+      key: "w4yl2u"
+    }
+  ],
+  ["path", { d: "M3 5a2 2 0 0 0 2 2h3", key: "f2jnh7" }],
+  ["path", { d: "M3 3v13a2 2 0 0 0 2 2h3", key: "k8epm1" }]
+];
+const FolderTree = createLucideIcon("folder-tree", __iconNode$x);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$w = [
+  [
+    "path",
+    {
+      d: "M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z",
+      key: "j76jl0"
+    }
+  ],
+  ["path", { d: "M22 10v6", key: "1lu8f3" }],
+  ["path", { d: "M6 12.5V16a6 3 0 0 0 12 0v-3.5", key: "1r8lef" }]
+];
+const GraduationCap = createLucideIcon("graduation-cap", __iconNode$w);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$v = [
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
+  ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
+];
+const History = createLucideIcon("history", __iconNode$v);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$u = [
+  ["path", { d: "M16 5h6", key: "1vod17" }],
+  ["path", { d: "M19 2v6", key: "4bpg5p" }],
+  ["path", { d: "M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5", key: "1ue2ih" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }]
+];
+const ImagePlus = createLucideIcon("image-plus", __iconNode$u);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$t = [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+];
+const Image = createLucideIcon("image", __iconNode$t);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$s = [
+  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+];
+const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$s);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$r = [
+  ["path", { d: "m3 17 2 2 4-4", key: "1jhpwq" }],
+  ["path", { d: "m3 7 2 2 4-4", key: "1obspn" }],
+  ["path", { d: "M13 6h8", key: "15sg57" }],
+  ["path", { d: "M13 12h8", key: "h98zly" }],
+  ["path", { d: "M13 18h8", key: "oe0vm4" }]
+];
+const ListChecks = createLucideIcon("list-checks", __iconNode$r);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$q = [
+  ["path", { d: "M10 12h11", key: "6m4ad9" }],
+  ["path", { d: "M10 18h11", key: "11hvi2" }],
+  ["path", { d: "M10 6h11", key: "c7qv1k" }],
+  ["path", { d: "M4 10h2", key: "16xx2s" }],
+  ["path", { d: "M4 6h1v4", key: "cnovpq" }],
+  ["path", { d: "M6 18H4c0-1 2-2 2-3s-1-1.5-2-1", key: "m9a95d" }]
+];
+const ListOrdered = createLucideIcon("list-ordered", __iconNode$q);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$p = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("loader-circle", __iconNode$p);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$o = [
+  ["circle", { cx: "12", cy: "16", r: "1", key: "1au0dj" }],
+  ["rect", { x: "3", y: "10", width: "18", height: "12", rx: "2", key: "6s8ecr" }],
+  ["path", { d: "M7 10V7a5 5 0 0 1 10 0v3", key: "1pqi11" }]
+];
+const LockKeyhole = createLucideIcon("lock-keyhole", __iconNode$o);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$n = [
+  ["path", { d: "m10 17 5-5-5-5", key: "1bsop3" }],
+  ["path", { d: "M15 12H3", key: "6jk70r" }],
+  ["path", { d: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4", key: "u53s6r" }]
+];
+const LogIn = createLucideIcon("log-in", __iconNode$n);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$m = [
+  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+  ["path", { d: "M21 12H9", key: "dn1m92" }],
+  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+];
+const LogOut = createLucideIcon("log-out", __iconNode$m);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$l = [["path", { d: "M5 12h14", key: "1ays0h" }]];
+const Minus = createLucideIcon("minus", __iconNode$l);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$k = [
+  [
+    "path",
+    {
+      d: "M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z",
+      key: "1a0edw"
+    }
+  ],
+  ["path", { d: "M12 22V12", key: "d0xqtd" }],
+  ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
+  ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
+];
+const Package = createLucideIcon("package", __iconNode$k);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$j = [
+  [
+    "path",
+    {
+      d: "M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z",
+      key: "e79jfc"
+    }
+  ],
+  ["circle", { cx: "13.5", cy: "6.5", r: ".5", fill: "currentColor", key: "1okk4w" }],
+  ["circle", { cx: "17.5", cy: "10.5", r: ".5", fill: "currentColor", key: "f64h9f" }],
+  ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
+  ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
+];
+const Palette = createLucideIcon("palette", __iconNode$j);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$i = [
+  [
+    "path",
+    {
+      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+      key: "1a8usu"
+    }
+  ],
+  ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+];
+const Pencil = createLucideIcon("pencil", __iconNode$i);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$h = [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "M12 5v14", key: "s699le" }]
+];
+const Plus = createLucideIcon("plus", __iconNode$h);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$g = [
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+];
+const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$g);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$f = [
+  ["path", { d: "M7 21h10", key: "1b0cd5" }],
+  ["path", { d: "M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z", key: "4rw317" }],
+  [
+    "path",
+    {
+      d: "M11.38 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7 2.51 2.51 0 0 1 .03 1.1",
+      key: "10xrj0"
+    }
+  ],
+  ["path", { d: "m13 12 4-4", key: "1hckqy" }],
+  ["path", { d: "M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2", key: "1p4srx" }]
+];
+const Salad = createLucideIcon("salad", __iconNode$f);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$e = [
+  [
+    "path",
+    {
+      d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
+      key: "1c8476"
+    }
+  ],
+  ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
+  ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
+];
+const Save = createLucideIcon("save", __iconNode$e);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$d = [
+  ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+];
+const Search = createLucideIcon("search", __iconNode$d);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$c = [
+  [
+    "path",
+    {
+      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
+      key: "1qme2f"
+    }
+  ],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+];
+const Settings = createLucideIcon("settings", __iconNode$c);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$b = [
+  [
+    "path",
+    {
+      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+      key: "oel41y"
+    }
+  ],
+  ["path", { d: "M12 8v4", key: "1got3b" }],
+  ["path", { d: "M12 16h.01", key: "1drbdi" }]
+];
+const ShieldAlert = createLucideIcon("shield-alert", __iconNode$b);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$a = [
+  [
+    "path",
+    {
+      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+      key: "oel41y"
+    }
+  ],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+];
+const ShieldCheck = createLucideIcon("shield-check", __iconNode$a);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$9 = [
+  ["path", { d: "M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z", key: "4rw317" }],
+  ["path", { d: "M7 21h10", key: "1b0cd5" }],
+  ["path", { d: "M19.5 12 22 6", key: "shfsr5" }],
+  [
+    "path",
+    {
+      d: "M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62",
+      key: "rpc6vp"
+    }
+  ],
+  [
+    "path",
+    {
+      d: "M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62",
+      key: "1lf63m"
+    }
+  ],
+  [
+    "path",
+    { d: "M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62", key: "97tijn" }
+  ]
+];
+const Soup = createLucideIcon("soup", __iconNode$9);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$8 = [
+  ["path", { d: "m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7", key: "ztvudi" }],
+  ["path", { d: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8", key: "1b2hhj" }],
+  ["path", { d: "M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4", key: "2ebpfo" }],
+  ["path", { d: "M2 7h20", key: "1fcdvo" }],
+  [
+    "path",
+    {
+      d: "M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7",
+      key: "6c3vgh"
+    }
+  ]
+];
+const Store$1 = createLucideIcon("store", __iconNode$8);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$7 = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
+  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
+];
+const Target = createLucideIcon("target", __iconNode$7);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$6 = [
+  ["path", { d: "M3 6h18", key: "d0wm0j" }],
+  ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
+  ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
+  ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
+  ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+];
+const Trash2 = createLucideIcon("trash-2", __iconNode$6);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$5 = [
+  ["path", { d: "M10 15H6a4 4 0 0 0-4 4v2", key: "1nfge6" }],
+  ["path", { d: "m14.305 16.53.923-.382", key: "1itpsq" }],
+  ["path", { d: "m15.228 13.852-.923-.383", key: "eplpkm" }],
+  ["path", { d: "m16.852 12.228-.383-.923", key: "13v3q0" }],
+  ["path", { d: "m16.852 17.772-.383.924", key: "1i8mnm" }],
+  ["path", { d: "m19.148 12.228.383-.923", key: "1q8j1v" }],
+  ["path", { d: "m19.53 18.696-.382-.924", key: "vk1qj3" }],
+  ["path", { d: "m20.772 13.852.924-.383", key: "n880s0" }],
+  ["path", { d: "m20.772 16.148.924.383", key: "1g6xey" }],
+  ["circle", { cx: "18", cy: "15", r: "3", key: "gjjjvw" }],
+  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+];
+const UserCog = createLucideIcon("user-cog", __iconNode$5);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$4 = [
+  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
+  ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }]
+];
+const UserMinus = createLucideIcon("user-minus", __iconNode$4);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$3 = [
+  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+  ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
+  ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
+  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
+];
+const Users = createLucideIcon("users", __iconNode$3);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$2 = [
+  ["path", { d: "m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8", key: "n7qcjb" }],
+  [
+    "path",
+    { d: "M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7", key: "d0u48b" }
+  ],
+  ["path", { d: "m2.1 21.8 6.4-6.3", key: "yn04lh" }],
+  ["path", { d: "m19 5-7 7", key: "194lzd" }]
+];
+const UtensilsCrossed = createLucideIcon("utensils-crossed", __iconNode$2);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$1 = [
+  [
+    "path",
+    {
+      d: "m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5",
+      key: "ftymec"
+    }
+  ],
+  ["rect", { x: "2", y: "6", width: "14", height: "12", rx: "2", key: "158x01" }]
+];
+const Video = createLucideIcon("video", __iconNode$1);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode = [
+  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+];
+const X = createLucideIcon("x", __iconNode);
+const LOGO_PLACEHOLDER = "/assets/images/placeholder.svg";
+const MIN_HOLD_MS = 1500;
+const FADE_MS = 600;
+function readLogoUrl() {
+  if (typeof document === "undefined") return null;
+  const url = document.documentElement.getAttribute("data-logo-url");
+  if (!url || url === LOGO_PLACEHOLDER) return null;
+  return url;
+}
+function SplashScreen({ onComplete, ready = true }) {
+  const { isAuthenticated, login, isLoggingIn } = useAuth();
+  const [phase, setPhase] = reactExports.useState("holding");
+  const [logoUrl, setLogoUrl] = reactExports.useState(() => readLogoUrl());
+  reactExports.useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      const url = readLogoUrl();
+      if (url) setLogoUrl(url);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  const [holdDone, setHoldDone] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    if (holdDone) return;
+    const mountedAt = Date.now();
+    const elapsed = () => Date.now() - mountedAt;
+    const finish = () => setHoldDone(true);
+    const remaining = Math.max(0, MIN_HOLD_MS - elapsed());
+    if (ready) {
+      const t = window.setTimeout(finish, remaining);
+      return () => window.clearTimeout(t);
+    }
+    const interval = window.setInterval(() => {
+      if (ready && elapsed() >= MIN_HOLD_MS) {
+        window.clearInterval(interval);
+        finish();
+      }
+    }, 100);
+    return () => window.clearInterval(interval);
+  }, [holdDone, ready]);
+  reactExports.useEffect(() => {
+    if (!holdDone || phase !== "holding") return;
+    if (isAuthenticated) {
+      setPhase("fading");
+    }
+  }, [holdDone, isAuthenticated, phase]);
+  reactExports.useEffect(() => {
+    if (phase !== "holding" || !holdDone) return;
+    if (isAuthenticated) {
+      setPhase("fading");
+    }
+  }, [phase, holdDone, isAuthenticated]);
+  reactExports.useEffect(() => {
+    if (phase !== "fading") return;
+    const t = window.setTimeout(() => {
+      setPhase("done");
+      onComplete == null ? void 0 : onComplete();
+    }, FADE_MS);
+    return () => window.clearTimeout(t);
+  }, [phase, onComplete]);
+  if (phase === "done") return null;
+  const showLogin = holdDone && !isAuthenticated;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      "data-ocid": "splash.screen",
+      "aria-hidden": phase === "fading",
+      className: "fixed inset-0 z-[9999] flex flex-col items-center justify-center px-6",
+      style: {
+        backgroundColor: "#141412",
+        opacity: phase === "fading" ? 0 : 1,
+        transition: `opacity ${FADE_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`
+      },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "flex items-center justify-center",
+            style: { marginBottom: "1.75rem" },
+            children: logoUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: logoUrl,
+                alt: "Bubba's 33",
+                className: "h-28 w-28 rounded-2xl object-contain sm:h-32 sm:w-32",
+                style: { maxHeight: "40vh", maxWidth: "70vw" }
+              }
+            ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                "data-ocid": "splash.emblem",
+                className: "flex h-28 w-28 items-center justify-center rounded-2xl sm:h-32 sm:w-32",
+                style: {
+                  backgroundColor: "#E4002B",
+                  boxShadow: "0 0 0 4px rgba(228,0,43,0.18), 0 12px 40px rgba(228,0,43,0.35)"
+                },
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "span",
+                  {
+                    className: "font-display leading-none text-white",
+                    style: {
+                      fontFamily: '"Anton", "Oswald", sans-serif',
+                      fontWeight: 700,
+                      fontSize: "3.25rem",
+                      letterSpacing: "0.02em"
+                    },
+                    children: "33"
+                  }
+                )
+              }
+            )
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "h1",
+          {
+            className: "font-display text-foreground",
+            style: {
+              fontFamily: '"Anton", "Oswald", sans-serif',
+              fontSize: "2.5rem",
+              letterSpacing: "0.08em",
+              lineHeight: 1,
+              marginBottom: "0.6rem"
+            },
+            children: "BUBBA’S 33"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "font-heading",
+            style: {
+              fontFamily: '"Oswald", "Barlow", sans-serif',
+              fontWeight: 700,
+              fontSize: "0.75rem",
+              letterSpacing: "0.32em",
+              color: "#E4002B",
+              marginBottom: showLogin ? "1.75rem" : "2.5rem"
+            },
+            children: "ROADIE TRAINING"
+          }
+        ),
+        showLogin ? (
+          /* Landing / Login state -------------------------------------- */
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full max-w-xs flex-col items-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: login,
+                disabled: isLoggingIn,
+                "data-ocid": "splash.signin_button",
+                "aria-label": "Sign in with Internet Identity",
+                className: "font-heading flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-base uppercase tracking-[0.18em] transition-smooth disabled:cursor-not-allowed disabled:opacity-70",
+                style: {
+                  fontFamily: '"Oswald", "Barlow", sans-serif',
+                  fontWeight: 700,
+                  backgroundColor: "#E4002B",
+                  color: "#f5f1e8",
+                  boxShadow: "0 10px 30px rgba(228,0,43,0.35)"
+                },
+                children: isLoggingIn ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-5 animate-spin", "aria-hidden": "true" }),
+                  "Connecting…"
+                ] }) : "Sign In"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "font-body text-center",
+                style: {
+                  fontFamily: '"Barlow", "Oswald", sans-serif',
+                  fontWeight: 500,
+                  fontSize: "1.05rem",
+                  letterSpacing: "0.04em",
+                  color: "#f5f1e8",
+                  opacity: 0.85,
+                  marginTop: "1.25rem"
+                },
+                children: "Let’s be Legendary"
+              }
+            )
+          ] })
+        ) : (
+          /* Hold state: loading bar + caption */
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                "data-ocid": "splash.loading_bar",
+                className: "overflow-hidden rounded-full",
+                style: {
+                  width: "180px",
+                  height: "3px",
+                  backgroundColor: "rgba(228,0,43,0.18)"
+                },
+                role: "progressbar",
+                "aria-label": "Loading",
+                "aria-valuenow": 0,
+                "aria-valuemin": 0,
+                "aria-valuemax": 100,
+                tabIndex: -1,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "h-full rounded-full",
+                    style: {
+                      width: "40%",
+                      backgroundColor: "#E4002B",
+                      animation: "splash-load 1.4s ease-in-out infinite"
+                    }
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                "data-ocid": "splash.loading_caption",
+                className: "font-heading",
+                style: {
+                  fontFamily: '"Oswald", "Barlow", sans-serif',
+                  fontWeight: 700,
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.28em",
+                  textTransform: "uppercase",
+                  color: "#E4002B",
+                  marginTop: "1rem"
+                },
+                children: "Loading Legendary"
+              }
+            )
+          ] })
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
+        @keyframes splash-load {
+          0%   { transform: translateX(-120%); }
+          100% { transform: translateX(360%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [data-ocid="splash.loading_bar"] > div {
+            animation: none;
+            width: 100%;
+          }
+        }
+      ` })
+      ]
+    }
+  );
 }
 var client = { exports: {} };
 var reactDomClient_production = {};
@@ -29251,7 +32643,7 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
   }, [image, crossOrigin, referrerPolicy]);
   return loadingStatus;
 }
-var Root$6 = Avatar$1;
+var Root$7 = Avatar$1;
 var Fallback = AvatarFallback$1;
 function r(e) {
   var t, f2, n = "";
@@ -31733,7 +35125,7 @@ function Avatar({
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$6,
+    Root$7,
     {
       "data-slot": "avatar",
       className: cn(
@@ -31841,2368 +35233,6 @@ function Button({
       ...props
     }
   );
-}
-const _ImmutableObjectStorageCreateCertificateResult = Record({
-  "method": Text,
-  "blob_hash": Text
-});
-const _ImmutableObjectStorageRefillInformation = Record({
-  "proposed_top_up_amount": Opt(Nat)
-});
-const _ImmutableObjectStorageRefillResult = Record({
-  "success": Opt(Bool),
-  "topped_up_amount": Opt(Nat)
-});
-const Error$1 = Variant({
-  "FrontendOriginsNotConfigured": Null,
-  "MixedSsoSources": Record({
-    "otherKeys": Vec(Text),
-    "ssoKeys": Vec(Text)
-  }),
-  "Stale": Record({ "ageNs": Nat }),
-  "MalformedCandid": Null,
-  "AmbiguousAttribute": Record({
-    "field": Text,
-    "sources": Vec(Text)
-  }),
-  "NoAttributes": Null,
-  "UnknownNonce": Null,
-  "UntrustedSsoSource": Record({ "domain": Text }),
-  "MissingField": Text,
-  "FrontendOriginMismatch": Record({
-    "got": Text,
-    "expected": Vec(Text)
-  })
-});
-const Result = Variant({ "ok": Null, "err": Error$1 });
-const UserRole$1 = Variant({
-  "admin": Null,
-  "user": Null,
-  "guest": Null
-});
-const Principal2 = Principal$1;
-const Timestamp = Nat;
-const UserProfilePublic = Record({
-  "principal": Principal2,
-  "displayName": Text,
-  "createdAt": Timestamp,
-  "role": UserRole$1
-});
-const PositionId = Nat;
-const ExternalBlob$1 = Vec(Nat8);
-const CategoryId = Nat;
-const SubCategoryId = Nat;
-const ItemId = Nat;
-const QuizId = Nat;
-const QuestionType$1 = Variant({
-  "multiple": Null,
-  "single": Null
-});
-const AnswerOptionInput = Record({
-  "text": Text,
-  "correct": Bool
-});
-const QuestionInput = Record({
-  "text": Text,
-  "questionType": QuestionType$1,
-  "options": Vec(AnswerOptionInput)
-});
-const QuestionId = Nat;
-const AnswerOption = Record({
-  "id": Nat,
-  "text": Text,
-  "correct": Bool
-});
-const QuestionPublic = Record({
-  "id": QuestionId,
-  "order": Nat,
-  "text": Text,
-  "questionType": QuestionType$1,
-  "quizId": QuizId,
-  "options": Vec(AnswerOption)
-});
-const QuizInput = Record({
-  "title": Text,
-  "description": Opt(Text),
-  "passingPercentage": Nat
-});
-const SubCategoryPublic = Record({
-  "id": SubCategoryId,
-  "sortOrder": Nat,
-  "name": Text,
-  "itemCount": Nat,
-  "parentCategoryId": CategoryId,
-  "coverPhoto": ExternalBlob$1
-});
-const TrainingStepInput = Record({
-  "video": Opt(ExternalBlob$1),
-  "text": Text,
-  "photo": Opt(ExternalBlob$1)
-});
-const TrainingStepPublic = Record({
-  "id": Nat,
-  "itemId": ItemId,
-  "order": Nat,
-  "video": Opt(ExternalBlob$1),
-  "text": Text,
-  "photo": Opt(ExternalBlob$1)
-});
-const TrainingStepEdit = Record({
-  "video": Opt(ExternalBlob$1),
-  "text": Text,
-  "photo": Opt(ExternalBlob$1)
-});
-const MenuItemPublic = Record({
-  "id": ItemId,
-  "categoryId": CategoryId,
-  "name": Text,
-  "description": Text,
-  "instructions": Vec(Text),
-  "subCategoryId": Opt(SubCategoryId),
-  "itemPhoto": ExternalBlob$1,
-  "ingredients": Vec(Text)
-});
-const PositionPublic = Record({
-  "id": PositionId,
-  "sortOrder": Nat,
-  "name": Text,
-  "createdAt": Timestamp,
-  "description": Opt(Text),
-  "coverPhoto": Opt(ExternalBlob$1),
-  "updatedAt": Timestamp,
-  "categoryCount": Nat
-});
-const QuizPublic = Record({
-  "id": QuizId,
-  "title": Text,
-  "createdAt": Timestamp,
-  "description": Opt(Text),
-  "positionId": PositionId,
-  "updatedAt": Timestamp,
-  "passingPercentage": Nat,
-  "questionCount": Nat
-});
-const FontChoice$1 = Variant({
-  "sansSerif": Null,
-  "monospace": Null,
-  "serif": Null,
-  "systemFont": Null
-});
-const ThemePublic = Record({
-  "font": FontChoice$1,
-  "primaryColor": Text,
-  "logo": Opt(ExternalBlob$1),
-  "accentColor": Text,
-  "updatedAt": Timestamp
-});
-const CategoryPublic = Record({
-  "id": CategoryId,
-  "sortOrder": Nat,
-  "name": Text,
-  "itemCount": Nat,
-  "positionId": PositionId,
-  "coverPhoto": ExternalBlob$1
-});
-const AttemptId = Nat;
-const AttemptAnswer = Record({
-  "questionId": QuestionId,
-  "selectedOptionIds": Vec(Nat)
-});
-const AttemptPublic = Record({
-  "id": AttemptId,
-  "maxScore": Nat,
-  "answers": Vec(AttemptAnswer),
-  "createdAt": Timestamp,
-  "score": Nat,
-  "quizId": QuizId,
-  "passed": Bool
-});
-const AttemptInput = Record({
-  "answers": Vec(AttemptAnswer),
-  "quizId": QuizId
-});
-const QuestionEdit = Record({
-  "text": Text,
-  "questionType": QuestionType$1,
-  "options": Vec(AnswerOptionInput)
-});
-const QuizEdit = Record({
-  "title": Text,
-  "description": Opt(Text),
-  "passingPercentage": Nat
-});
-Service({
-  "__accessControlState": Func([], [Reserved], ["query"]),
-  "__categories": Func([], [Reserved], ["query"]),
-  "__items": Func([], [Reserved], ["query"]),
-  "__positions": Func([], [Reserved], ["query"]),
-  "__quizAttempts": Func([], [Reserved], ["query"]),
-  "__quizQuestions": Func([], [Reserved], ["query"]),
-  "__quizState": Func([], [Reserved], ["query"]),
-  "__quizzes": Func([], [Reserved], ["query"]),
-  "__state": Func([], [Reserved], ["query"]),
-  "__steps": Func([], [Reserved], ["query"]),
-  "__subCategories": Func([], [Reserved], ["query"]),
-  "__theme": Func([], [Reserved], ["query"]),
-  "__trainingState": Func([], [Reserved], ["query"]),
-  "__users": Func([], [Reserved], ["query"]),
-  "_immutableObjectStorageBlobsAreLive": Func(
-    [Vec(Vec(Nat8))],
-    [Vec(Bool)],
-    ["query"]
-  ),
-  "_immutableObjectStorageBlobsToDelete": Func(
-    [],
-    [Vec(Vec(Nat8))],
-    ["query"]
-  ),
-  "_immutableObjectStorageConfirmBlobDeletion": Func(
-    [Vec(Vec(Nat8))],
-    [],
-    []
-  ),
-  "_immutableObjectStorageCreateCertificate": Func(
-    [Text],
-    [_ImmutableObjectStorageCreateCertificateResult],
-    []
-  ),
-  "_immutableObjectStorageRefillCashier": Func(
-    [Opt(_ImmutableObjectStorageRefillInformation)],
-    [_ImmutableObjectStorageRefillResult],
-    []
-  ),
-  "_immutableObjectStorageUpdateGatewayPrincipals": Func([], [], []),
-  "_initialize_access_control": Func([], [], []),
-  "_internet_identity_sign_in_finish": Func([], [Result], []),
-  "_internet_identity_sign_in_start": Func([], [Vec(Nat8)], []),
-  "assignCallerUserRole": Func([Principal$1, UserRole$1], [], []),
-  "assignRole": Func([Principal2, UserRole$1], [UserProfilePublic], []),
-  "createCategory": Func(
-    [PositionId, Text, ExternalBlob$1],
-    [CategoryId],
-    []
-  ),
-  "createMenuItem": Func(
-    [CategoryId, Opt(SubCategoryId), Text, Text, ExternalBlob$1],
-    [ItemId],
-    []
-  ),
-  "createPosition": Func(
-    [Text, Opt(Text), Opt(ExternalBlob$1)],
-    [PositionId],
-    []
-  ),
-  "createQuestion": Func([QuizId, QuestionInput], [QuestionPublic], []),
-  "createQuiz": Func([PositionId, QuizInput], [QuizId], []),
-  "createSubCategory": Func(
-    [CategoryId, Text, ExternalBlob$1],
-    [SubCategoryPublic],
-    []
-  ),
-  "createTrainingStep": Func(
-    [ItemId, TrainingStepInput],
-    [TrainingStepPublic],
-    []
-  ),
-  "deleteCategory": Func([CategoryId], [Nat], []),
-  "deleteMenuItem": Func([ItemId], [], []),
-  "deletePosition": Func([PositionId], [Nat], []),
-  "deleteQuestion": Func([QuestionId], [Bool], []),
-  "deleteQuiz": Func([QuizId], [Bool], []),
-  "deleteSubCategory": Func(
-    [SubCategoryId],
-    [Record({ "itemCount": Nat })],
-    []
-  ),
-  "deleteTrainingStep": Func([Nat], [Bool], []),
-  "editTrainingStep": Func(
-    [Nat, TrainingStepEdit],
-    [TrainingStepPublic],
-    []
-  ),
-  "getCallerUserProfile": Func(
-    [],
-    [Opt(UserProfilePublic)],
-    ["query"]
-  ),
-  "getCallerUserRole": Func([], [UserRole$1], ["query"]),
-  "getMenuItem": Func([ItemId], [Opt(MenuItemPublic)], ["query"]),
-  "getPosition": Func([PositionId], [Opt(PositionPublic)], ["query"]),
-  "getQuizWithQuestions": Func(
-    [QuizId],
-    [
-      Opt(
-        Record({
-          "quiz": QuizPublic,
-          "questions": Vec(QuestionPublic)
-        })
-      )
-    ],
-    ["query"]
-  ),
-  "getTheme": Func([], [ThemePublic], ["query"]),
-  "getTrainingStep": Func(
-    [Nat],
-    [Opt(TrainingStepPublic)],
-    ["query"]
-  ),
-  "isCallerAdmin": Func([], [Bool], ["query"]),
-  "listCategories": Func([], [Vec(CategoryPublic)], ["query"]),
-  "listItemsByCategory": Func(
-    [CategoryId],
-    [Vec(MenuItemPublic)],
-    ["query"]
-  ),
-  "listItemsBySubCategory": Func(
-    [SubCategoryId],
-    [Vec(MenuItemPublic)],
-    ["query"]
-  ),
-  "listMyQuizAttempts": Func(
-    [QuizId],
-    [Vec(AttemptPublic)],
-    ["query"]
-  ),
-  "listPositions": Func([], [Vec(PositionPublic)], ["query"]),
-  "listQuizzesByPosition": Func(
-    [PositionId],
-    [Vec(QuizPublic)],
-    ["query"]
-  ),
-  "listSubCategories": Func(
-    [CategoryId],
-    [Vec(SubCategoryPublic)],
-    ["query"]
-  ),
-  "listTrainingSteps": Func(
-    [ItemId],
-    [Vec(TrainingStepPublic)],
-    ["query"]
-  ),
-  "listUsers": Func([], [Vec(UserProfilePublic)], ["query"]),
-  "moveQuestion": Func([QuestionId, Nat], [Bool], []),
-  "moveTrainingStep": Func([Nat, Nat], [Bool], []),
-  "resetTheme": Func([], [ThemePublic], []),
-  "revokeRole": Func([Principal2], [UserProfilePublic], []),
-  "saveCallerUserProfile": Func([Text], [UserProfilePublic], []),
-  "searchItems": Func([Text], [Vec(MenuItemPublic)], ["query"]),
-  "searchItemsInCategory": Func(
-    [CategoryId, Text],
-    [Vec(MenuItemPublic)],
-    ["query"]
-  ),
-  "setCategorySortOrder": Func([CategoryId, Nat], [], []),
-  "setPositionSortOrder": Func([PositionId, Nat], [], []),
-  "setSubCategorySortOrder": Func([SubCategoryId, Nat], [], []),
-  "submitQuizAttempt": Func([AttemptInput], [AttemptPublic], []),
-  "updateCategory": Func(
-    [CategoryId, PositionId, Text, ExternalBlob$1],
-    [],
-    []
-  ),
-  "updateLogo": Func([Opt(ExternalBlob$1)], [ThemePublic], []),
-  "updateMenuItem": Func(
-    [
-      ItemId,
-      CategoryId,
-      Opt(SubCategoryId),
-      Text,
-      Text,
-      ExternalBlob$1
-    ],
-    [],
-    []
-  ),
-  "updateMenuItemRecipe": Func(
-    [ItemId, Vec(Text), Vec(Text)],
-    [],
-    []
-  ),
-  "updatePosition": Func(
-    [PositionId, Text, Opt(Text), Opt(ExternalBlob$1)],
-    [],
-    []
-  ),
-  "updateQuestion": Func([QuestionId, QuestionEdit], [QuestionPublic], []),
-  "updateQuiz": Func([QuizId, QuizEdit], [], []),
-  "updateSubCategory": Func(
-    [SubCategoryId, Text, ExternalBlob$1],
-    [SubCategoryPublic],
-    []
-  ),
-  "updateTheme": Func(
-    [Opt(Text), Opt(Text), Opt(FontChoice$1)],
-    [ThemePublic],
-    []
-  )
-});
-const idlFactory = ({ IDL: IDL2 }) => {
-  const _ImmutableObjectStorageCreateCertificateResult2 = IDL2.Record({
-    "method": IDL2.Text,
-    "blob_hash": IDL2.Text
-  });
-  const _ImmutableObjectStorageRefillInformation2 = IDL2.Record({
-    "proposed_top_up_amount": IDL2.Opt(IDL2.Nat)
-  });
-  const _ImmutableObjectStorageRefillResult2 = IDL2.Record({
-    "success": IDL2.Opt(IDL2.Bool),
-    "topped_up_amount": IDL2.Opt(IDL2.Nat)
-  });
-  const Error2 = IDL2.Variant({
-    "FrontendOriginsNotConfigured": IDL2.Null,
-    "MixedSsoSources": IDL2.Record({
-      "otherKeys": IDL2.Vec(IDL2.Text),
-      "ssoKeys": IDL2.Vec(IDL2.Text)
-    }),
-    "Stale": IDL2.Record({ "ageNs": IDL2.Nat }),
-    "MalformedCandid": IDL2.Null,
-    "AmbiguousAttribute": IDL2.Record({
-      "field": IDL2.Text,
-      "sources": IDL2.Vec(IDL2.Text)
-    }),
-    "NoAttributes": IDL2.Null,
-    "UnknownNonce": IDL2.Null,
-    "UntrustedSsoSource": IDL2.Record({ "domain": IDL2.Text }),
-    "MissingField": IDL2.Text,
-    "FrontendOriginMismatch": IDL2.Record({
-      "got": IDL2.Text,
-      "expected": IDL2.Vec(IDL2.Text)
-    })
-  });
-  const Result2 = IDL2.Variant({ "ok": IDL2.Null, "err": Error2 });
-  const UserRole2 = IDL2.Variant({
-    "admin": IDL2.Null,
-    "user": IDL2.Null,
-    "guest": IDL2.Null
-  });
-  const Principal3 = IDL2.Principal;
-  const Timestamp2 = IDL2.Nat;
-  const UserProfilePublic2 = IDL2.Record({
-    "principal": Principal3,
-    "displayName": IDL2.Text,
-    "createdAt": Timestamp2,
-    "role": UserRole2
-  });
-  const PositionId2 = IDL2.Nat;
-  const ExternalBlob3 = IDL2.Vec(IDL2.Nat8);
-  const CategoryId2 = IDL2.Nat;
-  const SubCategoryId2 = IDL2.Nat;
-  const ItemId2 = IDL2.Nat;
-  const QuizId2 = IDL2.Nat;
-  const QuestionType2 = IDL2.Variant({
-    "multiple": IDL2.Null,
-    "single": IDL2.Null
-  });
-  const AnswerOptionInput2 = IDL2.Record({
-    "text": IDL2.Text,
-    "correct": IDL2.Bool
-  });
-  const QuestionInput2 = IDL2.Record({
-    "text": IDL2.Text,
-    "questionType": QuestionType2,
-    "options": IDL2.Vec(AnswerOptionInput2)
-  });
-  const QuestionId2 = IDL2.Nat;
-  const AnswerOption2 = IDL2.Record({
-    "id": IDL2.Nat,
-    "text": IDL2.Text,
-    "correct": IDL2.Bool
-  });
-  const QuestionPublic2 = IDL2.Record({
-    "id": QuestionId2,
-    "order": IDL2.Nat,
-    "text": IDL2.Text,
-    "questionType": QuestionType2,
-    "quizId": QuizId2,
-    "options": IDL2.Vec(AnswerOption2)
-  });
-  const QuizInput2 = IDL2.Record({
-    "title": IDL2.Text,
-    "description": IDL2.Opt(IDL2.Text),
-    "passingPercentage": IDL2.Nat
-  });
-  const SubCategoryPublic2 = IDL2.Record({
-    "id": SubCategoryId2,
-    "sortOrder": IDL2.Nat,
-    "name": IDL2.Text,
-    "itemCount": IDL2.Nat,
-    "parentCategoryId": CategoryId2,
-    "coverPhoto": ExternalBlob3
-  });
-  const TrainingStepInput2 = IDL2.Record({
-    "video": IDL2.Opt(ExternalBlob3),
-    "text": IDL2.Text,
-    "photo": IDL2.Opt(ExternalBlob3)
-  });
-  const TrainingStepPublic2 = IDL2.Record({
-    "id": IDL2.Nat,
-    "itemId": ItemId2,
-    "order": IDL2.Nat,
-    "video": IDL2.Opt(ExternalBlob3),
-    "text": IDL2.Text,
-    "photo": IDL2.Opt(ExternalBlob3)
-  });
-  const TrainingStepEdit2 = IDL2.Record({
-    "video": IDL2.Opt(ExternalBlob3),
-    "text": IDL2.Text,
-    "photo": IDL2.Opt(ExternalBlob3)
-  });
-  const MenuItemPublic2 = IDL2.Record({
-    "id": ItemId2,
-    "categoryId": CategoryId2,
-    "name": IDL2.Text,
-    "description": IDL2.Text,
-    "instructions": IDL2.Vec(IDL2.Text),
-    "subCategoryId": IDL2.Opt(SubCategoryId2),
-    "itemPhoto": ExternalBlob3,
-    "ingredients": IDL2.Vec(IDL2.Text)
-  });
-  const PositionPublic2 = IDL2.Record({
-    "id": PositionId2,
-    "sortOrder": IDL2.Nat,
-    "name": IDL2.Text,
-    "createdAt": Timestamp2,
-    "description": IDL2.Opt(IDL2.Text),
-    "coverPhoto": IDL2.Opt(ExternalBlob3),
-    "updatedAt": Timestamp2,
-    "categoryCount": IDL2.Nat
-  });
-  const QuizPublic2 = IDL2.Record({
-    "id": QuizId2,
-    "title": IDL2.Text,
-    "createdAt": Timestamp2,
-    "description": IDL2.Opt(IDL2.Text),
-    "positionId": PositionId2,
-    "updatedAt": Timestamp2,
-    "passingPercentage": IDL2.Nat,
-    "questionCount": IDL2.Nat
-  });
-  const FontChoice2 = IDL2.Variant({
-    "sansSerif": IDL2.Null,
-    "monospace": IDL2.Null,
-    "serif": IDL2.Null,
-    "systemFont": IDL2.Null
-  });
-  const ThemePublic2 = IDL2.Record({
-    "font": FontChoice2,
-    "primaryColor": IDL2.Text,
-    "logo": IDL2.Opt(ExternalBlob3),
-    "accentColor": IDL2.Text,
-    "updatedAt": Timestamp2
-  });
-  const CategoryPublic2 = IDL2.Record({
-    "id": CategoryId2,
-    "sortOrder": IDL2.Nat,
-    "name": IDL2.Text,
-    "itemCount": IDL2.Nat,
-    "positionId": PositionId2,
-    "coverPhoto": ExternalBlob3
-  });
-  const AttemptId2 = IDL2.Nat;
-  const AttemptAnswer2 = IDL2.Record({
-    "questionId": QuestionId2,
-    "selectedOptionIds": IDL2.Vec(IDL2.Nat)
-  });
-  const AttemptPublic2 = IDL2.Record({
-    "id": AttemptId2,
-    "maxScore": IDL2.Nat,
-    "answers": IDL2.Vec(AttemptAnswer2),
-    "createdAt": Timestamp2,
-    "score": IDL2.Nat,
-    "quizId": QuizId2,
-    "passed": IDL2.Bool
-  });
-  const AttemptInput2 = IDL2.Record({
-    "answers": IDL2.Vec(AttemptAnswer2),
-    "quizId": QuizId2
-  });
-  const QuestionEdit2 = IDL2.Record({
-    "text": IDL2.Text,
-    "questionType": QuestionType2,
-    "options": IDL2.Vec(AnswerOptionInput2)
-  });
-  const QuizEdit2 = IDL2.Record({
-    "title": IDL2.Text,
-    "description": IDL2.Opt(IDL2.Text),
-    "passingPercentage": IDL2.Nat
-  });
-  return IDL2.Service({
-    "__accessControlState": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__categories": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__items": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__positions": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__quizAttempts": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__quizQuestions": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__quizState": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__quizzes": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__state": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__steps": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__subCategories": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__theme": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__trainingState": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "__users": IDL2.Func([], [IDL2.Reserved], ["query"]),
-    "_immutableObjectStorageBlobsAreLive": IDL2.Func(
-      [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
-      [IDL2.Vec(IDL2.Bool)],
-      ["query"]
-    ),
-    "_immutableObjectStorageBlobsToDelete": IDL2.Func(
-      [],
-      [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
-      ["query"]
-    ),
-    "_immutableObjectStorageConfirmBlobDeletion": IDL2.Func(
-      [IDL2.Vec(IDL2.Vec(IDL2.Nat8))],
-      [],
-      []
-    ),
-    "_immutableObjectStorageCreateCertificate": IDL2.Func(
-      [IDL2.Text],
-      [_ImmutableObjectStorageCreateCertificateResult2],
-      []
-    ),
-    "_immutableObjectStorageRefillCashier": IDL2.Func(
-      [IDL2.Opt(_ImmutableObjectStorageRefillInformation2)],
-      [_ImmutableObjectStorageRefillResult2],
-      []
-    ),
-    "_immutableObjectStorageUpdateGatewayPrincipals": IDL2.Func([], [], []),
-    "_initialize_access_control": IDL2.Func([], [], []),
-    "_internet_identity_sign_in_finish": IDL2.Func([], [Result2], []),
-    "_internet_identity_sign_in_start": IDL2.Func([], [IDL2.Vec(IDL2.Nat8)], []),
-    "assignCallerUserRole": IDL2.Func([IDL2.Principal, UserRole2], [], []),
-    "assignRole": IDL2.Func([Principal3, UserRole2], [UserProfilePublic2], []),
-    "createCategory": IDL2.Func(
-      [PositionId2, IDL2.Text, ExternalBlob3],
-      [CategoryId2],
-      []
-    ),
-    "createMenuItem": IDL2.Func(
-      [CategoryId2, IDL2.Opt(SubCategoryId2), IDL2.Text, IDL2.Text, ExternalBlob3],
-      [ItemId2],
-      []
-    ),
-    "createPosition": IDL2.Func(
-      [IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(ExternalBlob3)],
-      [PositionId2],
-      []
-    ),
-    "createQuestion": IDL2.Func([QuizId2, QuestionInput2], [QuestionPublic2], []),
-    "createQuiz": IDL2.Func([PositionId2, QuizInput2], [QuizId2], []),
-    "createSubCategory": IDL2.Func(
-      [CategoryId2, IDL2.Text, ExternalBlob3],
-      [SubCategoryPublic2],
-      []
-    ),
-    "createTrainingStep": IDL2.Func(
-      [ItemId2, TrainingStepInput2],
-      [TrainingStepPublic2],
-      []
-    ),
-    "deleteCategory": IDL2.Func([CategoryId2], [IDL2.Nat], []),
-    "deleteMenuItem": IDL2.Func([ItemId2], [], []),
-    "deletePosition": IDL2.Func([PositionId2], [IDL2.Nat], []),
-    "deleteQuestion": IDL2.Func([QuestionId2], [IDL2.Bool], []),
-    "deleteQuiz": IDL2.Func([QuizId2], [IDL2.Bool], []),
-    "deleteSubCategory": IDL2.Func(
-      [SubCategoryId2],
-      [IDL2.Record({ "itemCount": IDL2.Nat })],
-      []
-    ),
-    "deleteTrainingStep": IDL2.Func([IDL2.Nat], [IDL2.Bool], []),
-    "editTrainingStep": IDL2.Func(
-      [IDL2.Nat, TrainingStepEdit2],
-      [TrainingStepPublic2],
-      []
-    ),
-    "getCallerUserProfile": IDL2.Func(
-      [],
-      [IDL2.Opt(UserProfilePublic2)],
-      ["query"]
-    ),
-    "getCallerUserRole": IDL2.Func([], [UserRole2], ["query"]),
-    "getMenuItem": IDL2.Func([ItemId2], [IDL2.Opt(MenuItemPublic2)], ["query"]),
-    "getPosition": IDL2.Func(
-      [PositionId2],
-      [IDL2.Opt(PositionPublic2)],
-      ["query"]
-    ),
-    "getQuizWithQuestions": IDL2.Func(
-      [QuizId2],
-      [
-        IDL2.Opt(
-          IDL2.Record({
-            "quiz": QuizPublic2,
-            "questions": IDL2.Vec(QuestionPublic2)
-          })
-        )
-      ],
-      ["query"]
-    ),
-    "getTheme": IDL2.Func([], [ThemePublic2], ["query"]),
-    "getTrainingStep": IDL2.Func(
-      [IDL2.Nat],
-      [IDL2.Opt(TrainingStepPublic2)],
-      ["query"]
-    ),
-    "isCallerAdmin": IDL2.Func([], [IDL2.Bool], ["query"]),
-    "listCategories": IDL2.Func([], [IDL2.Vec(CategoryPublic2)], ["query"]),
-    "listItemsByCategory": IDL2.Func(
-      [CategoryId2],
-      [IDL2.Vec(MenuItemPublic2)],
-      ["query"]
-    ),
-    "listItemsBySubCategory": IDL2.Func(
-      [SubCategoryId2],
-      [IDL2.Vec(MenuItemPublic2)],
-      ["query"]
-    ),
-    "listMyQuizAttempts": IDL2.Func(
-      [QuizId2],
-      [IDL2.Vec(AttemptPublic2)],
-      ["query"]
-    ),
-    "listPositions": IDL2.Func([], [IDL2.Vec(PositionPublic2)], ["query"]),
-    "listQuizzesByPosition": IDL2.Func(
-      [PositionId2],
-      [IDL2.Vec(QuizPublic2)],
-      ["query"]
-    ),
-    "listSubCategories": IDL2.Func(
-      [CategoryId2],
-      [IDL2.Vec(SubCategoryPublic2)],
-      ["query"]
-    ),
-    "listTrainingSteps": IDL2.Func(
-      [ItemId2],
-      [IDL2.Vec(TrainingStepPublic2)],
-      ["query"]
-    ),
-    "listUsers": IDL2.Func([], [IDL2.Vec(UserProfilePublic2)], ["query"]),
-    "moveQuestion": IDL2.Func([QuestionId2, IDL2.Nat], [IDL2.Bool], []),
-    "moveTrainingStep": IDL2.Func([IDL2.Nat, IDL2.Nat], [IDL2.Bool], []),
-    "resetTheme": IDL2.Func([], [ThemePublic2], []),
-    "revokeRole": IDL2.Func([Principal3], [UserProfilePublic2], []),
-    "saveCallerUserProfile": IDL2.Func([IDL2.Text], [UserProfilePublic2], []),
-    "searchItems": IDL2.Func([IDL2.Text], [IDL2.Vec(MenuItemPublic2)], ["query"]),
-    "searchItemsInCategory": IDL2.Func(
-      [CategoryId2, IDL2.Text],
-      [IDL2.Vec(MenuItemPublic2)],
-      ["query"]
-    ),
-    "setCategorySortOrder": IDL2.Func([CategoryId2, IDL2.Nat], [], []),
-    "setPositionSortOrder": IDL2.Func([PositionId2, IDL2.Nat], [], []),
-    "setSubCategorySortOrder": IDL2.Func([SubCategoryId2, IDL2.Nat], [], []),
-    "submitQuizAttempt": IDL2.Func([AttemptInput2], [AttemptPublic2], []),
-    "updateCategory": IDL2.Func(
-      [CategoryId2, PositionId2, IDL2.Text, ExternalBlob3],
-      [],
-      []
-    ),
-    "updateLogo": IDL2.Func([IDL2.Opt(ExternalBlob3)], [ThemePublic2], []),
-    "updateMenuItem": IDL2.Func(
-      [
-        ItemId2,
-        CategoryId2,
-        IDL2.Opt(SubCategoryId2),
-        IDL2.Text,
-        IDL2.Text,
-        ExternalBlob3
-      ],
-      [],
-      []
-    ),
-    "updateMenuItemRecipe": IDL2.Func(
-      [ItemId2, IDL2.Vec(IDL2.Text), IDL2.Vec(IDL2.Text)],
-      [],
-      []
-    ),
-    "updatePosition": IDL2.Func(
-      [PositionId2, IDL2.Text, IDL2.Opt(IDL2.Text), IDL2.Opt(ExternalBlob3)],
-      [],
-      []
-    ),
-    "updateQuestion": IDL2.Func(
-      [QuestionId2, QuestionEdit2],
-      [QuestionPublic2],
-      []
-    ),
-    "updateQuiz": IDL2.Func([QuizId2, QuizEdit2], [], []),
-    "updateSubCategory": IDL2.Func(
-      [SubCategoryId2, IDL2.Text, ExternalBlob3],
-      [SubCategoryPublic2],
-      []
-    ),
-    "updateTheme": IDL2.Func(
-      [IDL2.Opt(IDL2.Text), IDL2.Opt(IDL2.Text), IDL2.Opt(FontChoice2)],
-      [ThemePublic2],
-      []
-    )
-  });
-};
-function candid_some(value) {
-  return [
-    value
-  ];
-}
-function candid_none() {
-  return [];
-}
-function record_opt_to_undefined(arg) {
-  return arg == null ? void 0 : arg;
-}
-class ExternalBlob2 {
-  constructor(directURL, blob) {
-    __publicField(this, "_blob");
-    __publicField(this, "directURL");
-    __publicField(this, "onProgress");
-    if (blob) {
-      this._blob = blob;
-    }
-    this.directURL = directURL;
-  }
-  static fromURL(url) {
-    return new ExternalBlob2(url, null);
-  }
-  static fromBytes(blob) {
-    const url = URL.createObjectURL(new Blob([
-      new Uint8Array(blob)
-    ], {
-      type: "application/octet-stream"
-    }));
-    return new ExternalBlob2(url, blob);
-  }
-  async getBytes() {
-    if (this._blob) {
-      return this._blob;
-    }
-    const response = await fetch(this.directURL);
-    const blob = await response.blob();
-    this._blob = new Uint8Array(await blob.arrayBuffer());
-    return this._blob;
-  }
-  getDirectURL() {
-    return this.directURL;
-  }
-  withUploadProgress(onProgress) {
-    this.onProgress = onProgress;
-    return this;
-  }
-}
-var FontChoice = /* @__PURE__ */ ((FontChoice2) => {
-  FontChoice2["sansSerif"] = "sansSerif";
-  FontChoice2["monospace"] = "monospace";
-  FontChoice2["serif"] = "serif";
-  FontChoice2["systemFont"] = "systemFont";
-  return FontChoice2;
-})(FontChoice || {});
-var QuestionType = /* @__PURE__ */ ((QuestionType2) => {
-  QuestionType2["multiple"] = "multiple";
-  QuestionType2["single"] = "single";
-  return QuestionType2;
-})(QuestionType || {});
-var UserRole = /* @__PURE__ */ ((UserRole2) => {
-  UserRole2["admin"] = "admin";
-  UserRole2["user"] = "user";
-  UserRole2["guest"] = "guest";
-  return UserRole2;
-})(UserRole || {});
-class Backend {
-  constructor(actor, _uploadFile, _downloadFile, processError2) {
-    this.actor = actor;
-    this._uploadFile = _uploadFile;
-    this._downloadFile = _downloadFile;
-    this.processError = processError2;
-  }
-  async __accessControlState() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__accessControlState();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__accessControlState();
-      return result;
-    }
-  }
-  async __categories() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__categories();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__categories();
-      return result;
-    }
-  }
-  async __items() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__items();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__items();
-      return result;
-    }
-  }
-  async __positions() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__positions();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__positions();
-      return result;
-    }
-  }
-  async __quizAttempts() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__quizAttempts();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__quizAttempts();
-      return result;
-    }
-  }
-  async __quizQuestions() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__quizQuestions();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__quizQuestions();
-      return result;
-    }
-  }
-  async __quizState() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__quizState();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__quizState();
-      return result;
-    }
-  }
-  async __quizzes() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__quizzes();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__quizzes();
-      return result;
-    }
-  }
-  async __state() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__state();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__state();
-      return result;
-    }
-  }
-  async __steps() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__steps();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__steps();
-      return result;
-    }
-  }
-  async __subCategories() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__subCategories();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__subCategories();
-      return result;
-    }
-  }
-  async __theme() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__theme();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__theme();
-      return result;
-    }
-  }
-  async __trainingState() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__trainingState();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__trainingState();
-      return result;
-    }
-  }
-  async __users() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.__users();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.__users();
-      return result;
-    }
-  }
-  async _immutableObjectStorageBlobsAreLive(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor._immutableObjectStorageBlobsAreLive(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._immutableObjectStorageBlobsAreLive(arg0);
-      return result;
-    }
-  }
-  async _immutableObjectStorageBlobsToDelete() {
-    if (this.processError) {
-      try {
-        const result = await this.actor._immutableObjectStorageBlobsToDelete();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._immutableObjectStorageBlobsToDelete();
-      return result;
-    }
-  }
-  async _immutableObjectStorageConfirmBlobDeletion(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor._immutableObjectStorageConfirmBlobDeletion(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._immutableObjectStorageConfirmBlobDeletion(arg0);
-      return result;
-    }
-  }
-  async _immutableObjectStorageCreateCertificate(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor._immutableObjectStorageCreateCertificate(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._immutableObjectStorageCreateCertificate(arg0);
-      return result;
-    }
-  }
-  async _immutableObjectStorageRefillCashier(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0));
-        return from_candid__ImmutableObjectStorageRefillResult_n4(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._immutableObjectStorageRefillCashier(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0));
-      return from_candid__ImmutableObjectStorageRefillResult_n4(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async _immutableObjectStorageUpdateGatewayPrincipals() {
-    if (this.processError) {
-      try {
-        const result = await this.actor._immutableObjectStorageUpdateGatewayPrincipals();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._immutableObjectStorageUpdateGatewayPrincipals();
-      return result;
-    }
-  }
-  async _initialize_access_control() {
-    if (this.processError) {
-      try {
-        const result = await this.actor._initialize_access_control();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._initialize_access_control();
-      return result;
-    }
-  }
-  async _internet_identity_sign_in_finish() {
-    if (this.processError) {
-      try {
-        const result = await this.actor._internet_identity_sign_in_finish();
-        return from_candid_Result_n8(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._internet_identity_sign_in_finish();
-      return from_candid_Result_n8(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async _internet_identity_sign_in_start() {
-    if (this.processError) {
-      try {
-        const result = await this.actor._internet_identity_sign_in_start();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor._internet_identity_sign_in_start();
-      return result;
-    }
-  }
-  async assignCallerUserRole(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
-      return result;
-    }
-  }
-  async assignRole(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.assignRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.assignRole(arg0, to_candid_UserRole_n12(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async createCategory(arg0, arg1, arg2) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return result;
-    }
-  }
-  async createMenuItem(arg0, arg1, arg2, arg3, arg4) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createMenuItem(arg0, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg1), arg2, arg3, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg4));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createMenuItem(arg0, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg1), arg2, arg3, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg4));
-      return result;
-    }
-  }
-  async createPosition(arg0, arg1, arg2) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createPosition(arg0, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg2));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createPosition(arg0, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg2));
-      return result;
-    }
-  }
-  async createQuestion(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createQuestion(arg0, to_candid_QuestionInput_n22(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createQuestion(arg0, to_candid_QuestionInput_n22(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async createQuiz(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createQuiz(arg0, to_candid_QuizInput_n30(this._uploadFile, this._downloadFile, arg1));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createQuiz(arg0, to_candid_QuizInput_n30(this._uploadFile, this._downloadFile, arg1));
-      return result;
-    }
-  }
-  async createSubCategory(arg0, arg1, arg2) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async createTrainingStep(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n35(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n35(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async deleteCategory(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deleteCategory(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deleteCategory(arg0);
-      return result;
-    }
-  }
-  async deleteMenuItem(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deleteMenuItem(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deleteMenuItem(arg0);
-      return result;
-    }
-  }
-  async deletePosition(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deletePosition(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deletePosition(arg0);
-      return result;
-    }
-  }
-  async deleteQuestion(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deleteQuestion(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deleteQuestion(arg0);
-      return result;
-    }
-  }
-  async deleteQuiz(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deleteQuiz(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deleteQuiz(arg0);
-      return result;
-    }
-  }
-  async deleteSubCategory(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deleteSubCategory(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deleteSubCategory(arg0);
-      return result;
-    }
-  }
-  async deleteTrainingStep(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.deleteTrainingStep(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.deleteTrainingStep(arg0);
-      return result;
-    }
-  }
-  async editTrainingStep(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n40(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n40(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getCallerUserProfile() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getCallerUserProfile();
-        return from_candid_opt_n41(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getCallerUserProfile();
-      return from_candid_opt_n41(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getCallerUserRole() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getCallerUserRole();
-        return from_candid_UserRole_n16(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getCallerUserRole();
-      return from_candid_UserRole_n16(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getMenuItem(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getMenuItem(arg0);
-        return from_candid_opt_n42(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getMenuItem(arg0);
-      return from_candid_opt_n42(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getPosition(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getPosition(arg0);
-        return from_candid_opt_n46(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getPosition(arg0);
-      return from_candid_opt_n46(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getQuizWithQuestions(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getQuizWithQuestions(arg0);
-        return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getQuizWithQuestions(arg0);
-      return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getTheme() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getTheme();
-        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getTheme();
-      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async getTrainingStep(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.getTrainingStep(arg0);
-        return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.getTrainingStep(arg0);
-      return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async isCallerAdmin() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.isCallerAdmin();
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.isCallerAdmin();
-      return result;
-    }
-  }
-  async listCategories() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listCategories();
-        return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listCategories();
-      return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listItemsByCategory(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listItemsByCategory(arg0);
-        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listItemsByCategory(arg0);
-      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listItemsBySubCategory(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listItemsBySubCategory(arg0);
-        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listItemsBySubCategory(arg0);
-      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listMyQuizAttempts(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listMyQuizAttempts(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listMyQuizAttempts(arg0);
-      return result;
-    }
-  }
-  async listPositions() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listPositions();
-        return from_candid_vec_n64(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listPositions();
-      return from_candid_vec_n64(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listQuizzesByPosition(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listQuizzesByPosition(arg0);
-        return from_candid_vec_n65(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listQuizzesByPosition(arg0);
-      return from_candid_vec_n65(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listSubCategories(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listSubCategories(arg0);
-        return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listSubCategories(arg0);
-      return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listTrainingSteps(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listTrainingSteps(arg0);
-        return from_candid_vec_n67(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listTrainingSteps(arg0);
-      return from_candid_vec_n67(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async listUsers() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.listUsers();
-        return from_candid_vec_n68(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.listUsers();
-      return from_candid_vec_n68(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async moveQuestion(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.moveQuestion(arg0, arg1);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.moveQuestion(arg0, arg1);
-      return result;
-    }
-  }
-  async moveTrainingStep(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.moveTrainingStep(arg0, arg1);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.moveTrainingStep(arg0, arg1);
-      return result;
-    }
-  }
-  async resetTheme() {
-    if (this.processError) {
-      try {
-        const result = await this.actor.resetTheme();
-        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.resetTheme();
-      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async revokeRole(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.revokeRole(arg0);
-        return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.revokeRole(arg0);
-      return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async saveCallerUserProfile(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.saveCallerUserProfile(arg0);
-        return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.saveCallerUserProfile(arg0);
-      return from_candid_UserProfilePublic_n14(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async searchItems(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.searchItems(arg0);
-        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.searchItems(arg0);
-      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async searchItemsInCategory(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.searchItemsInCategory(arg0, arg1);
-        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.searchItemsInCategory(arg0, arg1);
-      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async setCategorySortOrder(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.setCategorySortOrder(arg0, arg1);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.setCategorySortOrder(arg0, arg1);
-      return result;
-    }
-  }
-  async setPositionSortOrder(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.setPositionSortOrder(arg0, arg1);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.setPositionSortOrder(arg0, arg1);
-      return result;
-    }
-  }
-  async setSubCategorySortOrder(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.setSubCategorySortOrder(arg0, arg1);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.setSubCategorySortOrder(arg0, arg1);
-      return result;
-    }
-  }
-  async submitQuizAttempt(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.submitQuizAttempt(arg0);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.submitQuizAttempt(arg0);
-      return result;
-    }
-  }
-  async updateCategory(arg0, arg1, arg2, arg3) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateCategory(arg0, arg1, arg2, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg3));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateCategory(arg0, arg1, arg2, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg3));
-      return result;
-    }
-  }
-  async updateLogo(arg0) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
-        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
-      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async updateMenuItem(arg0, arg1, arg2, arg3, arg4, arg5) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateMenuItem(arg0, arg1, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg2), arg3, arg4, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg5));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateMenuItem(arg0, arg1, to_candid_opt_n19(this._uploadFile, this._downloadFile, arg2), arg3, arg4, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg5));
-      return result;
-    }
-  }
-  async updateMenuItemRecipe(arg0, arg1, arg2) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateMenuItemRecipe(arg0, arg1, arg2);
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateMenuItemRecipe(arg0, arg1, arg2);
-      return result;
-    }
-  }
-  async updatePosition(arg0, arg1, arg2, arg3) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg2), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updatePosition(arg0, arg1, to_candid_opt_n20(this._uploadFile, this._downloadFile, arg2), await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg3));
-      return result;
-    }
-  }
-  async updateQuestion(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateQuestion(arg0, to_candid_QuestionEdit_n69(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateQuestion(arg0, to_candid_QuestionEdit_n69(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async updateQuiz(arg0, arg1) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateQuiz(arg0, to_candid_QuizEdit_n70(this._uploadFile, this._downloadFile, arg1));
-        return result;
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateQuiz(arg0, to_candid_QuizEdit_n70(this._uploadFile, this._downloadFile, arg1));
-      return result;
-    }
-  }
-  async updateSubCategory(arg0, arg1, arg2) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
-    }
-  }
-  async updateTheme(arg0, arg1, arg2) {
-    if (this.processError) {
-      try {
-        const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n71(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-      } catch (e) {
-        this.processError(e);
-        throw new Error("unreachable");
-      }
-    } else {
-      const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n71(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
-    }
-  }
-}
-async function from_candid_CategoryPublic_n61(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n62(_uploadFile, _downloadFile, value);
-}
-function from_candid_Error_n10(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n11(_uploadFile, _downloadFile, value);
-}
-async function from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value) {
-  return await _downloadFile(value);
-}
-function from_candid_FontChoice_n57(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n58(_uploadFile, _downloadFile, value);
-}
-async function from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n44(_uploadFile, _downloadFile, value);
-}
-async function from_candid_PositionPublic_n47(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n48(_uploadFile, _downloadFile, value);
-}
-function from_candid_QuestionPublic_n26(_uploadFile, _downloadFile, value) {
-  return from_candid_record_n27(_uploadFile, _downloadFile, value);
-}
-function from_candid_QuestionType_n28(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n29(_uploadFile, _downloadFile, value);
-}
-function from_candid_QuizPublic_n52(_uploadFile, _downloadFile, value) {
-  return from_candid_record_n53(_uploadFile, _downloadFile, value);
-}
-function from_candid_Result_n8(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n9(_uploadFile, _downloadFile, value);
-}
-async function from_candid_SubCategoryPublic_n32(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n33(_uploadFile, _downloadFile, value);
-}
-async function from_candid_ThemePublic_n55(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n56(_uploadFile, _downloadFile, value);
-}
-async function from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n38(_uploadFile, _downloadFile, value);
-}
-function from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value) {
-  return from_candid_record_n15(_uploadFile, _downloadFile, value);
-}
-function from_candid_UserRole_n16(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n17(_uploadFile, _downloadFile, value);
-}
-function from_candid__ImmutableObjectStorageRefillResult_n4(_uploadFile, _downloadFile, value) {
-  return from_candid_record_n5(_uploadFile, _downloadFile, value);
-}
-async function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n41(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value[0]);
-}
-async function from_candid_opt_n42(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n45(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : value[0];
-}
-async function from_candid_opt_n46(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_PositionPublic_n47(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n49(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : value[0];
-}
-function from_candid_opt_n50(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : from_candid_record_n51(_uploadFile, _downloadFile, value[0]);
-}
-async function from_candid_opt_n59(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n6(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : value[0];
-}
-function from_candid_opt_n7(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : value[0];
-}
-function from_candid_record_n15(_uploadFile, _downloadFile, value) {
-  return {
-    principal: value.principal,
-    displayName: value.displayName,
-    createdAt: value.createdAt,
-    role: from_candid_UserRole_n16(_uploadFile, _downloadFile, value.role)
-  };
-}
-function from_candid_record_n27(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    order: value.order,
-    text: value.text,
-    questionType: from_candid_QuestionType_n28(_uploadFile, _downloadFile, value.questionType),
-    quizId: value.quizId,
-    options: value.options
-  };
-}
-async function from_candid_record_n33(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    sortOrder: value.sortOrder,
-    name: value.name,
-    itemCount: value.itemCount,
-    parentCategoryId: value.parentCategoryId,
-    coverPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.coverPhoto)
-  };
-}
-async function from_candid_record_n38(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    itemId: value.itemId,
-    order: value.order,
-    video: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.video)),
-    text: value.text,
-    photo: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.photo))
-  };
-}
-async function from_candid_record_n44(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    categoryId: value.categoryId,
-    name: value.name,
-    description: value.description,
-    instructions: value.instructions,
-    subCategoryId: record_opt_to_undefined(from_candid_opt_n45(_uploadFile, _downloadFile, value.subCategoryId)),
-    itemPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.itemPhoto),
-    ingredients: value.ingredients
-  };
-}
-async function from_candid_record_n48(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    sortOrder: value.sortOrder,
-    name: value.name,
-    createdAt: value.createdAt,
-    description: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.description)),
-    coverPhoto: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.coverPhoto)),
-    updatedAt: value.updatedAt,
-    categoryCount: value.categoryCount
-  };
-}
-function from_candid_record_n5(_uploadFile, _downloadFile, value) {
-  return {
-    success: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.success)),
-    topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
-  };
-}
-function from_candid_record_n51(_uploadFile, _downloadFile, value) {
-  return {
-    quiz: from_candid_QuizPublic_n52(_uploadFile, _downloadFile, value.quiz),
-    questions: from_candid_vec_n54(_uploadFile, _downloadFile, value.questions)
-  };
-}
-function from_candid_record_n53(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    title: value.title,
-    createdAt: value.createdAt,
-    description: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.description)),
-    positionId: value.positionId,
-    updatedAt: value.updatedAt,
-    passingPercentage: value.passingPercentage,
-    questionCount: value.questionCount
-  };
-}
-async function from_candid_record_n56(_uploadFile, _downloadFile, value) {
-  return {
-    font: from_candid_FontChoice_n57(_uploadFile, _downloadFile, value.font),
-    primaryColor: value.primaryColor,
-    logo: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.logo)),
-    accentColor: value.accentColor,
-    updatedAt: value.updatedAt
-  };
-}
-async function from_candid_record_n62(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    sortOrder: value.sortOrder,
-    name: value.name,
-    itemCount: value.itemCount,
-    positionId: value.positionId,
-    coverPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.coverPhoto)
-  };
-}
-function from_candid_variant_n11(_uploadFile, _downloadFile, value) {
-  return "FrontendOriginsNotConfigured" in value ? {
-    __kind__: "FrontendOriginsNotConfigured",
-    FrontendOriginsNotConfigured: value.FrontendOriginsNotConfigured
-  } : "MixedSsoSources" in value ? {
-    __kind__: "MixedSsoSources",
-    MixedSsoSources: value.MixedSsoSources
-  } : "Stale" in value ? {
-    __kind__: "Stale",
-    Stale: value.Stale
-  } : "MalformedCandid" in value ? {
-    __kind__: "MalformedCandid",
-    MalformedCandid: value.MalformedCandid
-  } : "AmbiguousAttribute" in value ? {
-    __kind__: "AmbiguousAttribute",
-    AmbiguousAttribute: value.AmbiguousAttribute
-  } : "NoAttributes" in value ? {
-    __kind__: "NoAttributes",
-    NoAttributes: value.NoAttributes
-  } : "UnknownNonce" in value ? {
-    __kind__: "UnknownNonce",
-    UnknownNonce: value.UnknownNonce
-  } : "UntrustedSsoSource" in value ? {
-    __kind__: "UntrustedSsoSource",
-    UntrustedSsoSource: value.UntrustedSsoSource
-  } : "MissingField" in value ? {
-    __kind__: "MissingField",
-    MissingField: value.MissingField
-  } : "FrontendOriginMismatch" in value ? {
-    __kind__: "FrontendOriginMismatch",
-    FrontendOriginMismatch: value.FrontendOriginMismatch
-  } : value;
-}
-function from_candid_variant_n17(_uploadFile, _downloadFile, value) {
-  return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
-}
-function from_candid_variant_n29(_uploadFile, _downloadFile, value) {
-  return "multiple" in value ? "multiple" : "single" in value ? "single" : value;
-}
-function from_candid_variant_n58(_uploadFile, _downloadFile, value) {
-  return "sansSerif" in value ? "sansSerif" : "monospace" in value ? "monospace" : "serif" in value ? "serif" : "systemFont" in value ? "systemFont" : value;
-}
-function from_candid_variant_n9(_uploadFile, _downloadFile, value) {
-  return "ok" in value ? {
-    __kind__: "ok",
-    ok: value.ok
-  } : "err" in value ? {
-    __kind__: "err",
-    err: from_candid_Error_n10(_uploadFile, _downloadFile, value.err)
-  } : value;
-}
-function from_candid_vec_n54(_uploadFile, _downloadFile, value) {
-  return value.map((x2) => from_candid_QuestionPublic_n26(_uploadFile, _downloadFile, x2));
-}
-async function from_candid_vec_n60(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_CategoryPublic_n61(_uploadFile, _downloadFile, x2)));
-}
-async function from_candid_vec_n63(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, x2)));
-}
-async function from_candid_vec_n64(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_PositionPublic_n47(_uploadFile, _downloadFile, x2)));
-}
-function from_candid_vec_n65(_uploadFile, _downloadFile, value) {
-  return value.map((x2) => from_candid_QuizPublic_n52(_uploadFile, _downloadFile, x2));
-}
-async function from_candid_vec_n66(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_SubCategoryPublic_n32(_uploadFile, _downloadFile, x2)));
-}
-async function from_candid_vec_n67(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, x2)));
-}
-function from_candid_vec_n68(_uploadFile, _downloadFile, value) {
-  return value.map((x2) => from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, x2));
-}
-async function to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value) {
-  return await _uploadFile(value);
-}
-function to_candid_FontChoice_n72(_uploadFile, _downloadFile, value) {
-  return to_candid_variant_n73(_uploadFile, _downloadFile, value);
-}
-function to_candid_QuestionEdit_n69(_uploadFile, _downloadFile, value) {
-  return to_candid_record_n23(_uploadFile, _downloadFile, value);
-}
-function to_candid_QuestionInput_n22(_uploadFile, _downloadFile, value) {
-  return to_candid_record_n23(_uploadFile, _downloadFile, value);
-}
-function to_candid_QuestionType_n24(_uploadFile, _downloadFile, value) {
-  return to_candid_variant_n25(_uploadFile, _downloadFile, value);
-}
-function to_candid_QuizEdit_n70(_uploadFile, _downloadFile, value) {
-  return to_candid_record_n31(_uploadFile, _downloadFile, value);
-}
-function to_candid_QuizInput_n30(_uploadFile, _downloadFile, value) {
-  return to_candid_record_n31(_uploadFile, _downloadFile, value);
-}
-async function to_candid_TrainingStepEdit_n40(_uploadFile, _downloadFile, value) {
-  return await to_candid_record_n36(_uploadFile, _downloadFile, value);
-}
-async function to_candid_TrainingStepInput_n35(_uploadFile, _downloadFile, value) {
-  return await to_candid_record_n36(_uploadFile, _downloadFile, value);
-}
-function to_candid_UserRole_n12(_uploadFile, _downloadFile, value) {
-  return to_candid_variant_n13(_uploadFile, _downloadFile, value);
-}
-function to_candid__ImmutableObjectStorageRefillInformation_n2(_uploadFile, _downloadFile, value) {
-  return to_candid_record_n3(_uploadFile, _downloadFile, value);
-}
-function to_candid_opt_n1(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(to_candid__ImmutableObjectStorageRefillInformation_n2(_uploadFile, _downloadFile, value));
-}
-function to_candid_opt_n19(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(value);
-}
-function to_candid_opt_n20(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(value);
-}
-async function to_candid_opt_n21(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value));
-}
-function to_candid_opt_n71(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(to_candid_FontChoice_n72(_uploadFile, _downloadFile, value));
-}
-function to_candid_record_n23(_uploadFile, _downloadFile, value) {
-  return {
-    text: value.text,
-    questionType: to_candid_QuestionType_n24(_uploadFile, _downloadFile, value.questionType),
-    options: value.options
-  };
-}
-function to_candid_record_n3(_uploadFile, _downloadFile, value) {
-  return {
-    proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
-  };
-}
-function to_candid_record_n31(_uploadFile, _downloadFile, value) {
-  return {
-    title: value.title,
-    description: value.description ? candid_some(value.description) : candid_none(),
-    passingPercentage: value.passingPercentage
-  };
-}
-async function to_candid_record_n36(_uploadFile, _downloadFile, value) {
-  return {
-    video: value.video ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.video)) : candid_none(),
-    text: value.text,
-    photo: value.photo ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.photo)) : candid_none()
-  };
-}
-function to_candid_variant_n13(_uploadFile, _downloadFile, value) {
-  return value == "admin" ? {
-    admin: null
-  } : value == "user" ? {
-    user: null
-  } : value == "guest" ? {
-    guest: null
-  } : value;
-}
-function to_candid_variant_n25(_uploadFile, _downloadFile, value) {
-  return value == "multiple" ? {
-    multiple: null
-  } : value == "single" ? {
-    single: null
-  } : value;
-}
-function to_candid_variant_n73(_uploadFile, _downloadFile, value) {
-  return value == "sansSerif" ? {
-    sansSerif: null
-  } : value == "monospace" ? {
-    monospace: null
-  } : value == "serif" ? {
-    serif: null
-  } : value == "systemFont" ? {
-    systemFont: null
-  } : value;
-}
-function createActor(canisterId, _uploadFile, _downloadFile, options = {}) {
-  const agent = options.agent || HttpAgent.createSync({
-    ...options.agentOptions
-  });
-  if (options.agent && options.agentOptions) {
-    console.warn("Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent.");
-  }
-  const actor = Actor.createActor(idlFactory, {
-    agent,
-    canisterId,
-    ...options.actorOptions
-  });
-  return new Backend(actor, _uploadFile, _downloadFile, options.processError);
-}
-function useAuth() {
-  const ii = useInternetIdentity();
-  const { actor, isFetching } = useActor(createActor);
-  const profileQuery = useQuery({
-    queryKey: ["auth", "profile", ii.isAuthenticated],
-    queryFn: async () => {
-      if (!actor || !ii.isAuthenticated) return null;
-      return actor.getCallerUserProfile();
-    },
-    enabled: !!actor && !isFetching && ii.isAuthenticated
-  });
-  const roleQuery = useQuery({
-    queryKey: ["auth", "role", ii.isAuthenticated],
-    queryFn: async () => {
-      if (!actor || !ii.isAuthenticated) return null;
-      try {
-        return await actor.getCallerUserRole();
-      } catch {
-        return null;
-      }
-    },
-    enabled: !!actor && !isFetching && ii.isAuthenticated
-  });
-  const role = roleQuery.data ?? null;
-  return {
-    isAuthenticated: ii.isAuthenticated,
-    isInitializing: ii.isInitializing,
-    isLoggingIn: ii.isLoggingIn,
-    login: ii.login,
-    clear: ii.clear,
-    profile: profileQuery.data ?? null,
-    role,
-    isAdmin: role === UserRole.admin,
-    isStaff: role === UserRole.admin || role === UserRole.user,
-    isLoadingProfile: profileQuery.isLoading && ii.isAuthenticated,
-    isLoadingRole: roleQuery.isLoading && ii.isAuthenticated
-  };
 }
 var prefix = "Invariant failed";
 function invariant$1(condition, message) {
@@ -34318,7 +35348,7 @@ function batch(fn) {
 function isUpdaterFunction(updater) {
   return typeof updater === "function";
 }
-let Store$1 = class Store {
+class Store {
   constructor(initialState, options) {
     this.listeners = /* @__PURE__ */ new Set();
     this.subscribe = (listener) => {
@@ -34349,7 +35379,7 @@ let Store$1 = class Store {
     (_c2 = (_b2 = this.options) == null ? void 0 : _b2.onUpdate) == null ? void 0 : _c2.call(_b2);
     __flush(this);
   }
-};
+}
 class Derived {
   constructor(options) {
     this.listeners = /* @__PURE__ */ new Set();
@@ -34428,7 +35458,7 @@ class Derived {
       if (dep instanceof Derived) {
         dep.registerOnGraph();
         this.registerOnGraph(dep.options.deps);
-      } else if (dep instanceof Store$1) {
+      } else if (dep instanceof Store) {
         let relatedLinkedDerivedVals = __storeToDerived.get(dep);
         if (!relatedLinkedDerivedVals) {
           relatedLinkedDerivedVals = /* @__PURE__ */ new Set();
@@ -34448,7 +35478,7 @@ class Derived {
     for (const dep of deps) {
       if (dep instanceof Derived) {
         this.unregisterFromGraph(dep.options.deps);
-      } else if (dep instanceof Store$1) {
+      } else if (dep instanceof Store) {
         const relatedLinkedDerivedVals = __storeToDerived.get(dep);
         if (relatedLinkedDerivedVals) {
           relatedLinkedDerivedVals.delete(this);
@@ -36762,7 +37792,7 @@ class RouterCore {
         this.buildRouteTree();
       }
       if (!this.__store) {
-        this.__store = new Store$1(getInitialRouterState(this.latestLocation), {
+        this.__store = new Store(getInitialRouterState(this.latestLocation), {
           onUpdate: () => {
             this.__store.state = {
               ...this.state,
@@ -39370,808 +40400,6 @@ function useLocation(opts) {
     select: (state) => state.location
   });
 }
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-const toCamelCase = (string) => string.replace(
-  /^([A-Z])|[\s-_]+(\w)/g,
-  (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
-);
-const toPascalCase = (string) => {
-  const camelCase = toCamelCase(string);
-  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
-};
-const mergeClasses = (...classes) => classes.filter((className, index2, array) => {
-  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index2;
-}).join(" ").trim();
-const hasA11yProp = (props) => {
-  for (const prop in props) {
-    if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
-      return true;
-    }
-  }
-};
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-var defaultAttributes = {
-  xmlns: "http://www.w3.org/2000/svg",
-  width: 24,
-  height: 24,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round",
-  strokeLinejoin: "round"
-};
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const Icon$1 = reactExports.forwardRef(
-  ({
-    color: color2 = "currentColor",
-    size: size2 = 24,
-    strokeWidth = 2,
-    absoluteStrokeWidth,
-    className = "",
-    children,
-    iconNode,
-    ...rest
-  }, ref) => reactExports.createElement(
-    "svg",
-    {
-      ref,
-      ...defaultAttributes,
-      width: size2,
-      height: size2,
-      stroke: color2,
-      strokeWidth: absoluteStrokeWidth ? Number(strokeWidth) * 24 / Number(size2) : strokeWidth,
-      className: mergeClasses("lucide", className),
-      ...!children && !hasA11yProp(rest) && { "aria-hidden": "true" },
-      ...rest
-    },
-    [
-      ...iconNode.map(([tag, attrs]) => reactExports.createElement(tag, attrs)),
-      ...Array.isArray(children) ? children : [children]
-    ]
-  )
-);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const createLucideIcon = (iconName, iconNode) => {
-  const Component2 = reactExports.forwardRef(
-    ({ className, ...props }, ref) => reactExports.createElement(Icon$1, {
-      ref,
-      iconNode,
-      className: mergeClasses(
-        `lucide-${toKebabCase(toPascalCase(iconName))}`,
-        `lucide-${iconName}`,
-        className
-      ),
-      ...props
-    })
-  );
-  Component2.displayName = toPascalCase(iconName);
-  return Component2;
-};
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$N = [
-  ["path", { d: "M12 5v14", key: "s699le" }],
-  ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
-];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$N);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$M = [
-  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
-];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$M);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$L = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
-];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$L);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$K = [
-  ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
-  ["path", { d: "M12 19V5", key: "x0mq9r" }]
-];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$K);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$J = [
-  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
-  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
-];
-const Briefcase = createLucideIcon("briefcase", __iconNode$J);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$I = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$I);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$H = [
-  [
-    "path",
-    {
-      d: "M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z",
-      key: "1qvrer"
-    }
-  ],
-  ["path", { d: "M6 17h12", key: "1jwigz" }]
-];
-const ChefHat = createLucideIcon("chef-hat", __iconNode$H);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$G = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$G);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$F = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$F);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$E = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode$E);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$D = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$D);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$C = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
-  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
-];
-const CircleX = createLucideIcon("circle-x", __iconNode$C);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$B = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
-const Circle = createLucideIcon("circle", __iconNode$B);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$A = [
-  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
-  [
-    "path",
-    {
-      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
-      key: "116196"
-    }
-  ],
-  ["path", { d: "M12 11h4", key: "1jrz19" }],
-  ["path", { d: "M12 16h4", key: "n85exb" }],
-  ["path", { d: "M8 11h.01", key: "1dfujw" }],
-  ["path", { d: "M8 16h.01", key: "18s6g9" }]
-];
-const ClipboardList = createLucideIcon("clipboard-list", __iconNode$A);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$z = [
-  ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
-  ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
-];
-const Copy = createLucideIcon("copy", __iconNode$z);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$y = [
-  [
-    "path",
-    {
-      d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
-      key: "1nclc0"
-    }
-  ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
-];
-const Eye = createLucideIcon("eye", __iconNode$y);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$x = [
-  [
-    "path",
-    {
-      d: "M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z",
-      key: "hod4my"
-    }
-  ],
-  [
-    "path",
-    {
-      d: "M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z",
-      key: "w4yl2u"
-    }
-  ],
-  ["path", { d: "M3 5a2 2 0 0 0 2 2h3", key: "f2jnh7" }],
-  ["path", { d: "M3 3v13a2 2 0 0 0 2 2h3", key: "k8epm1" }]
-];
-const FolderTree = createLucideIcon("folder-tree", __iconNode$x);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$w = [
-  [
-    "path",
-    {
-      d: "M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z",
-      key: "j76jl0"
-    }
-  ],
-  ["path", { d: "M22 10v6", key: "1lu8f3" }],
-  ["path", { d: "M6 12.5V16a6 3 0 0 0 12 0v-3.5", key: "1r8lef" }]
-];
-const GraduationCap = createLucideIcon("graduation-cap", __iconNode$w);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$v = [
-  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
-  ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
-];
-const History = createLucideIcon("history", __iconNode$v);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$u = [
-  ["path", { d: "M16 5h6", key: "1vod17" }],
-  ["path", { d: "M19 2v6", key: "4bpg5p" }],
-  ["path", { d: "M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5", key: "1ue2ih" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }]
-];
-const ImagePlus = createLucideIcon("image-plus", __iconNode$u);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$t = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
-];
-const Image = createLucideIcon("image", __iconNode$t);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$s = [
-  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
-  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
-  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
-  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
-];
-const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$s);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$r = [
-  ["path", { d: "m3 17 2 2 4-4", key: "1jhpwq" }],
-  ["path", { d: "m3 7 2 2 4-4", key: "1obspn" }],
-  ["path", { d: "M13 6h8", key: "15sg57" }],
-  ["path", { d: "M13 12h8", key: "h98zly" }],
-  ["path", { d: "M13 18h8", key: "oe0vm4" }]
-];
-const ListChecks = createLucideIcon("list-checks", __iconNode$r);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$q = [
-  ["path", { d: "M10 12h11", key: "6m4ad9" }],
-  ["path", { d: "M10 18h11", key: "11hvi2" }],
-  ["path", { d: "M10 6h11", key: "c7qv1k" }],
-  ["path", { d: "M4 10h2", key: "16xx2s" }],
-  ["path", { d: "M4 6h1v4", key: "cnovpq" }],
-  ["path", { d: "M6 18H4c0-1 2-2 2-3s-1-1.5-2-1", key: "m9a95d" }]
-];
-const ListOrdered = createLucideIcon("list-ordered", __iconNode$q);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$p = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("loader-circle", __iconNode$p);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$o = [
-  ["circle", { cx: "12", cy: "16", r: "1", key: "1au0dj" }],
-  ["rect", { x: "3", y: "10", width: "18", height: "12", rx: "2", key: "6s8ecr" }],
-  ["path", { d: "M7 10V7a5 5 0 0 1 10 0v3", key: "1pqi11" }]
-];
-const LockKeyhole = createLucideIcon("lock-keyhole", __iconNode$o);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$n = [
-  ["path", { d: "m10 17 5-5-5-5", key: "1bsop3" }],
-  ["path", { d: "M15 12H3", key: "6jk70r" }],
-  ["path", { d: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4", key: "u53s6r" }]
-];
-const LogIn = createLucideIcon("log-in", __iconNode$n);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$m = [
-  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-  ["path", { d: "M21 12H9", key: "dn1m92" }],
-  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-];
-const LogOut = createLucideIcon("log-out", __iconNode$m);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$l = [["path", { d: "M5 12h14", key: "1ays0h" }]];
-const Minus = createLucideIcon("minus", __iconNode$l);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$k = [
-  [
-    "path",
-    {
-      d: "M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z",
-      key: "1a0edw"
-    }
-  ],
-  ["path", { d: "M12 22V12", key: "d0xqtd" }],
-  ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
-  ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
-];
-const Package = createLucideIcon("package", __iconNode$k);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$j = [
-  [
-    "path",
-    {
-      d: "M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z",
-      key: "e79jfc"
-    }
-  ],
-  ["circle", { cx: "13.5", cy: "6.5", r: ".5", fill: "currentColor", key: "1okk4w" }],
-  ["circle", { cx: "17.5", cy: "10.5", r: ".5", fill: "currentColor", key: "f64h9f" }],
-  ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
-  ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
-];
-const Palette = createLucideIcon("palette", __iconNode$j);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$i = [
-  [
-    "path",
-    {
-      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
-      key: "1a8usu"
-    }
-  ],
-  ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
-];
-const Pencil = createLucideIcon("pencil", __iconNode$i);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$h = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
-];
-const Plus = createLucideIcon("plus", __iconNode$h);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$g = [
-  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-  ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
-];
-const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$g);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$f = [
-  ["path", { d: "M7 21h10", key: "1b0cd5" }],
-  ["path", { d: "M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z", key: "4rw317" }],
-  [
-    "path",
-    {
-      d: "M11.38 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7 2.51 2.51 0 0 1 .03 1.1",
-      key: "10xrj0"
-    }
-  ],
-  ["path", { d: "m13 12 4-4", key: "1hckqy" }],
-  ["path", { d: "M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2", key: "1p4srx" }]
-];
-const Salad = createLucideIcon("salad", __iconNode$f);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$e = [
-  [
-    "path",
-    {
-      d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
-      key: "1c8476"
-    }
-  ],
-  ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
-  ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
-];
-const Save = createLucideIcon("save", __iconNode$e);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$d = [
-  ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
-  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
-];
-const Search = createLucideIcon("search", __iconNode$d);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$c = [
-  [
-    "path",
-    {
-      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
-      key: "1qme2f"
-    }
-  ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
-];
-const Settings = createLucideIcon("settings", __iconNode$c);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$b = [
-  [
-    "path",
-    {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
-  ],
-  ["path", { d: "M12 8v4", key: "1got3b" }],
-  ["path", { d: "M12 16h.01", key: "1drbdi" }]
-];
-const ShieldAlert = createLucideIcon("shield-alert", __iconNode$b);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$a = [
-  [
-    "path",
-    {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
-  ],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-];
-const ShieldCheck = createLucideIcon("shield-check", __iconNode$a);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$9 = [
-  ["path", { d: "M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z", key: "4rw317" }],
-  ["path", { d: "M7 21h10", key: "1b0cd5" }],
-  ["path", { d: "M19.5 12 22 6", key: "shfsr5" }],
-  [
-    "path",
-    {
-      d: "M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62",
-      key: "rpc6vp"
-    }
-  ],
-  [
-    "path",
-    {
-      d: "M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62",
-      key: "1lf63m"
-    }
-  ],
-  [
-    "path",
-    { d: "M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62", key: "97tijn" }
-  ]
-];
-const Soup = createLucideIcon("soup", __iconNode$9);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$8 = [
-  ["path", { d: "m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7", key: "ztvudi" }],
-  ["path", { d: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8", key: "1b2hhj" }],
-  ["path", { d: "M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4", key: "2ebpfo" }],
-  ["path", { d: "M2 7h20", key: "1fcdvo" }],
-  [
-    "path",
-    {
-      d: "M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7",
-      key: "6c3vgh"
-    }
-  ]
-];
-const Store2 = createLucideIcon("store", __iconNode$8);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$7 = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
-  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
-];
-const Target = createLucideIcon("target", __iconNode$7);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$6 = [
-  ["path", { d: "M3 6h18", key: "d0wm0j" }],
-  ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
-  ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
-  ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
-  ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
-];
-const Trash2 = createLucideIcon("trash-2", __iconNode$6);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$5 = [
-  ["path", { d: "M10 15H6a4 4 0 0 0-4 4v2", key: "1nfge6" }],
-  ["path", { d: "m14.305 16.53.923-.382", key: "1itpsq" }],
-  ["path", { d: "m15.228 13.852-.923-.383", key: "eplpkm" }],
-  ["path", { d: "m16.852 12.228-.383-.923", key: "13v3q0" }],
-  ["path", { d: "m16.852 17.772-.383.924", key: "1i8mnm" }],
-  ["path", { d: "m19.148 12.228.383-.923", key: "1q8j1v" }],
-  ["path", { d: "m19.53 18.696-.382-.924", key: "vk1qj3" }],
-  ["path", { d: "m20.772 13.852.924-.383", key: "n880s0" }],
-  ["path", { d: "m20.772 16.148.924.383", key: "1g6xey" }],
-  ["circle", { cx: "18", cy: "15", r: "3", key: "gjjjvw" }],
-  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
-];
-const UserCog = createLucideIcon("user-cog", __iconNode$5);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$4 = [
-  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
-  ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }]
-];
-const UserMinus = createLucideIcon("user-minus", __iconNode$4);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$3 = [
-  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-  ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
-  ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
-  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
-];
-const Users = createLucideIcon("users", __iconNode$3);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$2 = [
-  ["path", { d: "m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8", key: "n7qcjb" }],
-  [
-    "path",
-    { d: "M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7", key: "d0u48b" }
-  ],
-  ["path", { d: "m2.1 21.8 6.4-6.3", key: "yn04lh" }],
-  ["path", { d: "m19 5-7 7", key: "194lzd" }]
-];
-const UtensilsCrossed = createLucideIcon("utensils-crossed", __iconNode$2);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$1 = [
-  [
-    "path",
-    {
-      d: "m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5",
-      key: "ftymec"
-    }
-  ],
-  ["rect", { x: "2", y: "6", width: "14", height: "12", rx: "2", key: "158x01" }]
-];
-const Video = createLucideIcon("video", __iconNode$1);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode = [
-  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
-];
-const X = createLucideIcon("x", __iconNode);
 const NAV = [
   {
     label: "Dashboard",
@@ -40227,14 +40455,14 @@ function AdminLayout() {
   const { profile, clear } = useAuth();
   const location2 = useLocation();
   const navigate = useNavigate();
-  const initials = (profile == null ? void 0 : profile.displayName) ? profile.displayName.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase() : "AD";
+  const initials = (profile == null ? void 0 : profile.displayName) ? profile.displayName.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase() : "B3";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-h-screen bg-background", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-16 items-center gap-2.5 border-b border-sidebar-border px-5", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-4.5" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "hidden w-64 shrink-0 flex-col border-r border-[#E4002B]/40 bg-sidebar text-sidebar-foreground md:flex", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-16 items-center gap-2.5 border-b border-[#E4002B]/40 px-5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 items-center justify-center rounded-lg bg-[#E4002B] font-display text-sm leading-none text-white", children: "33" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col leading-tight", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-base font-semibold", children: "MenuCraft" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] uppercase tracking-wider text-muted-foreground", children: "Admin" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-base tracking-wide", children: "BUBBA'S 33" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] uppercase tracking-wider text-[#F2A900]", children: "Admin" })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "flex-1 space-y-1 px-3 py-4", "aria-label": "Admin", children: NAV.map((item) => {
@@ -40246,7 +40474,7 @@ function AdminLayout() {
             to: item.to,
             className: cn(
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              active ? "bg-[#E4002B] text-white" : "text-sidebar-foreground/80 hover:bg-[#E4002B]/15 hover:text-white"
             ),
             "data-ocid": item.ocid,
             children: [
@@ -40257,25 +40485,25 @@ function AdminLayout() {
           item.to
         );
       }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-sidebar-border p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-[#E4002B]/40 p-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Button,
         {
           variant: "ghost",
-          className: "w-full justify-start gap-3 text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+          className: "w-full justify-start gap-3 text-sidebar-foreground/80 hover:bg-[#E4002B]/15 hover:text-white",
           onClick: () => navigate({ to: "/" }),
           "data-ocid": "admin.nav.storefront",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Store2, { className: "size-4" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Store$1, { className: "size-4" }),
             "Back to storefront"
           ]
         }
       ) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 flex-1 flex-col", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border bg-card px-4 sm:px-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b-2 border-[#E4002B] bg-topbar text-topbar-foreground px-4 sm:px-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 md:hidden", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-4" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg font-semibold", children: "MenuCraft Admin" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 items-center justify-center rounded-lg bg-[#E4002B] font-display text-sm leading-none text-white", children: "33" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg tracking-wide", children: "BUBBA'S 33 Admin" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hidden md:block" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
@@ -40287,7 +40515,7 @@ function AdminLayout() {
               size: "sm",
               "data-ocid": "admin.topbar.storefront",
               children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/", "data-ocid": "admin.topbar.storefront_link", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Store2, { className: "size-4" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Store$1, { className: "size-4" }),
                 " Storefront"
               ] })
             }
@@ -40308,7 +40536,7 @@ function AdminLayout() {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "nav",
         {
-          className: "flex gap-1 overflow-x-auto border-b border-border bg-card px-4 py-2 md:hidden",
+          className: "flex gap-1 overflow-x-auto border-b border-[#E4002B]/40 bg-topbar px-4 py-2 md:hidden",
           "aria-label": "Admin mobile",
           children: NAV.map((item) => {
             const active = item.end ? location2.pathname === item.to : location2.pathname.startsWith(item.to);
@@ -40318,7 +40546,7 @@ function AdminLayout() {
                 to: item.to,
                 className: cn(
                   "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                  active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
+                  active ? "bg-[#E4002B] text-white" : "text-topbar-foreground/80 hover:bg-[#E4002B]/15 hover:text-white"
                 ),
                 "data-ocid": `${item.ocid}.mobile`,
                 children: item.label
@@ -43472,7 +43700,7 @@ var Arrow$1 = reactExports.forwardRef((props, forwardedRef) => {
   );
 });
 Arrow$1.displayName = NAME$3;
-var Root$5 = Arrow$1;
+var Root$6 = Arrow$1;
 function useSize(element) {
   const [size2, setSize] = reactExports.useState(void 0);
   useLayoutEffect2(() => {
@@ -43719,7 +43947,7 @@ var PopperArrow = reactExports.forwardRef(function PopperArrow2(props, forwarded
           visibility: contentContext.shouldHideArrow ? "hidden" : void 0
         },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Root$5,
+          Root$6,
           {
             ...arrowProps,
             ref: forwardedRef,
@@ -44118,7 +44346,7 @@ function focusFirst$1(candidates, preventScroll = false) {
 function wrapArray$2(array, startIndex) {
   return array.map((_2, index2) => array[(startIndex + index2) % array.length]);
 }
-var Root$4 = RovingFocusGroup;
+var Root$5 = RovingFocusGroup;
 var Item$1 = RovingFocusGroupItem;
 var getDefaultParent = function(originalTarget) {
   if (typeof document === "undefined") {
@@ -45151,7 +45379,7 @@ var MenuContentImpl = reactExports.forwardRef(
                 onInteractOutside,
                 onDismiss,
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Root$4,
+                  Root$5,
                   {
                     asChild: true,
                     ...rovingFocusGroupScope,
@@ -46016,9 +46244,9 @@ function Layout({ children }) {
   const { isAuthenticated, isAdmin, profile, login, clear, isLoggingIn } = useAuth();
   const navigate = useNavigate();
   const logoUrl = document.documentElement.getAttribute("data-logo-url") || null;
-  const initials = (profile == null ? void 0 : profile.displayName) ? profile.displayName.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase() : "MC";
+  const initials = (profile == null ? void 0 : profile.displayName) ? profile.displayName.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase() : "B3";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-h-screen flex-col bg-background", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-subtle", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-40 border-b-2 border-[#E4002B] bg-topbar text-topbar-foreground shadow-subtle", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         Link,
         {
@@ -46029,12 +46257,12 @@ function Layout({ children }) {
             "img",
             {
               src: logoUrl,
-              alt: "MenuCraft",
+              alt: "Bubba's 33",
               className: "h-9 w-auto max-w-[10rem] object-contain"
             }
           ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-9 items-center justify-center rounded-lg bg-gradient-primary text-primary-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-5" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-xl font-semibold tracking-tight", children: "MenuCraft" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-9 items-center justify-center rounded-lg bg-[#E4002B] font-display text-lg leading-none text-white", children: "33" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-xl tracking-wide", children: "BUBBA'S 33" })
           ] })
         }
       ),
@@ -46119,9 +46347,9 @@ function Layout({ children }) {
     /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 bg-background", children }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "border-t border-border bg-muted/40", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-sm text-muted-foreground", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-4 text-primary" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display font-medium text-foreground", children: "MenuCraft" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "· Kitchen Training & Recipe Studio" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-4 text-[#E4002B]" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display tracking-wide text-foreground", children: "BUBBA'S 33" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "· Roadie Training" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground", children: [
         "© ",
@@ -46132,7 +46360,7 @@ function Layout({ children }) {
           "a",
           {
             href: `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-              typeof window !== "undefined" ? window.location.hostname : "menucraft"
+              typeof window !== "undefined" ? window.location.hostname : "bubbas33"
             )}`,
             target: "_blank",
             rel: "noreferrer",
@@ -46227,13 +46455,13 @@ function blobUrl(blob, fallback = "/assets/images/placeholder.svg") {
   }
 }
 function fileToBlob(file) {
-  return file.arrayBuffer().then((buf) => ExternalBlob2.fromBytes(new Uint8Array(buf)));
+  return file.arrayBuffer().then((buf) => ExternalBlob.fromBytes(new Uint8Array(buf)));
 }
 const FONT_MAP = {
-  [FontChoice.serif]: '"Fraunces", serif',
-  [FontChoice.sansSerif]: '"DM Sans", sans-serif',
-  [FontChoice.monospace]: 'ui-monospace, "JetBrains Mono", monospace',
-  [FontChoice.systemFont]: "system-ui, sans-serif"
+  [FontChoice.sansSerif]: '"Anton", "Oswald", "Barlow", sans-serif',
+  [FontChoice.serif]: '"Oswald", "Barlow", sans-serif',
+  [FontChoice.systemFont]: "system-ui, sans-serif",
+  [FontChoice.monospace]: 'ui-monospace, "JetBrains Mono", monospace'
 };
 function hexToOklchComponents(hex2) {
   const m2 = /^#?([0-9a-fA-F]{6})$/.exec(hex2.trim());
@@ -46313,12 +46541,12 @@ function EmptyState({
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
+      className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center",
       "data-ocid": ocid,
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Soup, { className: "size-7" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full border border-accent/40 bg-accent/10 text-accent", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Soup, { className: "size-7" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: title }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-2xl font-semibold uppercase tracking-wide", children: title }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: description })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, variant: "outline", "data-ocid": `${ocid}.back_button`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/", "data-ocid": `${ocid}.back_link`, children: backLabel }) })
@@ -46339,20 +46567,23 @@ function MenuItemCard({
       className: "group block focus-visible:outline-none",
       "data-ocid": `category.menu.item.${index2 + 1}`,
       "aria-label": `View recipe for ${item.name}`,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative aspect-square overflow-hidden bg-muted", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            src: photoUrl,
-            alt: item.name,
-            loading: "lazy",
-            className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-          }
-        ) }),
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-square overflow-hidden bg-muted", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: photoUrl,
+              alt: item.name,
+              loading: "lazy",
+              className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70" })
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 flex-col gap-1.5 p-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight text-foreground line-clamp-1", children: item.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase leading-tight tracking-wide text-foreground line-clamp-1", children: item.name }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground line-clamp-2", children: item.description }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-auto pt-2 text-xs font-medium uppercase tracking-wider text-primary", children: "View recipe" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-auto pt-2 text-xs font-semibold uppercase tracking-wider text-accent", children: "View recipe" })
         ] })
       ] })
     }
@@ -46375,7 +46606,7 @@ function SubCategoryCard({
       className: "group block focus-visible:outline-none",
       "data-ocid": `category.subcategory.item.${index2 + 1}`,
       "aria-label": `Browse ${subcategory.name} sub-category`,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[4/3] overflow-hidden bg-muted", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
@@ -46386,11 +46617,11 @@ function SubCategoryCard({
               className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 bg-primary px-4 py-3 text-primary-foreground", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-1", children: subcategory.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 border-t border-border bg-card px-4 py-3.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase leading-tight tracking-wide text-foreground line-clamp-1", children: subcategory.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-accent", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3" }),
             count2,
             " ",
@@ -55213,11 +55444,11 @@ function CategoryPage() {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3" }),
           " Category"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl", children: categoryLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl", children: categoryLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "h-10 w-48",
@@ -55274,7 +55505,7 @@ function CategoryPage() {
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(FolderTree, { className: "size-5 text-primary" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Sub-Categories" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Sub-Categories" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
                 subCount,
                 " ",
@@ -55302,7 +55533,7 @@ function CategoryPage() {
       hasItems && items ? /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-5", "data-ocid": "category.menu.section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-5 text-primary" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Items" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Items" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
             itemCount,
             " ",
@@ -55342,7 +55573,7 @@ function CategoryCard({
       className: "group block focus-visible:outline-none",
       "data-ocid": `home.category.item.${index2 + 1}`,
       "aria-label": `Browse ${category.name} category`,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:border-primary/50 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[4/3] overflow-hidden bg-muted", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
@@ -55353,11 +55584,11 @@ function CategoryCard({
               className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 bg-primary px-4 py-3 text-primary-foreground", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-1", children: category.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 border-t border-border bg-card px-4 py-3.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase leading-tight tracking-wide text-foreground line-clamp-1", children: category.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-accent", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3" }),
             count2,
             " ",
@@ -55410,22 +55641,22 @@ function QuizCard({
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     Card,
     {
-      className: "h-full gap-0 py-0 transition-smooth hover:shadow-elevated",
+      className: "h-full gap-0 border-border bg-card py-0 transition-smooth hover:border-primary/50 hover:shadow-elevated",
       "data-ocid": `quiz.item.${itemMarker}`,
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex h-full flex-col gap-4 p-5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 space-y-1.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-3" }),
               " Quiz"
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-2", children: quiz.title })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase leading-tight tracking-wide line-clamp-2", children: quiz.title })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             Badge,
             {
               variant: "secondary",
-              className: "shrink-0 gap-1",
+              className: "shrink-0 gap-1 border-accent/40 bg-accent/10 text-accent",
               "data-ocid": `quiz.question_count.${itemMarker}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ListChecks, { className: "size-3" }),
@@ -55447,7 +55678,7 @@ function QuizCard({
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                 "Passing score:",
                 " ",
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-medium text-foreground", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-semibold text-foreground", children: [
                   quiz.passingPercentage,
                   "%"
                 ] })
@@ -55479,7 +55710,7 @@ function QuizCard({
               asChild: true,
               variant: "ghost",
               size: "sm",
-              className: "gap-1.5",
+              className: "gap-1.5 text-muted-foreground hover:text-foreground",
               "data-ocid": `quiz.history_button.${itemMarker}`,
               children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 Link,
@@ -55621,11 +55852,11 @@ function PositionPage() {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-3" }),
           " Position"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl", children: positionLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl", children: positionLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "h-10 w-48",
@@ -55654,9 +55885,9 @@ function PositionPage() {
         className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
         "data-ocid": "position.error_state",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-7" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Position not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-2xl font-semibold uppercase tracking-wide", children: "Position not found" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "The position you're looking for doesn't exist or has been removed." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -55681,7 +55912,7 @@ function PositionPage() {
     ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-5", "data-ocid": "position.category.section", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-5 text-primary" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Categories" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Categories" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
           categoryCount,
           " ",
@@ -55715,7 +55946,7 @@ function PositionPage() {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-5 text-primary" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Quizzes" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Quizzes" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-muted-foreground", children: quizzesLoadingState ? "Loading…" : `${quizCount} ${quizCount === 1 ? "quiz" : "quizzes"}` })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Test your knowledge of this position. Retakes are unlimited." })
@@ -55752,9 +55983,9 @@ function PositionPage() {
               className: "flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-10 text-center",
               "data-ocid": "position.quiz.empty_state",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-6" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-12 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-6" }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold tracking-tight", children: "No quizzes for this position yet" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase tracking-wide", children: "No quizzes for this position yet" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-md text-sm text-muted-foreground", children: "Your training team hasn't published any quizzes for this position yet. Check back soon." })
                 ] })
               ]
@@ -55846,11 +56077,11 @@ function PositionQuizzesPage() {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-3" }),
           " Quizzes"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl", children: positionLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl", children: positionLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "h-10 w-56",
@@ -55879,9 +56110,9 @@ function PositionQuizzesPage() {
         className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
         "data-ocid": "position_quizzes.error_state",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-7" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Position not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-2xl font-semibold uppercase tracking-wide", children: "Position not found" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "The position you're looking for doesn't exist or has been removed." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -55906,7 +56137,7 @@ function PositionQuizzesPage() {
     ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-5", "data-ocid": "position_quizzes.section", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-5 text-primary" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Available quizzes" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Available quizzes" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
           quizCount,
           " ",
@@ -56037,11 +56268,11 @@ function QuizHistoryPage() {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(History, { className: "size-3" }),
           " Attempt history"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl", children: quizLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl", children: quizLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "h-10 w-56",
@@ -56071,9 +56302,9 @@ function QuizHistoryPage() {
         className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
         "data-ocid": "quiz_history.error_state",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-7" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Quiz not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-2xl font-semibold uppercase tracking-wide", children: "Quiz not found" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "This quiz doesn't exist or doesn't belong to this position." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -56104,42 +56335,49 @@ function QuizHistoryPage() {
         backLabel: "Back to quizzes"
       }
     ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-6", "data-ocid": "quiz_history.section", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "bg-muted/30", "data-ocid": "quiz_history.summary", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-wrap items-center justify-between gap-4 py-5", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: "Best score" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-display text-2xl font-semibold tracking-tight", children: [
-            bestPercentage,
-            "%"
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Card,
+        {
+          className: "border-border bg-muted/30",
+          "data-ocid": "quiz_history.summary",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-wrap items-center justify-between gap-4 py-5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-semibold uppercase tracking-wider text-muted-foreground", children: "Best score" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-heading text-2xl font-bold uppercase tracking-wide", children: [
+                bestPercentage,
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-semibold uppercase tracking-wider text-muted-foreground", children: "Passing threshold" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "flex items-center gap-1.5 font-heading text-2xl font-bold uppercase tracking-wide", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { className: "size-4 text-accent" }),
+                (quizView == null ? void 0 : quizView.passingPercentage) ?? 0,
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Badge,
+              {
+                variant: hasPassed ? "default" : "secondary",
+                className: "gap-1 px-3 py-1 text-sm font-semibold uppercase tracking-wider",
+                "data-ocid": "quiz_history.summary.status",
+                children: hasPassed ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3.5" }),
+                  " Passed"
+                ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "size-3.5" }),
+                  " Not yet passed"
+                ] })
+              }
+            )
           ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: "Passing threshold" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "flex items-center gap-1.5 font-display text-2xl font-semibold tracking-tight", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { className: "size-4 text-accent" }),
-            (quizView == null ? void 0 : quizView.passingPercentage) ?? 0,
-            "%"
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Badge,
-          {
-            variant: hasPassed ? "default" : "secondary",
-            className: "gap-1 px-3 py-1 text-sm",
-            "data-ocid": "quiz_history.summary.status",
-            children: hasPassed ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3.5" }),
-              " Passed"
-            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "size-3.5" }),
-              " Not yet passed"
-            ] })
-          }
-        )
-      ] }) }),
+        }
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(History, { className: "size-5 text-primary" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Your attempts" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Your attempts" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
             attemptCount,
             " ",
@@ -56167,13 +56405,13 @@ function QuizHistoryPage() {
                     /* @__PURE__ */ jsxRuntimeExports.jsx(
                       "span",
                       {
-                        className: "flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary",
+                        className: "flex size-9 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary/10 font-heading text-sm font-bold text-primary",
                         "data-ocid": `quiz_history.attempt.number.${index2 + 1}`,
                         children: attemptCount - index2
                       }
                     ),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 space-y-0.5", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-medium leading-tight", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-semibold leading-tight", children: [
                         "Attempt ",
                         attemptCount - index2
                       ] }),
@@ -56194,7 +56432,7 @@ function QuizHistoryPage() {
                         className: "text-right",
                         "data-ocid": `quiz_history.attempt.score.${index2 + 1}`,
                         children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-display text-lg font-semibold leading-tight tracking-tight", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-heading text-lg font-bold uppercase leading-tight tracking-wide", children: [
                             attempt.score,
                             "/",
                             attempt.total
@@ -56210,7 +56448,7 @@ function QuizHistoryPage() {
                       Badge,
                       {
                         variant: attempt.passed ? "default" : "destructive",
-                        className: "gap-1",
+                        className: "gap-1 font-semibold uppercase tracking-wider",
                         "data-ocid": `quiz_history.attempt.status.${index2 + 1}`,
                         children: attempt.passed ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                           /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3.5" }),
@@ -56325,7 +56563,7 @@ function getInvalidValueError(propValue, componentName) {
 
 Defaulting to \`null\`.`;
 }
-var Root$3 = Progress$1;
+var Root$4 = Progress$1;
 var Indicator$1 = ProgressIndicator;
 function Progress({
   className,
@@ -56333,7 +56571,7 @@ function Progress({
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$3,
+    Root$4,
     {
       "data-slot": "progress",
       className: cn(
@@ -56389,7 +56627,7 @@ function QuizResultsPage() {
   if (!attempt) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", "data-ocid": "quiz.results.empty_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "mx-auto max-w-md text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-8 text-muted-foreground" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "No attempt to review" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "No attempt to review" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "You haven't taken this quiz yet. Start an attempt to see your results here." }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap justify-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, "data-ocid": "quiz.results.empty_state.take_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -56470,7 +56708,7 @@ function QuizResultsPage() {
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight", children: passed ? "You passed!" : "Not quite yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase tracking-wide", children: passed ? "You passed!" : "Not quite yet" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
                 (quiz == null ? void 0 : quiz.title) ?? "Quiz",
                 " ·",
@@ -56487,7 +56725,7 @@ function QuizResultsPage() {
               Badge,
               {
                 variant: passed ? "default" : "destructive",
-                className: "px-3 py-1 text-sm",
+                className: "px-3 py-1 text-sm font-semibold uppercase tracking-wider",
                 "data-ocid": "quiz.results.summary.status_badge",
                 children: passed ? "Passed" : "Failed"
               }
@@ -56499,7 +56737,7 @@ function QuizResultsPage() {
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "span",
                 {
-                  className: "font-display text-2xl font-semibold tabular-nums text-primary",
+                  className: "font-heading text-2xl font-bold tabular-nums text-primary",
                   "data-ocid": "quiz.results.summary.percentage",
                   children: [
                     percentage,
@@ -56582,7 +56820,7 @@ function QuizResultsPage() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", "data-ocid": "quiz.results.review.section", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(ListChecks, { className: "size-5 text-primary" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Answer review" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Answer review" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
           questions.length,
           " ",
@@ -56646,7 +56884,7 @@ function ReviewQuestion({
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1 space-y-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold uppercase tracking-wider text-muted-foreground", children: [
                     "Question ",
                     index2 + 1
                   ] }),
@@ -56654,13 +56892,13 @@ function ReviewQuestion({
                     Badge,
                     {
                       variant: isCorrect ? "secondary" : "destructive",
-                      className: "text-[10px]",
+                      className: "text-[10px] font-semibold uppercase tracking-wider",
                       "data-ocid": `quiz.results.review.badge.${index2 + 1}`,
                       children: isCorrect ? "Correct" : "Incorrect"
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold leading-snug", children: question.text })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-base font-semibold uppercase leading-snug tracking-wide", children: question.text })
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57041,13 +57279,13 @@ var Label$2 = reactExports.forwardRef((props, forwardedRef) => {
   );
 });
 Label$2.displayName = NAME$2;
-var Root$2 = Label$2;
+var Root$3 = Label$2;
 function Label$1({
   className,
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$2,
+    Root$3,
     {
       "data-slot": "label",
       className: cn(
@@ -57230,7 +57468,7 @@ var RadioGroup$1 = reactExports.forwardRef(
         value,
         onValueChange: setValue,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Root$4,
+          Root$5,
           {
             asChild: true,
             ...rovingFocusGroupScope,
@@ -57437,7 +57675,7 @@ function QuizTakePage() {
   if (!quiz) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", "data-ocid": "quiz.take.error_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "mx-auto max-w-md text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-8 text-muted-foreground" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "Quiz not found" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "Quiz not found" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "This quiz may have been removed. Pick another quiz from the position to continue." }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         Button,
@@ -57460,7 +57698,7 @@ function QuizTakePage() {
   if (total === 0) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", "data-ocid": "quiz.take.empty_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "mx-auto max-w-md text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-8 text-muted-foreground" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "No questions yet" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "No questions yet" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
         quiz.title,
         " doesn't have any questions configured yet. Check back soon."
@@ -57490,11 +57728,11 @@ function QuizTakePage() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-3.5 text-primary" }),
             "Quiz"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-1 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl", children: quiz.title }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-1 truncate font-heading text-2xl font-bold uppercase tracking-wide sm:text-3xl", children: quiz.title }),
           quiz.description ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-muted-foreground", children: quiz.description }) : null
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57523,7 +57761,7 @@ function QuizTakePage() {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
-                className: "font-display text-lg text-primary",
+                className: "font-heading text-lg font-bold uppercase tracking-wide text-primary",
                 "data-ocid": "quiz.take.progress.current",
                 children: current + 1
               }
@@ -57571,10 +57809,10 @@ function QuizTakePage() {
         transition: { duration: 0.25, ease: "easeOut" },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { "data-ocid": `quiz.take.question.${current + 1}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-3", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary", children: current + 1 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary/10 font-heading text-sm font-bold text-primary", children: current + 1 }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 space-y-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-lg font-semibold leading-snug", children: question.text }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: question.type === "single" ? "Choose one answer" : "Choose all that apply" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-lg font-semibold uppercase leading-snug tracking-wide", children: question.text }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-semibold uppercase tracking-wider text-muted-foreground", children: question.type === "single" ? "Choose one answer" : "Choose all that apply" })
             ] })
           ] }),
           question.type === "single" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57590,7 +57828,7 @@ function QuizTakePage() {
                   Label$1,
                   {
                     htmlFor: optId,
-                    className: "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/40 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-primary/5",
+                    className: "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/50 hover:bg-primary/5 has-[:checked]:border-primary has-[:checked]:bg-primary/10",
                     "data-ocid": `quiz.take.option.${current + 1}.${i + 1}`,
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57620,7 +57858,7 @@ function QuizTakePage() {
                   Label$1,
                   {
                     htmlFor: optId,
-                    className: "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/40 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-primary/5",
+                    className: "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/50 hover:bg-primary/5 has-[:checked]:border-primary has-[:checked]:bg-primary/10",
                     "data-ocid": `quiz.take.option.${current + 1}.${i + 1}`,
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57731,7 +57969,7 @@ function RecipeCard({ item }) {
   const hasInstructions = item.instructions.length > 0;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-2xl border border-border bg-card shadow-card", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-5 border-b border-border bg-muted/20 p-6 sm:flex-row sm:items-start sm:gap-6 sm:p-8", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-28 shrink-0 overflow-hidden rounded-xl bg-muted sm:size-32", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "size-28 shrink-0 overflow-hidden rounded-xl border border-border bg-muted sm:size-32", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
           src: photoUrl,
@@ -57740,11 +57978,11 @@ function RecipeCard({ item }) {
         }
       ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1 space-y-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-3" }),
           " Recipe"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl", children: item.name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase leading-tight tracking-wide sm:text-4xl", children: item.name }),
         item.description && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-2xl text-base text-muted-foreground", children: item.description })
       ] })
     ] }),
@@ -57754,14 +57992,14 @@ function RecipeCard({ item }) {
           "h2",
           {
             id: "ingredients-heading",
-            className: "flex items-center gap-2 font-display text-xl font-semibold tracking-tight",
+            className: "flex items-center gap-2 font-heading text-xl font-semibold uppercase tracking-wide",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Salad, { className: "size-5 text-accent" }),
               " Ingredients"
             ]
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 h-px w-12 bg-accent/40" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 h-px w-12 bg-accent/60" }),
         hasIngredients ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           "ul",
           {
@@ -57787,21 +58025,21 @@ function RecipeCard({ item }) {
           "h2",
           {
             id: "instructions-heading",
-            className: "flex items-center gap-2 font-display text-xl font-semibold tracking-tight",
+            className: "flex items-center gap-2 font-heading text-xl font-semibold uppercase tracking-wide",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(ListOrdered, { className: "size-5 text-primary" }),
               " Instructions"
             ]
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 h-px w-12 bg-primary/40" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 h-px w-12 bg-primary/60" }),
         hasInstructions ? /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "mt-5 space-y-4", "data-ocid": "recipe.instructions.list", children: item.instructions.map((step, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "li",
           {
             className: "flex items-start gap-3.5 text-sm text-foreground",
             "data-ocid": `recipe.instructions.item.${i + 1}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground", children: i + 1 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground", children: i + 1 }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "pt-0.5 leading-relaxed", children: step })
             ]
           },
@@ -57811,7 +58049,7 @@ function RecipeCard({ item }) {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start gap-4 border-t border-border bg-muted/20 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold tracking-tight", children: "Ready to cook?" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-lg font-semibold uppercase tracking-wide", children: "Ready to cook?" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Walk through this recipe step-by-step with the staff training flow." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57894,9 +58132,9 @@ function RecipeCardPage() {
         className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
         "data-ocid": "recipe.not_found.empty_state",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Soup, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Soup, { className: "size-7" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Recipe not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-2xl font-semibold uppercase tracking-wide", children: "Recipe not found" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "We couldn't find that dish. It may have been removed from the menu." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -57913,6 +58151,107 @@ function RecipeCardPage() {
     ) })
   ] });
 }
+const STATUS_LABEL = {
+  certified: "Certified",
+  in_training: "In training",
+  not_started: "Not started"
+};
+function QuizAttempts({
+  quizId,
+  onAttempts
+}) {
+  const { data, isLoading } = useMyAttempts(quizId);
+  reactExports.useEffect(() => {
+    onAttempts(isLoading ? void 0 : data ?? []);
+  }, [data, isLoading, onAttempts]);
+  return null;
+}
+function usePositionStatus(positionId, isAuthenticated) {
+  const quizzesQuery = useQuizzesByPosition(
+    isAuthenticated ? positionId : void 0
+  );
+  const quizzes = quizzesQuery.data ?? [];
+  const quizIds = quizzes.map((q2) => q2.id);
+  const [attemptsByQuiz, setAttemptsByQuiz] = reactExports.useState({});
+  const registerAttempts = reactExports.useCallback(
+    (quizId, attempts) => {
+      const key = String(quizId);
+      setAttemptsByQuiz((prev) => {
+        if (prev[key] === attempts) return prev;
+        return { ...prev, [key]: attempts };
+      });
+    },
+    []
+  );
+  if (!isAuthenticated) {
+    return {
+      status: null,
+      isLoading: false,
+      quizIds: [],
+      registerAttempts
+    };
+  }
+  const quizzesReady = !quizzesQuery.isLoading && quizzesQuery.isSuccess;
+  if (!quizzesReady) {
+    return { status: null, isLoading: true, quizIds, registerAttempts };
+  }
+  const allReported = quizIds.every(
+    (id2) => attemptsByQuiz[String(id2)] !== void 0
+  );
+  if (!allReported) {
+    return { status: null, isLoading: true, quizIds, registerAttempts };
+  }
+  const allAttempts = quizIds.flatMap((id2) => attemptsByQuiz[String(id2)] ?? []);
+  if (allAttempts.length === 0) {
+    return {
+      status: "not_started",
+      isLoading: false,
+      quizIds,
+      registerAttempts
+    };
+  }
+  const passed = allAttempts.some((a2) => a2.passed);
+  return {
+    status: passed ? "certified" : "in_training",
+    isLoading: false,
+    quizIds,
+    registerAttempts
+  };
+}
+function StatusBadge({ status }) {
+  if (status === "certified") {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Badge,
+      {
+        className: "border-success/30 bg-success/15 text-success",
+        "data-ocid": "position.status.certified",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3" }),
+          STATUS_LABEL.certified
+        ]
+      }
+    );
+  }
+  if (status === "in_training") {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Badge,
+      {
+        className: "border-accent/30 bg-accent/15 text-accent",
+        "data-ocid": "position.status.in_training",
+        children: STATUS_LABEL.in_training
+      }
+    );
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Badge,
+    {
+      variant: "outline",
+      className: "border-border bg-card/80 text-muted-foreground",
+      "data-ocid": "position.status.not_started",
+      children: STATUS_LABEL.not_started
+    }
+  );
+}
 function PositionCard({
   position,
   index: index2
@@ -57920,6 +58259,11 @@ function PositionCard({
   const count2 = position.categoryCount;
   const hasCover = position.coverUrl && position.coverUrl.length > 0;
   const initial = position.name.trim().charAt(0).toUpperCase();
+  const { isAuthenticated } = useAuth();
+  const { status, isLoading, quizIds, registerAttempts } = usePositionStatus(
+    position.id,
+    isAuthenticated
+  );
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     Link,
     {
@@ -57928,7 +58272,7 @@ function PositionCard({
       className: "group block focus-visible:outline-none",
       "data-ocid": `home.position.item.${index2 + 1}`,
       "aria-label": `Browse ${position.name} position`,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "overflow-hidden rounded-xl border border-border bg-card shadow-card transition-smooth group-hover:-translate-y-1 group-hover:border-primary/40 group-hover:shadow-elevated group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-[4/3] overflow-hidden bg-muted", children: [
           hasCover ? /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
@@ -57939,15 +58283,30 @@ function PositionCard({
               className: "size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             }
           ) : (
-            // Tasteful placeholder tile for positions without a cover photo.
+            // Dark placeholder tile for positions without a cover photo.
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-full items-center justify-center bg-gradient-to-br from-muted to-muted/60", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20 transition-smooth group-hover:scale-105", children: initial ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-3xl font-semibold", children: initial }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-9" }) }) })
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70" }),
+          isAuthenticated && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute right-2 top-2", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LoaderCircle,
+            {
+              className: "size-4 animate-spin text-foreground/80",
+              "aria-label": "Loading status"
+            }
+          ) : status ? /* @__PURE__ */ jsxRuntimeExports.jsx(StatusBadge, { status }) : null }),
+          quizIds.map((qid) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            QuizAttempts,
+            {
+              quizId: qid,
+              onAttempts: (attempts) => registerAttempts(qid, attempts)
+            },
+            String(qid)
+          ))
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 bg-primary px-4 py-3 text-primary-foreground", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-1", children: position.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-1 text-xs font-medium", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-3" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3 border-t border-border px-4 py-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-lg font-semibold uppercase leading-tight tracking-wide line-clamp-1 text-foreground", children: position.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-3 text-primary" }),
             count2,
             " ",
             count2 === 1 ? "category" : "categories"
@@ -57970,19 +58329,15 @@ function StorefrontHomePage() {
         transition: { duration: 0.5, ease: "easeOut" },
         className: "mx-auto max-w-3xl text-center",
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-3.5 text-primary" }),
-            " MenuCraft Kitchen"
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-primary", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Flame, { className: "size-3.5" }),
+            " Bubba's 33 Roadhouse"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "mt-6 font-display text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl", children: [
-            "A photo-driven menu,",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("br", { className: "hidden sm:block" }),
-            " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-gradient-primary", children: "recipe & training" }),
-            " ",
-            "studio"
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "mt-6 font-display text-5xl font-bold uppercase tracking-tight text-foreground sm:text-6xl md:text-7xl", children: [
+            "Pick your ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-primary", children: "position" })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mx-auto mt-5 max-w-xl text-lg text-muted-foreground", children: "Browse training positions and their dishes, follow step-by-step recipe cards, and train your kitchen staff — all in one warm, editorial space." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mx-auto mt-5 max-w-xl font-body text-lg text-muted-foreground", children: "Train up. Get certified. Run the floor." }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, size: "lg", "data-ocid": "home.explore_button", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: "#positions", "data-ocid": "home.explore_link", children: [
               "Explore positions",
@@ -58123,11 +58478,11 @@ function SubCategoryPage() {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-3" }),
           " Sub-category"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl", children: subsLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl", children: subsLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "h-10 w-56",
@@ -58185,7 +58540,7 @@ function TrainingComplete({
       transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
       className: "mx-auto max-w-xl",
       "data-ocid": "training.complete",
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "overflow-hidden border-primary/30 shadow-md", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-5 px-6 py-12 text-center", children: [
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "overflow-hidden border-primary/40 bg-card shadow-elevated", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-5 px-6 py-12 text-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           motion.div,
           {
@@ -58197,13 +58552,13 @@ function TrainingComplete({
               stiffness: 200,
               damping: 14
             },
-            className: "flex size-16 items-center justify-center rounded-full bg-success/15 text-success",
+            className: "flex size-16 items-center justify-center rounded-full border border-accent/40 bg-accent/15 text-accent",
             "data-ocid": "training.complete.badge",
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-9" })
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-3xl font-semibold tracking-tight", children: "Training complete" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-3xl font-bold uppercase tracking-wide", children: "Training complete" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-muted-foreground", children: [
             "You've walked through all ",
             totalSteps,
@@ -58211,7 +58566,7 @@ function TrainingComplete({
             totalSteps === 1 ? "" : "s",
             " for",
             " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium text-foreground", children: itemName }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-foreground", children: itemName }),
             ". You're ready to plate it."
           ] })
         ] }),
@@ -58282,7 +58637,7 @@ function TrainingProgress({
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
-                className: "font-display text-lg text-primary",
+                className: "font-heading text-lg font-bold uppercase tracking-wide text-primary",
                 "data-ocid": "training.progress.current",
                 children: clamped
               }
@@ -58302,7 +58657,7 @@ function TrainingProgress({
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "span",
             {
-              className: "text-xs font-medium tabular-nums text-muted-foreground",
+              className: "text-xs font-semibold tabular-nums uppercase tracking-wider text-accent",
               "data-ocid": "training.progress.percent",
               children: [
                 percent2,
@@ -58393,7 +58748,7 @@ function TrainingStepView({
             className: "lg:col-span-2 flex flex-col",
             "data-ocid": `training.step.${index2 + 1}.text`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-primary", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Video, { className: "size-3.5" }),
                 "Step ",
                 index2 + 1
@@ -58480,7 +58835,7 @@ function TrainingPage() {
         "data-ocid": "training.empty_state",
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10 text-center", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-8 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "No training steps yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-heading text-xl font-semibold uppercase tracking-wide", children: "No training steps yet" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
             item.name,
             " doesn't have a training flow configured. Check back soon."
@@ -58522,11 +58877,11 @@ function TrainingPage() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8 space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-3.5 text-primary" }),
             "Staff training"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-1 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl", children: item.name })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-1 truncate font-heading text-2xl font-bold uppercase tracking-wide sm:text-3xl", children: item.name })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Button,
@@ -58642,10 +58997,11 @@ function PhotoUpload({
     lastMimeTypeRef.current = file.type || "image/jpeg";
     try {
       const blob = await fileToBlob(file);
+      setStage("uploading");
       const tracked = blob.withUploadProgress((pct) => {
         setProgress(pct);
+        if (pct >= 100) setStage("ready");
       });
-      setStage("ready");
       onChange(tracked);
     } catch (err) {
       setStage("error");
@@ -58664,10 +59020,10 @@ function PhotoUpload({
     setProgress(0);
     setErrorMsg(null);
   }
-  const busy = stage === "preparing";
-  const showProgress = stage === "ready";
+  const busy = stage === "preparing" || stage === "uploading";
+  const showProgress = stage === "uploading" || stage === "ready";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-    label && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-foreground", children: label }),
+    label && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-sm font-medium uppercase tracking-wide text-foreground", children: label }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
@@ -58683,7 +59039,7 @@ function PhotoUpload({
                 className: "size-full object-cover"
               }
             ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-full items-center justify-center text-muted-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ImagePlus, { className: "size-5" }) }),
-            busy && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center bg-background/70", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-5 animate-spin text-primary" }) })
+            busy && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-5 animate-spin text-primary" }) })
           ]
         }
       ),
@@ -58728,8 +59084,14 @@ function PhotoUpload({
             className: "flex flex-col gap-1",
             "data-ocid": "photo.loading_state",
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Progress, { value: progress2, className: "h-1.5" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: progress2 >= 100 ? "Uploaded" : progress2 > 0 ? `Uploading… ${progress2}%` : "Ready to upload on save" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Progress,
+                {
+                  value: progress2,
+                  className: "h-1.5 bg-muted [&>div]:bg-primary"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: stage === "ready" ? "Uploaded" : progress2 > 0 ? `Uploading… ${progress2}%` : "Uploading…" })
             ]
           }
         ),
@@ -59055,7 +59417,7 @@ var DescriptionWarning$1 = ({ contentRef, descriptionId }) => {
   }, [MESSAGE, contentRef, descriptionId]);
   return null;
 };
-var Root$1 = Dialog$1;
+var Root$2 = Dialog$1;
 var Trigger$2 = DialogTrigger;
 var Portal$1 = DialogPortal$1;
 var Overlay = DialogOverlay$1;
@@ -59066,7 +59428,7 @@ var Close = DialogClose;
 function Dialog({
   ...props
 }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$1, { "data-slot": "dialog", ...props });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$2, { "data-slot": "dialog", ...props });
 }
 function DialogPortal({
   ...props
@@ -60539,12 +60901,19 @@ function CategoryFormDialog({
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "category.dialog", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit category" : "New category" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-display uppercase tracking-wide", children: isEdit ? "Edit category" : "New category" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the position, name, and cover photo for this category." : "Add a new menu category under a position, with a name and a cover photo." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "category.position.label", children: "Position" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "category.position.label",
+            children: "Position"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           Select,
           {
@@ -60581,7 +60950,15 @@ function CategoryFormDialog({
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "category-name", "data-ocid": "category.name.label", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            htmlFor: "category-name",
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "category.name.label",
+            children: "Name"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
@@ -60659,7 +61036,7 @@ var useDialogScope = createDialogScope();
 var AlertDialog$1 = (props) => {
   const { __scopeAlertDialog, ...alertDialogProps } = props;
   const dialogScope = useDialogScope(__scopeAlertDialog);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$1, { ...dialogScope, ...alertDialogProps, modal: true });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$2, { ...dialogScope, ...alertDialogProps, modal: true });
 };
 AlertDialog$1.displayName = ROOT_NAME;
 var TRIGGER_NAME$1 = "AlertDialogTrigger";
@@ -61038,22 +61415,22 @@ function CategoryList({
         "data-ocid": "category.empty_state",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "No categories yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-lg font-semibold uppercase tracking-wide", children: "No categories yet" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Create your first menu category to start organizing dishes on the storefront." })
         ]
       }
     );
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "category.table", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center", children: "#" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16", children: "Photo" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Name" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Items" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center", children: "Order" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" }),
-        hasSubCategorySupport && /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-44 text-right", children: "Sub-categories" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "category.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "#" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Photo" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Items" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Order" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Actions" }),
+        hasSubCategorySupport && /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-44 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Sub-categories" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sorted.map((cat, index2) => {
         const itemCount = Number(cat.itemCount);
@@ -61077,6 +61454,7 @@ function CategoryList({
               Badge,
               {
                 variant: "secondary",
+                className: "border-accent/40 bg-accent/10 text-accent",
                 "data-ocid": `category.item_count.${index2 + 1}`,
                 children: itemCount
               }
@@ -61264,7 +61642,7 @@ function SubCategoryFormDialog({
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "subcategory.dialog", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit sub-category" : "New sub-category" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-display uppercase tracking-wide", children: isEdit ? "Edit sub-category" : "New sub-category" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the name and cover photo for this sub-category." : "Add a sub-category under a parent category with a name and a cover photo." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
@@ -61273,7 +61651,7 @@ function SubCategoryFormDialog({
           Label$1,
           {
             htmlFor: "subcategory-parent",
-            className: "text-muted-foreground",
+            className: "font-heading uppercase tracking-wide text-muted-foreground",
             children: "Parent category"
           }
         ),
@@ -61292,6 +61670,7 @@ function SubCategoryFormDialog({
           Label$1,
           {
             htmlFor: "subcategory-name",
+            className: "font-heading uppercase tracking-wide",
             "data-ocid": "subcategory.name.label",
             children: "Name"
           }
@@ -61422,21 +61801,21 @@ function SubCategoryList({
         "data-ocid": "subcategory.empty_state",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-base font-semibold", children: "No sub-categories yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-base font-semibold uppercase tracking-wide", children: "No sub-categories yet" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Add a sub-category to organize items within this category more granularly on the storefront." })
         ]
       }
     );
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "subcategory.table", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center", children: "#" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-14", children: "Photo" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Name" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Items" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center", children: "Order" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "subcategory.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "#" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-14 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Photo" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Items" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Order" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Actions" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sorted.map((sub, index2) => {
         const itemCount = Number(sub.itemCount);
@@ -61462,6 +61841,7 @@ function SubCategoryList({
                 Badge,
                 {
                   variant: "secondary",
+                  className: "border-accent/40 bg-accent/10 text-accent",
                   "data-ocid": `subcategory.item_count.${index2 + 1}`,
                   children: itemCount
                 }
@@ -61625,9 +62005,9 @@ function AdminCategoriesPage() {
   }
   const subParentName = ((_a2 = data == null ? void 0 : data.find((c2) => c2.id === subParentCategoryId)) == null ? void 0 : _a2.name) ?? void 0;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Categories" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: "Categories" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Create, reorder, and delete the menu categories shown on your storefront." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openCreate, "data-ocid": "category.create_button", children: [
@@ -61837,13 +62217,13 @@ function RecipeEditor({
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "section",
       {
-        className: "flex flex-col gap-3",
+        className: "flex flex-col gap-3 border-t-2 border-t-primary/40 pt-4",
         "data-ocid": "recipe.ingredients.section",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex items-center justify-between gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(UtensilsCrossed, { className: "size-4 text-primary" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold", children: "Ingredients" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-base font-semibold uppercase tracking-wide", children: "Ingredients" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
                 ing.length,
                 " item",
@@ -61944,12 +62324,12 @@ function RecipeEditor({
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "section",
       {
-        className: "flex flex-col gap-3",
+        className: "flex flex-col gap-3 border-t-2 border-t-primary/40 pt-4",
         "data-ocid": "recipe.instructions.section",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex items-center justify-between gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold", children: "Instructions" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-base font-semibold uppercase tracking-wide", children: "Instructions" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
                 ins.length,
                 " step",
@@ -62083,7 +62463,7 @@ function SubCategorySelect({
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline justify-between gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { ocidPrefix }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: "Optional" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-heading text-xs uppercase tracking-wide text-muted-foreground", children: "Optional" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       Select,
@@ -62147,7 +62527,7 @@ function Label({ ocidPrefix }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "span",
     {
-      className: "text-sm font-medium leading-none",
+      className: "font-heading text-sm font-medium uppercase leading-none tracking-wide",
       "data-ocid": `${ocidPrefix}.subcategory.label`,
       children: "Sub-category"
     }
@@ -62204,7 +62584,7 @@ function TrainingStepsEditor({ itemId }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", "data-ocid": "training.editor", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex items-center justify-between gap-3", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold", children: "Training steps" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-base font-semibold uppercase tracking-wide", children: "Training steps" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
           sorted.length,
           " step",
@@ -62247,7 +62627,7 @@ function TrainingStepsEditor({ itemId }) {
     ) : /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "flex flex-col gap-3", children: sorted.map((step, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "li",
       {
-        className: "flex items-start gap-3 rounded-lg border border-border bg-card p-4",
+        className: "flex items-start gap-3 rounded-lg border border-border border-t-2 border-t-primary/40 bg-card p-4",
         "data-ocid": `training.item.${index2 + 1}`,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary", children: index2 + 1 }),
@@ -62612,7 +62992,7 @@ var TabsList$1 = reactExports.forwardRef(
     const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Root$4,
+      Root$5,
       {
         asChild: true,
         ...rovingFocusGroupScope,
@@ -62884,14 +63264,14 @@ function AdminItemEditPage() {
       className: "mx-auto flex max-w-3xl flex-col gap-6",
       "data-ocid": "item_edit.page",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
                 type: "button",
                 onClick: () => navigate({ to: "/admin/items" }),
-                className: "flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                className: "flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary",
                 "data-ocid": "item_edit.back_link",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
@@ -62899,7 +63279,7 @@ function AdminItemEditPage() {
                 ]
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: item.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: item.name }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Edit the details, recipe, and training flow for this menu item." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -63325,12 +63705,20 @@ function ItemFormDialog({
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "item.dialog", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit menu item" : "New menu item" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-display uppercase tracking-wide", children: isEdit ? "Edit menu item" : "New menu item" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the basic details for this dish. Recipe and training steps can be edited on the full edit screen." : "Add a new dish to your menu. You can add its recipe and training steps afterwards." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "item-name", "data-ocid": "item.name.label", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            htmlFor: "item-name",
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "item.name.label",
+            children: "Name"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
@@ -63358,6 +63746,7 @@ function ItemFormDialog({
           Label$1,
           {
             htmlFor: "item-description",
+            className: "font-heading uppercase tracking-wide",
             "data-ocid": "item.description.label",
             children: "Description"
           }
@@ -63375,7 +63764,14 @@ function ItemFormDialog({
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "item.category.label", children: "Category" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "item.category.label",
+            children: "Category"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           Select,
           {
@@ -63510,21 +63906,21 @@ function ItemList({
         "data-ocid": "item.empty_state",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "No menu items found" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-lg font-semibold uppercase tracking-wide", children: "No menu items found" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Try adjusting your search or category filter, or create a new menu item to add to your storefront." })
         ]
       }
     );
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "item.table", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16", children: "Photo" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Name" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "hidden md:table-cell", children: "Description" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Category" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "hidden sm:table-cell", children: "Sub-category" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "item.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Photo" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "hidden font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground md:table-cell", children: "Description" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Category" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "hidden font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:table-cell", children: "Sub-category" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Actions" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: items.map((item, index2) => {
         const subName = subCategoryName(item.subCategoryId);
@@ -63548,6 +63944,7 @@ function ItemList({
                 Badge,
                 {
                   variant: "secondary",
+                  className: "border-accent/40 bg-accent/10 text-accent",
                   "data-ocid": `item.category.${index2 + 1}`,
                   children: categoryName(item.categoryId)
                 }
@@ -63556,6 +63953,7 @@ function ItemList({
                 Badge,
                 {
                   variant: "secondary",
+                  className: "border-border bg-muted/40 text-foreground",
                   "data-ocid": `item.subcategory.${index2 + 1}`,
                   children: subName
                 }
@@ -63699,11 +64097,11 @@ function AdminItemsPage() {
       className: "mx-auto flex max-w-5xl flex-col gap-6",
       "data-ocid": "admin.items.page",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Package, { className: "size-5 text-primary" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Menu items" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: "Menu items" })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Create, edit, and delete the dishes on your storefront. Filter by category or sub-category, or search by name." })
           ] }),
@@ -63905,12 +64303,20 @@ function PositionFormDialog({
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "position.dialog", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit position" : "New position" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-display uppercase tracking-wide", children: isEdit ? "Edit position" : "New position" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the name, description, and cover photo for this position." : "Add a new position to group your menu categories." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "position-name", "data-ocid": "position.name.label", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            htmlFor: "position-name",
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "position.name.label",
+            children: "Name"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
@@ -63938,11 +64344,12 @@ function PositionFormDialog({
           Label$1,
           {
             htmlFor: "position-description",
+            className: "font-heading uppercase tracking-wide",
             "data-ocid": "position.description.label",
             children: [
               "Description",
               " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-normal text-muted-foreground", children: "(optional)" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-normal normal-case tracking-normal text-muted-foreground", children: "(optional)" })
             ]
           }
         ),
@@ -64047,21 +64454,21 @@ function PositionList({ positions, onEdit }) {
         "data-ocid": "position.empty_state",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "size-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "No positions yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-lg font-semibold uppercase tracking-wide", children: "No positions yet" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Create your first position to start grouping menu categories on the storefront." })
         ]
       }
     );
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "position.table", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center", children: "#" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16", children: "Photo" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Name" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Categories" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center", children: "Order" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "position.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "#" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-16 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Photo" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Name" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Categories" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-32 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Order" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Actions" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sorted.map((pos, index2) => {
         const isFirst = index2 === 0;
@@ -64086,6 +64493,7 @@ function PositionList({ positions, onEdit }) {
                 Badge,
                 {
                   variant: "secondary",
+                  className: "border-accent/40 bg-accent/10 text-accent",
                   "data-ocid": `position.category_count.${index2 + 1}`,
                   children: pos.categoryCount
                 }
@@ -64237,9 +64645,9 @@ function AdminPositionsPage() {
   const positions = (data ?? []).map(toPositionView);
   const editing = editingId !== null ? (data ?? []).find((p2) => p2.id === editingId) ?? null : null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Positions" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: "Positions" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Create, reorder, and delete the positions that group your menu categories on the storefront." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openCreate, "data-ocid": "position.create_button", children: [
@@ -64374,13 +64782,13 @@ function AdminQuizEditPage() {
       className: "mx-auto flex max-w-3xl flex-col gap-6",
       "data-ocid": "quiz_edit.page",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-col gap-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-col gap-1 border-b-2 border-primary/60 pb-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "button",
             {
               type: "button",
               onClick: () => navigate({ to: "/admin/quizzes" }),
-              className: "flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+              className: "flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary",
               "data-ocid": "quiz_edit.back_link",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
@@ -64388,7 +64796,7 @@ function AdminQuizEditPage() {
               ]
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: quiz.title || "Untitled quiz" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: quiz.title || "Untitled quiz" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: positionName ? `Position: ${positionName}` : "Edit quiz details, passing percentage, and manage its ordered questions." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -65108,12 +65516,19 @@ function QuizFormDialog({
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "quiz.dialog", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit quiz" : "New quiz" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { className: "font-display uppercase tracking-wide", children: isEdit ? "Edit quiz" : "New quiz" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the position, title, description, and passing percentage for this quiz." : "Create a quiz attached to a position. You can add questions next." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "quiz.position.label", children: "Position" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "quiz.position.label",
+            children: "Position"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           Select,
           {
@@ -65150,7 +65565,15 @@ function QuizFormDialog({
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "quiz-title", "data-ocid": "quiz.title.label", children: "Title" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Label$1,
+          {
+            htmlFor: "quiz-title",
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "quiz.title.label",
+            children: "Title"
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
@@ -65178,11 +65601,12 @@ function QuizFormDialog({
           Label$1,
           {
             htmlFor: "quiz-description",
+            className: "font-heading uppercase tracking-wide",
             "data-ocid": "quiz.description.label",
             children: [
               "Description",
               " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-normal text-muted-foreground", children: "(optional)" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-normal normal-case tracking-normal text-muted-foreground", children: "(optional)" })
             ]
           }
         ),
@@ -65199,17 +65623,25 @@ function QuizFormDialog({
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Label$1, { htmlFor: "quiz-percent", "data-ocid": "quiz.percent.label", children: [
-          "Passing percentage",
-          " ",
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-normal text-muted-foreground", children: [
-            "(",
-            MIN_PERCENT,
-            "–",
-            MAX_PERCENT,
-            ")"
-          ] })
-        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Label$1,
+          {
+            htmlFor: "quiz-percent",
+            className: "font-heading uppercase tracking-wide",
+            "data-ocid": "quiz.percent.label",
+            children: [
+              "Passing percentage",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-normal normal-case tracking-normal text-muted-foreground", children: [
+                "(",
+                MIN_PERCENT,
+                "–",
+                MAX_PERCENT,
+                ")"
+              ] })
+            ]
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Input,
           {
@@ -65296,21 +65728,21 @@ function QuizList({ quizzes, positionNames }) {
         "data-ocid": "quiz.empty_state",
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "No quizzes yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-heading text-lg font-semibold uppercase tracking-wide", children: "No quizzes yet" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Create your first quiz to start testing your team on a position's menu knowledge." })
         ]
       }
     );
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "quiz.table", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center", children: "#" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Title" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Position" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Questions" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Pass %" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "quiz.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "#" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Title" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Position" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Questions" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Pass %" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Actions" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sorted.map((quiz, index2) => {
         const positionName = positionNames.get(BigInt(quiz.positionId)) ?? "—";
@@ -65326,6 +65758,7 @@ function QuizList({ quizzes, positionNames }) {
                 Badge,
                 {
                   variant: "secondary",
+                  className: "border-accent/40 bg-accent/10 text-accent",
                   "data-ocid": `quiz.question_count.${index2 + 1}`,
                   children: quiz.questionCount
                 }
@@ -65463,9 +65896,9 @@ function AdminQuizzesPage() {
       },
       String(p2.id)
     )) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Quizzes" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: "Quizzes" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Create and manage quizzes attached to positions. Edit a quiz to add questions and mark correct answers." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openCreate, "data-ocid": "quiz.create_button", children: [
@@ -65584,7 +66017,7 @@ function ColorPicker({
           id: `${ocid}.input`,
           type: "text",
           value: text,
-          placeholder: "#8a5a3b",
+          placeholder: "#E4002B",
           onChange: (e) => setText(e.target.value),
           onBlur: onTextBlur,
           "aria-invalid": showError || void 0,
@@ -65598,23 +66031,23 @@ function ColorPicker({
       {
         className: "text-xs text-destructive",
         "data-ocid": `${ocid}.field_error`,
-        children: "Enter a valid hex color, e.g. #8a5a3b or #8a5."
+        children: "Enter a valid hex color, e.g. #E4002B or #E40."
       }
     ) : hint ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: hint }) : null
   ] });
 }
 const OPTIONS = [
   {
-    value: FontChoice.serif,
-    label: "Fraunces (serif)",
-    description: "Editorial, warm — pairs with food photography.",
-    stack: '"Fraunces", serif'
+    value: FontChoice.sansSerif,
+    label: "Anton / Oswald / Barlow",
+    description: "Anton — bold condensed athletic display.",
+    stack: '"Anton", "Oswald", "Barlow", sans-serif'
   },
   {
-    value: FontChoice.sansSerif,
-    label: "DM Sans (sans)",
-    description: "Clean, modern — neutral and highly legible.",
-    stack: '"DM Sans", sans-serif'
+    value: FontChoice.serif,
+    label: "Oswald / Barlow",
+    description: "Oswald — strong condensed headings.",
+    stack: '"Oswald", "Barlow", sans-serif'
   },
   {
     value: FontChoice.systemFont,
@@ -65625,7 +66058,7 @@ const OPTIONS = [
   {
     value: FontChoice.monospace,
     label: "Monospace",
-    description: "Fixed-width — technical, retro feel.",
+    description: "Barlow — clean readable body. Fixed-width fallback.",
     stack: 'ui-monospace, "JetBrains Mono", monospace'
   }
 ];
@@ -65721,8 +66154,8 @@ function LogoUpload({ value, onChange, ocid }) {
         {
           className: "relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-input",
           style: {
-            backgroundColor: "oklch(0.985 0.008 75)",
-            backgroundImage: "linear-gradient(45deg, oklch(0.93 0.015 75) 25%, transparent 25%), linear-gradient(-45deg, oklch(0.93 0.015 75) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, oklch(0.93 0.015 75) 75%), linear-gradient(-45deg, transparent 75%, oklch(0.93 0.015 75) 75%)",
+            backgroundColor: "oklch(0.2 0.005 75)",
+            backgroundImage: "linear-gradient(45deg, oklch(0.24 0.005 75) 25%, transparent 25%), linear-gradient(-45deg, oklch(0.24 0.005 75) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, oklch(0.24 0.005 75) 75%), linear-gradient(-45deg, transparent 75%, oklch(0.24 0.005 75) 75%)",
             backgroundSize: "12px 12px",
             backgroundPosition: "0 0, 0 6px, 6px -6px, -6px 0"
           },
@@ -65810,8 +66243,8 @@ function LogoUpload({ value, onChange, ocid }) {
   ] });
 }
 const FONT_STACK = {
-  [FontChoice.serif]: '"Fraunces", serif',
-  [FontChoice.sansSerif]: '"DM Sans", sans-serif',
+  [FontChoice.sansSerif]: '"Anton", "Oswald", "Barlow", sans-serif',
+  [FontChoice.serif]: '"Oswald", "Barlow", sans-serif',
   [FontChoice.systemFont]: "system-ui, sans-serif",
   [FontChoice.monospace]: 'ui-monospace, "JetBrains Mono", monospace'
 };
@@ -65835,9 +66268,9 @@ function ThemePreview({
     {
       "data-ocid": ocid,
       style: style2,
-      className: "rounded-xl border border-border bg-gradient-subtle p-6",
+      className: "rounded-xl border border-border bg-card p-6",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5 border-b border-border pb-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5 border-b-2 border-primary pb-4", children: [
           logoUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
             {
@@ -65845,36 +66278,36 @@ function ThemePreview({
               alt: "Logo preview",
               className: "h-8 w-auto max-w-[120px] object-contain"
             }
-          ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-4.5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg font-semibold tracking-tight", children: "MenuCraft" }),
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 items-center justify-center rounded-lg bg-primary font-display text-sm leading-none text-primary-foreground", children: "33" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-display text-lg tracking-wide", children: "BUBBA'S 33" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: "secondary", className: "ml-auto", children: "Preview" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-5 flex flex-col gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-2xl font-semibold tracking-tight", children: "Roasted heirloom carrots" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-muted-foreground", children: "A warm, photo-driven preview of how your storefront will read." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-heading text-2xl font-semibold uppercase tracking-wide", children: "Smokehouse brisket" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-muted-foreground", children: "A bold preview of how your roadhouse storefront will read." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", "data-ocid": `${ocid}.primary_button`, children: "Order now" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { size: "sm", "data-ocid": `${ocid}.primary_button`, children: "Start training" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               Button,
               {
                 size: "sm",
                 variant: "outline",
                 "data-ocid": `${ocid}.secondary_button`,
-                children: "View recipe"
+                children: "Review"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-medium text-accent", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "size-1.5 rounded-full bg-accent" }),
-              "Seasonal"
+              "House special"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex items-center gap-3 p-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChefHat, { className: "size-5" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "bg-background", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex items-center gap-3 p-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-10 items-center justify-center rounded-lg bg-primary/10 font-display text-base text-primary", children: "33" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium", children: "Kitchen training" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Step-by-step prep cards inherit your theme." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium", children: "Roadie training" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Step-by-step prep cards inherit your roadhouse theme." })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { className: "bg-accent text-accent-foreground", children: "3 steps" })
           ] }) })
@@ -65905,7 +66338,7 @@ Separator$1.displayName = NAME;
 function isValidOrientation(orientation) {
   return ORIENTATIONS.includes(orientation);
 }
-var Root = Separator$1;
+var Root$1 = Separator$1;
 function Separator({
   className,
   orientation = "horizontal",
@@ -65913,7 +66346,7 @@ function Separator({
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root,
+    Root$1,
     {
       "data-slot": "separator",
       decorative,
@@ -65926,9 +66359,9 @@ function Separator({
     }
   );
 }
-const DEFAULT_PRIMARY = "#B35A3C";
-const DEFAULT_ACCENT = "#7C8B6A";
-const DEFAULT_FONT = FontChoice.serif;
+const DEFAULT_PRIMARY = "#E4002B";
+const DEFAULT_ACCENT = "#F2A900";
+const DEFAULT_FONT = FontChoice.sansSerif;
 function AdminThemePage() {
   const { theme, isLoading } = useThemeSettings();
   const updateTheme = useUpdateTheme();
@@ -66113,15 +66546,15 @@ function AdminThemePage() {
 const ROLE_META = {
   [UserRole.admin]: {
     label: "Admin",
-    className: "border-primary/30 bg-primary/10 text-primary [a&]:hover:bg-primary/15"
+    className: "border-primary/50 bg-primary/15 text-primary [a&]:hover:bg-primary/20"
   },
   [UserRole.user]: {
     label: "Staff",
-    className: "border-accent/30 bg-accent/15 text-accent [a&]:hover:bg-accent/20"
+    className: "border-border bg-muted text-muted-foreground [a&]:hover:bg-muted/80"
   },
   [UserRole.guest]: {
     label: "Guest",
-    className: "border-border bg-muted text-muted-foreground [a&]:hover:bg-muted/80"
+    className: "border-border/60 bg-muted/40 text-muted-foreground/80 [a&]:hover:bg-muted/60"
   }
 };
 function RoleBadge({
@@ -66133,7 +66566,11 @@ function RoleBadge({
     Badge,
     {
       variant: "outline",
-      className: cn(meta.className, className),
+      className: cn(
+        "font-heading text-xs font-semibold uppercase tracking-wide",
+        meta.className,
+        className
+      ),
       "data-ocid": "role.badge",
       children: meta.label
     }
@@ -66284,12 +66721,12 @@ function UserList({
       }
     );
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40 hover:bg-muted/40", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[28%] font-medium text-muted-foreground", children: "Principal" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[26%] font-medium text-muted-foreground", children: "Display name" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[16%] font-medium text-muted-foreground", children: "Role" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[30%] text-right font-medium text-muted-foreground", children: "Role controls" })
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[28%] font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Principal" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[26%] font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Display name" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[16%] font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Role" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[30%] text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground", children: "Role controls" })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: users.map((user, index2) => {
       const isSelf = !!currentPrincipal && user.principal.toString() === currentPrincipal.toString();
@@ -66306,7 +66743,7 @@ function UserList({
             /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CopyablePrincipal, { principal: user.principal }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate font-medium text-foreground", children: user.displayName || "Unnamed" }),
-              isSelf && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary", children: "You" })
+              isSelf && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent", children: "You" })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(RoleBadge, { role: user.role }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "align-middle text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
@@ -66366,10 +66803,10 @@ function AdminUsersPage() {
   const staffCount = list.filter((u2) => u2.role === UserRole.user).length;
   const guestCount = list.filter((u2) => u2.role === UserRole.guest).length;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", "data-ocid": "admin.users.page", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "space-y-2", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "space-y-2 border-b-2 border-primary/60 pb-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "size-5 text-primary" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Users & roles" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold uppercase tracking-wide text-foreground", children: "Users & roles" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-2xl text-sm text-muted-foreground", children: "View every registered member and assign roles. Admins manage the storefront and other users; staff access training content; guests can browse but not train. You can't change your own role." })
     ] }),
@@ -66436,22 +66873,22 @@ const storefrontLayoutRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/",
-  component: StorefrontHomePage
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(StorefrontHomePage, {}) })
 });
 const categoryRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/category/$id",
-  component: CategoryPage
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CategoryPage, {}) })
 });
 const subCategoryRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/category/$id/sub/$subId",
-  component: SubCategoryPage
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SubCategoryPage, {}) })
 });
 const itemRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/item/$id",
-  component: RecipeCardPage
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(RecipeCardPage, {}) })
 });
 const trainingRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
@@ -66461,12 +66898,12 @@ const trainingRoute = createRoute({
 const positionRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/position/$id",
-  component: PositionPage
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(PositionPage, {}) })
 });
 const positionQuizzesRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/position/$id/quizzes",
-  component: PositionQuizzesPage
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(PositionQuizzesPage, {}) })
 });
 const quizTakeRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
@@ -66566,6 +67003,13 @@ BigInt.prototype.toJSON = function() {
   return this.toString();
 };
 const queryClient = new QueryClient();
-ReactDOM.createRoot(document.getElementById("root")).render(
-  /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsxRuntimeExports.jsx(InternetIdentityProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) })
-);
+function Root() {
+  const { isAuthenticated } = useAuth();
+  const [splashDone, setSplashDone] = reactExports.useState(false);
+  const showApp = splashDone && isAuthenticated;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(InternetIdentityProvider, { children: [
+    !showApp && /* @__PURE__ */ jsxRuntimeExports.jsx(SplashScreen, { onComplete: () => setSplashDone(true) }),
+    showApp && /* @__PURE__ */ jsxRuntimeExports.jsx(App, {})
+  ] }) });
+}
+ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsxRuntimeExports.jsx(Root, {}));

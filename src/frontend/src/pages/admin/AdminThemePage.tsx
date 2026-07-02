@@ -35,9 +35,9 @@ import { toast } from "sonner";
 // backend stores colors as hex (#RRGGBB) and validates that format, so the
 // reset constants must be hex too. useThemeSettings converts hex to OKLCH
 // components before writing to the CSS variables.
-const DEFAULT_PRIMARY = "#B35A3C";
-const DEFAULT_ACCENT = "#7C8B6A";
-const DEFAULT_FONT = FontChoice.serif;
+const DEFAULT_PRIMARY = "#E4002B";
+const DEFAULT_ACCENT = "#F2A900";
+const DEFAULT_FONT = FontChoice.sansSerif;
 
 export function AdminThemePage() {
   const { theme, isLoading } = useThemeSettings();

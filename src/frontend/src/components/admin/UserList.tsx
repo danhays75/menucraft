@@ -205,20 +205,20 @@ export function UserList({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
+    <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/40 hover:bg-muted/40">
-            <TableHead className="w-[28%] font-medium text-muted-foreground">
+          <TableRow className="border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50">
+            <TableHead className="w-[28%] font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Principal
             </TableHead>
-            <TableHead className="w-[26%] font-medium text-muted-foreground">
+            <TableHead className="w-[26%] font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Display name
             </TableHead>
-            <TableHead className="w-[16%] font-medium text-muted-foreground">
+            <TableHead className="w-[16%] font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Role
             </TableHead>
-            <TableHead className="w-[30%] text-right font-medium text-muted-foreground">
+            <TableHead className="w-[30%] text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Role controls
             </TableHead>
           </TableRow>
@@ -249,7 +249,7 @@ export function UserList({
                       {user.displayName || "Unnamed"}
                     </span>
                     {isSelf && (
-                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                      <span className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
                         You
                       </span>
                     )}

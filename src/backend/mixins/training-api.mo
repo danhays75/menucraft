@@ -36,7 +36,7 @@ mixin (
     };
     let id = trainingState.nextStepId;
     trainingState.nextStepId := id + 1;
-    let order = TrainingLib.listForItem(steps, itemId).size() + 1;
+    let order = steps.size() + 1;
     let step = TrainingLib.new(id, itemId, order, input, Int.abs(Time.now()));
     steps.add(step);
     step.toPublic();
@@ -63,8 +63,8 @@ mixin (
       Runtime.trap("Unauthorized: staff login required");
     };
     switch (TrainingLib.remove(steps, stepId)) {
-      case (?step) {
-        TrainingLib.renumber(steps, step.itemId);
+      case (?_step) {
+        TrainingLib.renumber(steps);
         true;
       };
       case null false;

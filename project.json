@@ -1,21 +1,17 @@
 {
-  "overview": "MenuCraft is a staff training app for bar and restaurant teams, with drink library, menu items, training steps, and quizzes per position.",
+  "overview": "Bubba's 33 Roadie Training app with a branded landing page that gates all training content behind Internet Identity login.",
   "features": [
-    "Positions with categories, sub-categories, and menu items",
-    "Drink library with recipes and training steps",
-    "Internet Identity login with admin and trainee roles",
-    "Theme customization with logo and color accents",
-    "Quizzes per position with single and multiple-answer questions",
-    "Trainee quiz taking with scoring, pass/fail, and attempt history",
-    "Admin quiz management with question editor and reordering"
+    "Branded splash screen with Loading Legendary caption",
+    "Landing page with Sign In button and Lets be Legendary tagline",
+    "All training content gated behind login",
+    "Positions grid and training flows for authenticated staff"
   ],
-  "category": "productivity",
+  "category": "training-app",
   "tags": [
-    "staff-training",
-    "menu",
-    "quizzes",
-    "hospitality",
-    "internet-identity"
+    "branding",
+    "authentication",
+    "landing-page",
+    "mobile-first"
   ],
-  "last_updated": "2026-06-30T20:34:39.180Z"
+  "last_updated": "2026-07-02T03:18:17.364Z"
 }

@@ -107,7 +107,7 @@ export function QuizResultsPage() {
         <Card className="mx-auto max-w-md text-center">
           <CardContent className="flex flex-col items-center gap-3 py-10">
             <ClipboardList className="size-8 text-muted-foreground" />
-            <h2 className="font-display text-xl font-semibold">
+            <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
               No attempt to review
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -196,7 +196,7 @@ export function QuizResultsPage() {
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <h1 className="font-display text-3xl font-semibold tracking-tight">
+                  <h1 className="font-heading text-3xl font-bold uppercase tracking-wide">
                     {passed ? "You passed!" : "Not quite yet"}
                   </h1>
                   <p className="text-sm text-muted-foreground">
@@ -208,7 +208,7 @@ export function QuizResultsPage() {
                 </div>
                 <Badge
                   variant={passed ? "default" : "destructive"}
-                  className="px-3 py-1 text-sm"
+                  className="px-3 py-1 text-sm font-semibold uppercase tracking-wider"
                   data-ocid="quiz.results.summary.status_badge"
                 >
                   {passed ? "Passed" : "Failed"}
@@ -223,7 +223,7 @@ export function QuizResultsPage() {
                     Your score
                   </span>
                   <span
-                    className="font-display text-2xl font-semibold tabular-nums text-primary"
+                    className="font-heading text-2xl font-bold tabular-nums text-primary"
                     data-ocid="quiz.results.summary.percentage"
                   >
                     {percentage}%
@@ -292,7 +292,7 @@ export function QuizResultsPage() {
         <div className="space-y-4" data-ocid="quiz.results.review.section">
           <div className="flex items-center gap-2.5">
             <ListChecks className="size-5 text-primary" />
-            <h2 className="font-display text-xl font-semibold tracking-tight">
+            <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
               Answer review
             </h2>
             <span className="text-sm text-muted-foreground">
@@ -383,18 +383,18 @@ function ReviewQuestion({
               </span>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Question {index + 1}
                   </span>
                   <Badge
                     variant={isCorrect ? "secondary" : "destructive"}
-                    className="text-[10px]"
+                    className="text-[10px] font-semibold uppercase tracking-wider"
                     data-ocid={`quiz.results.review.badge.${index + 1}`}
                   >
                     {isCorrect ? "Correct" : "Incorrect"}
                   </Badge>
                 </div>
-                <h3 className="font-display text-base font-semibold leading-snug">
+                <h3 className="font-heading text-base font-semibold uppercase leading-snug tracking-wide">
                   {question.text}
                 </h3>
               </div>

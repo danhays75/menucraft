@@ -55,10 +55,10 @@ export function AdminUsersPage() {
   return (
     <div className="space-y-6" data-ocid="admin.users.page">
       {/* Header */}
-      <header className="space-y-2">
+      <header className="space-y-2 border-b-2 border-primary/60 pb-4">
         <div className="flex items-center gap-2">
           <Users className="size-5 text-primary" />
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
+          <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
             Users &amp; roles
           </h1>
         </div>

@@ -96,7 +96,7 @@ export function ColorPicker({
           id={`${ocid}.input`}
           type="text"
           value={text}
-          placeholder="#8a5a3b"
+          placeholder="#E4002B"
           onChange={(e) => setText(e.target.value)}
           onBlur={onTextBlur}
           aria-invalid={showError || undefined}
@@ -109,7 +109,7 @@ export function ColorPicker({
           className="text-xs text-destructive"
           data-ocid={`${ocid}.field_error`}
         >
-          Enter a valid hex color, e.g. #8a5a3b or #8a5.
+          Enter a valid hex color, e.g. #E4002B or #E40.
         </p>
       ) : hint ? (
         <p className="text-xs text-muted-foreground">{hint}</p>

@@ -98,7 +98,7 @@ export function SubCategoryFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" data-ocid="subcategory.dialog">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="font-display uppercase tracking-wide">
             {isEdit ? "Edit sub-category" : "New sub-category"}
           </DialogTitle>
           <DialogDescription>
@@ -113,7 +113,7 @@ export function SubCategoryFormDialog({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="subcategory-parent"
-              className="text-muted-foreground"
+              className="font-heading uppercase tracking-wide text-muted-foreground"
             >
               Parent category
             </Label>
@@ -129,6 +129,7 @@ export function SubCategoryFormDialog({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="subcategory-name"
+              className="font-heading uppercase tracking-wide"
               data-ocid="subcategory.name.label"
             >
               Name

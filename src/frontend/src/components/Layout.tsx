@@ -16,13 +16,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  ChefHat,
-  LogIn,
-  LogOut,
-  Settings,
-  UtensilsCrossed,
-} from "lucide-react";
+import { LogIn, LogOut, Settings, UtensilsCrossed } from "lucide-react";
 import type * as React from "react";
 
 const NAV_LINKS = [{ label: "Menu", to: "/", ocid: "nav.menu" }] as const;
@@ -41,12 +35,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         .slice(0, 2)
         .join("")
         .toUpperCase()
-    : "MC";
+    : "B3";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Header — elevated card surface */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-subtle">
+      {/* Header — pure-black top bar with a thin red bottom border */}
+      <header className="sticky top-0 z-40 border-b-2 border-[#E4002B] bg-topbar text-topbar-foreground shadow-subtle">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link
             to="/"
@@ -56,16 +50,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {logoUrl ? (
               <img
                 src={logoUrl}
-                alt="MenuCraft"
+                alt="Bubba's 33"
                 className="h-9 w-auto max-w-[10rem] object-contain"
               />
             ) : (
               <span className="flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-primary text-primary-foreground">
-                  <ChefHat className="size-5" />
+                <span className="flex size-9 items-center justify-center rounded-lg bg-[#E4002B] font-display text-lg leading-none text-white">
+                  33
                 </span>
-                <span className="font-display text-xl font-semibold tracking-tight">
-                  MenuCraft
+                <span className="font-display text-xl tracking-wide">
+                  BUBBA'S 33
                 </span>
               </span>
             )}
@@ -153,13 +147,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-border bg-muted/40">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <UtensilsCrossed className="size-4 text-primary" />
-            <span className="font-display font-medium text-foreground">
-              MenuCraft
+            <UtensilsCrossed className="size-4 text-[#E4002B]" />
+            <span className="font-display tracking-wide text-foreground">
+              BUBBA'S 33
             </span>
-            <span className="hidden sm:inline">
-              · Kitchen Training & Recipe Studio
-            </span>
+            <span className="hidden sm:inline">· Roadie Training</span>
           </div>
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()}. Built with love using{" "}
@@ -167,7 +159,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                 typeof window !== "undefined"
                   ? window.location.hostname
-                  : "menucraft",
+                  : "bubbas33",
               )}`}
               target="_blank"
               rel="noreferrer"

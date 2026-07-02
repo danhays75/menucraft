@@ -6,17 +6,18 @@
 // Stage model:
 //   idle       — no file selected yet
 //   preparing  — reading the file into an ExternalBlob (local I/O)
-//   ready      — file prepared, progress callback registered; will upload on
+//   uploading  — file prepared, progress callback registered; will upload on
 //                save. The progress bar reflects the registered callback and
 //                advances 0→100 during the real (submit-time) upload for as
 //                long as this component stays mounted.
+//   ready      — upload completed (progress callback reported pct >= 100)
 //   error      — file could not be read
 //
 // Note: the actual bytes upload happens at form-submit time inside the actor
 // (to_candid_ExternalBlob → _uploadFile → storageClient.putFile(bytes,
 // onProgress)). The onProgress closure below references this component's
 // state setters, so progress advances whenever the parent keeps this control
-// mounted during the submit mutation.
+// mounted during the submit mutation, and transitions to "ready" at 100%.
 
 import type { ExternalBlob } from "@/backend";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,7 @@ export interface PhotoUploadProps {
   hint?: string;
 }
 
-type Stage = "idle" | "preparing" | "ready" | "error";
+type Stage = "idle" | "preparing" | "uploading" | "ready" | "error";
 
 export function PhotoUpload({
   value,
@@ -105,13 +106,14 @@ export function PhotoUpload({
       // The file is prepared (bytes read into the ExternalBlob) and the
       // progress callback is registered. The real upload happens later, at
       // form-submit time, when the actor serializes this blob. We mark the
-      // control "ready" — NOT "uploading" — because nothing is uploading
-      // yet. The progress bar will advance 0→100 during the submit mutation
-      // for as long as this component stays mounted.
+      // control "uploading" — the progress bar will advance 0→100 during the
+      // submit mutation for as long as this component stays mounted, and the
+      // callback transitions to "ready" once pct reaches 100.
+      setStage("uploading");
       const tracked = blob.withUploadProgress((pct: number) => {
         setProgress(pct);
+        if (pct >= 100) setStage("ready");
       });
-      setStage("ready");
       onChange(tracked);
     } catch (err) {
       setStage("error");
@@ -133,13 +135,15 @@ export function PhotoUpload({
     setErrorMsg(null);
   }
 
-  const busy = stage === "preparing";
-  const showProgress = stage === "ready";
+  const busy = stage === "preparing" || stage === "uploading";
+  const showProgress = stage === "uploading" || stage === "ready";
 
   return (
     <div className="flex flex-col gap-2">
       {label && (
-        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="font-heading text-sm font-medium uppercase tracking-wide text-foreground">
+          {label}
+        </span>
       )}
 
       <div className="flex items-start gap-4">
@@ -160,7 +164,7 @@ export function PhotoUpload({
             </div>
           )}
           {busy && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/70">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
               <Loader2 className="size-5 animate-spin text-primary" />
             </div>
           )}
@@ -198,13 +202,16 @@ export function PhotoUpload({
               className="flex flex-col gap-1"
               data-ocid="photo.loading_state"
             >
-              <Progress value={progress} className="h-1.5" />
-              <span className="text-xs text-muted-foreground">
-                {progress >= 100
+              <Progress
+                value={progress}
+                className="h-1.5 bg-muted [&>div]:bg-primary"
+              />
+              <span className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
+                {stage === "ready"
                   ? "Uploaded"
                   : progress > 0
                     ? `Uploading… ${progress}%`
-                    : "Ready to upload on save"}
+                    : "Uploading…"}
               </span>
             </div>
           )}

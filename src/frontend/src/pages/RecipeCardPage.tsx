@@ -67,11 +67,11 @@ export function RecipeCardPage() {
             className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
             data-ocid="recipe.not_found.empty_state"
           >
-            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <div className="flex size-14 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary">
               <Soup className="size-7" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
+              <h2 className="font-heading text-2xl font-semibold uppercase tracking-wide">
                 Recipe not found
               </h2>
               <p className="text-sm text-muted-foreground">

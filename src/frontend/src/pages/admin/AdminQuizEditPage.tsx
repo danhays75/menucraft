@@ -173,16 +173,16 @@ export function AdminQuizEditPage() {
       data-ocid="quiz_edit.page"
     >
       {/* Header */}
-      <header className="flex flex-col gap-1">
+      <header className="flex flex-col gap-1 border-b-2 border-primary/60 pb-4">
         <button
           type="button"
           onClick={() => navigate({ to: "/admin/quizzes" })}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary"
           data-ocid="quiz_edit.back_link"
         >
           <ArrowLeft className="size-3.5" /> All quizzes
         </button>
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
           {quiz.title || "Untitled quiz"}
         </h1>
         <p className="text-sm text-muted-foreground">

@@ -1,6 +1,5 @@
 import Array "mo:core/Array";
 import Char "mo:core/Char";
-import Iter "mo:core/Iter";
 import Map "mo:core/Map";
 import PrincipalLib "mo:core/Principal";
 import AccessControl "mo:caffeineai-authorization/access-control";
@@ -18,11 +17,13 @@ module {
   public type UserRole = Types.UserRole;
 
   // Platform default theme. Used on first install and when the admin resets.
+  // Rebranded to Bubba's 33 roadhouse identity: red primary, gold accent,
+  // sansSerif font (frontend FONT_MAP resolves to Anton/Oswald/Barlow stack).
   public func defaultTheme() : ThemeDefaults {
     {
-      primaryColor = "#B35A3C";
-      accentColor = "#7C8B6A";
-      font = #serif;
+      primaryColor = "#E4002B";
+      accentColor = "#F2A900";
+      font = #sansSerif;
     };
   };
 
@@ -59,18 +60,15 @@ module {
 
   // Validate a hex color string (e.g. "#RRGGBB"). Returns true when valid.
   public func validateColor(color : Text) : Bool {
-    if (Text.size(color) != 7) return false;
-    let chars = Text.toIter(color);
+    let chars = color.chars();
+    let len = color.size();
+    if (len != 7) { return false };
     switch (chars.next()) {
+      case (?c) if (c != '#') { return false };
       case null return false;
-      case (?first) {
-        if (first != '#') return false;
-      };
     };
-    for (c in chars) {
-      if (not (c.isDigit() or
-        c == 'a' or c == 'b' or c == 'c' or c == 'd' or c == 'e' or c == 'f' or
-        c == 'A' or c == 'B' or c == 'C' or c == 'D' or c == 'E' or c == 'F')) {
+    label hex for (c in chars) {
+      if (not (c.isDigit() or (c >= 'a' and c <= 'f') or (c >= 'A' and c <= 'F'))) {
         return false;
       };
     };
@@ -81,9 +79,9 @@ module {
   // signs in via Internet Identity.
   public func newUserProfile(principal : Principal, role : UserRole, now : Common.Timestamp) : UserProfile {
     {
-      principal = principal;
+      principal;
       var displayName = "";
-      var role = role;
+      var role;
       var createdAt = now;
     };
   };
@@ -99,20 +97,18 @@ module {
   };
 
   // Convert the entire user map to a sorted list of public profiles for
-  // the admin portal's user management screen.
+  // the admin portal's user management screen. Sorted by display name.
   public func listUserProfiles(users : Map.Map<Principal, UserProfile>) : [UserProfilePublic] {
-    let mapped = users.values().map(
-      func(p : UserProfile) : UserProfilePublic { toPublicUserProfile(p) },
+    let tuples = Map.toArray(
+      users.map<Principal, UserProfile, UserProfilePublic>(
+        func(_p, profile) { profile.toPublicUserProfile() },
+      ),
     );
-    let arr = mapped.toArray();
-    arr.sort(
-      func(a : UserProfilePublic, b : UserProfilePublic) : {
-        #less; #equal; #greater;
-      } {
-        if (a.createdAt < b.createdAt) #less
-        else if (a.createdAt > b.createdAt) #greater
-        else #equal;
-      },
+    let publics = tuples.map(
+      func(_p, pub) { pub },
+    );
+    publics.sort(
+      func(a, b) { Text.compare(a.displayName, b.displayName) },
     );
   };
 

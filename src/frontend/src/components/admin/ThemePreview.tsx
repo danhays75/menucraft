@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { blobUrl } from "@/lib/blob";
-import { ChefHat } from "lucide-react";
 import type * as React from "react";
 
 export interface ThemePreviewProps {
@@ -23,8 +22,8 @@ export interface ThemePreviewProps {
 }
 
 const FONT_STACK: Record<FontChoice, string> = {
-  [FontChoice.serif]: '"Fraunces", serif',
-  [FontChoice.sansSerif]: '"DM Sans", sans-serif',
+  [FontChoice.sansSerif]: '"Anton", "Oswald", "Barlow", sans-serif',
+  [FontChoice.serif]: '"Oswald", "Barlow", sans-serif',
   [FontChoice.systemFont]: "system-ui, sans-serif",
   [FontChoice.monospace]: 'ui-monospace, "JetBrains Mono", monospace',
 };
@@ -53,10 +52,10 @@ export function ThemePreview({
     <div
       data-ocid={ocid}
       style={style}
-      className="rounded-xl border border-border bg-gradient-subtle p-6"
+      className="rounded-xl border border-border bg-card p-6"
     >
-      {/* Mock header lockup — logo (or fallback mark) + wordmark */}
-      <div className="flex items-center gap-2.5 border-b border-border pb-4">
+      {/* Mock header lockup — dark roadhouse bar with red "33" emblem + wordmark */}
+      <div className="flex items-center gap-2.5 border-b-2 border-primary pb-4">
         {logoUrl ? (
           <img
             src={logoUrl}
@@ -64,55 +63,53 @@ export function ThemePreview({
             className="h-8 w-auto max-w-[120px] object-contain"
           />
         ) : (
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <ChefHat className="size-4.5" />
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary font-display text-sm leading-none text-primary-foreground">
+            33
           </span>
         )}
-        <span className="font-display text-lg font-semibold tracking-tight">
-          MenuCraft
-        </span>
+        <span className="font-display text-lg tracking-wide">BUBBA'S 33</span>
         <Badge variant="secondary" className="ml-auto">
           Preview
         </Badge>
       </div>
 
-      {/* Sample content */}
+      {/* Sample content — roadhouse-themed */}
       <div className="mt-5 flex flex-col gap-4">
         <div>
-          <h3 className="font-display text-2xl font-semibold tracking-tight">
-            Roasted heirloom carrots
+          <h3 className="font-heading text-2xl font-semibold uppercase tracking-wide">
+            Smokehouse brisket
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            A warm, photo-driven preview of how your storefront will read.
+            A bold preview of how your roadhouse storefront will read.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" data-ocid={`${ocid}.primary_button`}>
-            Order now
+            Start training
           </Button>
           <Button
             size="sm"
             variant="outline"
             data-ocid={`${ocid}.secondary_button`}
           >
-            View recipe
+            Review
           </Button>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-medium text-accent">
             <span className="size-1.5 rounded-full bg-accent" />
-            Seasonal
+            House special
           </span>
         </div>
 
-        <Card className="bg-card">
+        <Card className="bg-background">
           <CardContent className="flex items-center gap-3 p-4">
-            <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <ChefHat className="size-5" />
+            <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 font-display text-base text-primary">
+              33
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium">Kitchen training</p>
+              <p className="text-sm font-medium">Roadie training</p>
               <p className="text-xs text-muted-foreground">
-                Step-by-step prep cards inherit your theme.
+                Step-by-step prep cards inherit your roadhouse theme.
               </p>
             </div>
             <Badge className="bg-accent text-accent-foreground">3 steps</Badge>

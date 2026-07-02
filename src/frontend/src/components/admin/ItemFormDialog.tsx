@@ -135,7 +135,7 @@ export function ItemFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" data-ocid="item.dialog">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="font-display uppercase tracking-wide">
             {isEdit ? "Edit menu item" : "New menu item"}
           </DialogTitle>
           <DialogDescription>
@@ -147,7 +147,11 @@ export function ItemFormDialog({
 
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="item-name" data-ocid="item.name.label">
+            <Label
+              htmlFor="item-name"
+              className="font-heading uppercase tracking-wide"
+              data-ocid="item.name.label"
+            >
               Name
             </Label>
             <Input
@@ -173,6 +177,7 @@ export function ItemFormDialog({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="item-description"
+              className="font-heading uppercase tracking-wide"
               data-ocid="item.description.label"
             >
               Description
@@ -188,7 +193,12 @@ export function ItemFormDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label data-ocid="item.category.label">Category</Label>
+            <Label
+              className="font-heading uppercase tracking-wide"
+              data-ocid="item.category.label"
+            >
+              Category
+            </Label>
             <Select
               value={categoryId !== null ? String(categoryId) : undefined}
               onValueChange={(v) => onCategoryChange(BigInt(v))}

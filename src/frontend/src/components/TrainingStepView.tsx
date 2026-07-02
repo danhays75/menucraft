@@ -1,6 +1,7 @@
 // Renders a single training step: large media area (optional photo and/or
 // video) above the step's text instructions. Motion is keyed by step index so
 // advancing triggers a directional slide+fade; direction flips on Back.
+// Dark roadhouse styling: red step label, Oswald step number, dark card media.
 
 import { blobUrl } from "@/lib/blob";
 import type { TrainingStepPublic } from "@/types";
@@ -85,7 +86,7 @@ export function TrainingStepView({
         className="lg:col-span-2 flex flex-col"
         data-ocid={`training.step.${index + 1}.text`}
       >
-        <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-primary">
+        <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
           <Video className="size-3.5" />
           Step {index + 1}
         </span>

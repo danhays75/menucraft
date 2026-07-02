@@ -107,7 +107,7 @@ export function SubCategoryList({
         <div className="rounded-full bg-primary/10 p-3 text-primary">
           <Pencil className="size-5" />
         </div>
-        <p className="font-display text-base font-semibold">
+        <p className="font-heading text-base font-semibold uppercase tracking-wide">
           No sub-categories yet
         </p>
         <p className="max-w-sm text-sm text-muted-foreground">
@@ -120,16 +120,28 @@ export function SubCategoryList({
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <Table data-ocid="subcategory.table">
           <TableHeader>
-            <TableRow className="bg-muted/40">
-              <TableHead className="w-12 text-center">#</TableHead>
-              <TableHead className="w-14">Photo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="text-right">Items</TableHead>
-              <TableHead className="w-32 text-center">Order</TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+            <TableRow className="border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                #
+              </TableHead>
+              <TableHead className="w-14 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Photo
+              </TableHead>
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </TableHead>
+              <TableHead className="text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Items
+              </TableHead>
+              <TableHead className="w-32 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Order
+              </TableHead>
+              <TableHead className="w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -161,6 +173,7 @@ export function SubCategoryList({
                   <TableCell className="text-right">
                     <Badge
                       variant="secondary"
+                      className="border-accent/40 bg-accent/10 text-accent"
                       data-ocid={`subcategory.item_count.${index + 1}`}
                     >
                       {itemCount}

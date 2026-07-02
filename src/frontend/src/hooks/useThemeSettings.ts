@@ -8,11 +8,14 @@ import { blobUrl } from "@/lib/blob";
 import { useActor } from "@caffeineai/core-infrastructure";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+// Bubba's 33 roadhouse fonts — Anton (display) + Oswald (headings) + Barlow
+// (body). The backend default is #sansSerif, which maps to the Anton/Oswald/
+// Barlow stack so the brand reads correctly out of the box.
 const FONT_MAP: Record<FontChoice, string> = {
-  [FontChoice.serif]: '"Fraunces", serif',
-  [FontChoice.sansSerif]: '"DM Sans", sans-serif',
-  [FontChoice.monospace]: 'ui-monospace, "JetBrains Mono", monospace',
+  [FontChoice.sansSerif]: '"Anton", "Oswald", "Barlow", sans-serif',
+  [FontChoice.serif]: '"Oswald", "Barlow", sans-serif',
   [FontChoice.systemFont]: "system-ui, sans-serif",
+  [FontChoice.monospace]: 'ui-monospace, "JetBrains Mono", monospace',
 };
 
 // The backend stores colors as hex (#RRGGBB), but tailwind.config.js maps the

@@ -73,10 +73,10 @@ export function CategoryPage() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <UtensilsCrossed className="size-3" /> Category
             </span>
-            <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+            <h1 className="font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl">
               {categoryLoading ? (
                 <Skeleton
                   className="h-10 w-48"
@@ -150,7 +150,7 @@ export function CategoryPage() {
               >
                 <div className="flex items-center gap-2.5">
                   <FolderTree className="size-5 text-primary" />
-                  <h2 className="font-display text-xl font-semibold tracking-tight">
+                  <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
                     Sub-Categories
                   </h2>
                   <span className="text-sm text-muted-foreground">
@@ -182,7 +182,7 @@ export function CategoryPage() {
               <section className="space-y-5" data-ocid="category.menu.section">
                 <div className="flex items-center gap-2.5">
                   <UtensilsCrossed className="size-5 text-primary" />
-                  <h2 className="font-display text-xl font-semibold tracking-tight">
+                  <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
                     Items
                   </h2>
                   <span className="text-sm text-muted-foreground">

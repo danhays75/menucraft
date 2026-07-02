@@ -99,7 +99,7 @@ export function ItemList({
         <div className="rounded-full bg-primary/10 p-3 text-primary">
           <Pencil className="size-5" />
         </div>
-        <p className="font-display text-lg font-semibold">
+        <p className="font-heading text-lg font-semibold uppercase tracking-wide">
           No menu items found
         </p>
         <p className="max-w-sm text-sm text-muted-foreground">
@@ -112,20 +112,28 @@ export function ItemList({
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <Table data-ocid="item.table">
           <TableHeader>
-            <TableRow className="bg-muted/40">
-              <TableHead className="w-16">Photo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">
+            <TableRow className="border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-16 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Photo
+              </TableHead>
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </TableHead>
+              <TableHead className="hidden font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground md:table-cell">
                 Description
               </TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className="hidden sm:table-cell">
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Category
+              </TableHead>
+              <TableHead className="hidden font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:table-cell">
                 Sub-category
               </TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+              <TableHead className="w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -157,6 +165,7 @@ export function ItemList({
                   <TableCell>
                     <Badge
                       variant="secondary"
+                      className="border-accent/40 bg-accent/10 text-accent"
                       data-ocid={`item.category.${index + 1}`}
                     >
                       {categoryName(item.categoryId)}
@@ -166,6 +175,7 @@ export function ItemList({
                     {subName !== null ? (
                       <Badge
                         variant="secondary"
+                        className="border-border bg-muted/40 text-foreground"
                         data-ocid={`item.subcategory.${index + 1}`}
                       >
                         {subName}

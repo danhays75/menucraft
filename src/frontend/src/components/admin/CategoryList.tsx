@@ -113,7 +113,9 @@ export function CategoryList({
         <div className="rounded-full bg-primary/10 p-3 text-primary">
           <Pencil className="size-5" />
         </div>
-        <p className="font-display text-lg font-semibold">No categories yet</p>
+        <p className="font-heading text-lg font-semibold uppercase tracking-wide">
+          No categories yet
+        </p>
         <p className="max-w-sm text-sm text-muted-foreground">
           Create your first menu category to start organizing dishes on the
           storefront.
@@ -124,18 +126,30 @@ export function CategoryList({
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <Table data-ocid="category.table">
           <TableHeader>
-            <TableRow className="bg-muted/40">
-              <TableHead className="w-12 text-center">#</TableHead>
-              <TableHead className="w-16">Photo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="text-right">Items</TableHead>
-              <TableHead className="w-32 text-center">Order</TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+            <TableRow className="border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                #
+              </TableHead>
+              <TableHead className="w-16 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Photo
+              </TableHead>
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </TableHead>
+              <TableHead className="text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Items
+              </TableHead>
+              <TableHead className="w-32 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Order
+              </TableHead>
+              <TableHead className="w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
               {hasSubCategorySupport && (
-                <TableHead className="w-44 text-right">
+                <TableHead className="w-44 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Sub-categories
                 </TableHead>
               )}
@@ -171,6 +185,7 @@ export function CategoryList({
                     <TableCell className="text-right">
                       <Badge
                         variant="secondary"
+                        className="border-accent/40 bg-accent/10 text-accent"
                         data-ocid={`category.item_count.${index + 1}`}
                       >
                         {itemCount}

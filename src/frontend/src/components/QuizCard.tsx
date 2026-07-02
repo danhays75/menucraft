@@ -2,8 +2,9 @@
 // quiz title, optional description, question count, admin-set passing
 // percentage, and two actions: "Take quiz" (links to the take flow) and
 // "View history" (links to the trainee's attempt history for this quiz).
-// Used by both the PositionPage quizzes section and the standalone
-// PositionQuizzesPage so the visual treatment stays consistent.
+// Dark roadhouse styling with red accents on the quiz badge and primary CTA,
+// gold accent on the passing-score target. Used by both the PositionPage
+// quizzes section and the standalone PositionQuizzesPage.
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,23 +26,23 @@ export function QuizCard({
 
   return (
     <Card
-      className="h-full gap-0 py-0 transition-smooth hover:shadow-elevated"
+      className="h-full gap-0 border-border bg-card py-0 transition-smooth hover:border-primary/50 hover:shadow-elevated"
       data-ocid={`quiz.item.${itemMarker}`}
     >
       <CardContent className="flex h-full flex-col gap-4 p-5">
         {/* Header — title + question count badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <ClipboardList className="size-3" /> Quiz
             </span>
-            <h3 className="font-display text-lg font-semibold leading-tight tracking-tight line-clamp-2">
+            <h3 className="font-heading text-lg font-semibold uppercase leading-tight tracking-wide line-clamp-2">
               {quiz.title}
             </h3>
           </div>
           <Badge
             variant="secondary"
-            className="shrink-0 gap-1"
+            className="shrink-0 gap-1 border-accent/40 bg-accent/10 text-accent"
             data-ocid={`quiz.question_count.${itemMarker}`}
           >
             <ListChecks className="size-3" />
@@ -69,7 +70,7 @@ export function QuizCard({
           <Target className="size-4 text-accent" />
           <span>
             Passing score:{" "}
-            <span className="font-medium text-foreground">
+            <span className="font-semibold text-foreground">
               {quiz.passingPercentage}%
             </span>
           </span>
@@ -94,7 +95,7 @@ export function QuizCard({
             asChild
             variant="ghost"
             size="sm"
-            className="gap-1.5"
+            className="gap-1.5 text-muted-foreground hover:text-foreground"
             data-ocid={`quiz.history_button.${itemMarker}`}
           >
             <Link

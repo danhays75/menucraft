@@ -78,7 +78,9 @@ export function QuizList({ quizzes, positionNames }: QuizListProps) {
         <div className="rounded-full bg-primary/10 p-3 text-primary">
           <ClipboardList className="size-5" />
         </div>
-        <p className="font-display text-lg font-semibold">No quizzes yet</p>
+        <p className="font-heading text-lg font-semibold uppercase tracking-wide">
+          No quizzes yet
+        </p>
         <p className="max-w-sm text-sm text-muted-foreground">
           Create your first quiz to start testing your team on a position's menu
           knowledge.
@@ -89,16 +91,28 @@ export function QuizList({ quizzes, positionNames }: QuizListProps) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <Table data-ocid="quiz.table">
           <TableHeader>
-            <TableRow className="bg-muted/40">
-              <TableHead className="w-12 text-center">#</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Position</TableHead>
-              <TableHead className="text-right">Questions</TableHead>
-              <TableHead className="text-right">Pass %</TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+            <TableRow className="border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                #
+              </TableHead>
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Title
+              </TableHead>
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Position
+              </TableHead>
+              <TableHead className="text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Questions
+              </TableHead>
+              <TableHead className="text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Pass %
+              </TableHead>
+              <TableHead className="w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -122,6 +136,7 @@ export function QuizList({ quizzes, positionNames }: QuizListProps) {
                   <TableCell className="text-right">
                     <Badge
                       variant="secondary"
+                      className="border-accent/40 bg-accent/10 text-accent"
                       data-ocid={`quiz.question_count.${index + 1}`}
                     >
                       {quiz.questionCount}

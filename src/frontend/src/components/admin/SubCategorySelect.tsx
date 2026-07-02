@@ -49,7 +49,9 @@ export function SubCategorySelect({
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-2">
         <Label ocidPrefix={ocidPrefix} />
-        <span className="text-xs text-muted-foreground">Optional</span>
+        <span className="font-heading text-xs uppercase tracking-wide text-muted-foreground">
+          Optional
+        </span>
       </div>
       <Select
         value={selectValue}
@@ -103,7 +105,7 @@ export function SubCategorySelect({
 function Label({ ocidPrefix }: { ocidPrefix: string }) {
   return (
     <span
-      className="text-sm font-medium leading-none"
+      className="font-heading text-sm font-medium uppercase leading-none tracking-wide"
       data-ocid={`${ocidPrefix}.subcategory.label`}
     >
       Sub-category

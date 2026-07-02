@@ -132,7 +132,7 @@ export function QuizTakePage() {
         <Card className="mx-auto max-w-md text-center">
           <CardContent className="flex flex-col items-center gap-3 py-10">
             <ClipboardList className="size-8 text-muted-foreground" />
-            <h2 className="font-display text-xl font-semibold">
+            <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
               Quiz not found
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -164,7 +164,7 @@ export function QuizTakePage() {
         <Card className="mx-auto max-w-md text-center">
           <CardContent className="flex flex-col items-center gap-3 py-10">
             <ClipboardList className="size-8 text-muted-foreground" />
-            <h2 className="font-display text-xl font-semibold">
+            <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
               No questions yet
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -200,11 +200,11 @@ export function QuizTakePage() {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
-              <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <ClipboardList className="size-3.5 text-primary" />
                 Quiz
               </span>
-              <h1 className="mt-1 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h1 className="mt-1 truncate font-heading text-2xl font-bold uppercase tracking-wide sm:text-3xl">
                 {quiz.title}
               </h1>
               {quiz.description ? (
@@ -233,7 +233,7 @@ export function QuizTakePage() {
               <span className="text-sm font-medium text-foreground">
                 Question{" "}
                 <span
-                  className="font-display text-lg text-primary"
+                  className="font-heading text-lg font-bold uppercase tracking-wide text-primary"
                   data-ocid="quiz.take.progress.current"
                 >
                   {current + 1}
@@ -273,14 +273,14 @@ export function QuizTakePage() {
             <Card data-ocid={`quiz.take.question.${current + 1}`}>
               <CardContent className="space-y-5">
                 <div className="flex items-start gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary/10 font-heading text-sm font-bold text-primary">
                     {current + 1}
                   </span>
                   <div className="min-w-0 space-y-1">
-                    <h2 className="font-display text-lg font-semibold leading-snug">
+                    <h2 className="font-heading text-lg font-semibold uppercase leading-snug tracking-wide">
                       {question.text}
                     </h2>
-                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       {question.type === "single"
                         ? "Choose one answer"
                         : "Choose all that apply"}
@@ -301,7 +301,7 @@ export function QuizTakePage() {
                         <Label
                           key={String(opt.id)}
                           htmlFor={optId}
-                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/40 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/50 hover:bg-primary/5 has-[:checked]:border-primary has-[:checked]:bg-primary/10"
                           data-ocid={`quiz.take.option.${current + 1}.${i + 1}`}
                         >
                           <RadioGroupItem
@@ -328,7 +328,7 @@ export function QuizTakePage() {
                         <Label
                           key={String(opt.id)}
                           htmlFor={optId}
-                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/40 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/50 hover:bg-primary/5 has-[:checked]:border-primary has-[:checked]:bg-primary/10"
                           data-ocid={`quiz.take.option.${current + 1}.${i + 1}`}
                         >
                           <Checkbox

@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePositions } from "@/hooks/useQueries";
 import { toPositionView } from "@/types";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Briefcase, ChefHat } from "lucide-react";
+import { ArrowRight, Briefcase, Flame } from "lucide-react";
 import { motion } from "motion/react";
 
 export function StorefrontHomePage() {
@@ -20,7 +20,7 @@ export function StorefrontHomePage() {
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero — Bubba's 33 roadhouse */}
       <Section className="py-20 sm:py-28">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -28,19 +28,14 @@ export function StorefrontHomePage() {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="mx-auto max-w-3xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <ChefHat className="size-3.5 text-primary" /> MenuCraft Kitchen
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <Flame className="size-3.5" /> Bubba&apos;s 33 Roadhouse
           </span>
-          <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-            A photo-driven menu,
-            <br className="hidden sm:block" />{" "}
-            <span className="text-gradient-primary">recipe & training</span>{" "}
-            studio
+          <h1 className="mt-6 font-display text-5xl font-bold uppercase tracking-tight text-foreground sm:text-6xl md:text-7xl">
+            Pick your <span className="text-primary">position</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            Browse training positions and their dishes, follow step-by-step
-            recipe cards, and train your kitchen staff — all in one warm,
-            editorial space.
+          <p className="mx-auto mt-5 max-w-xl font-body text-lg text-muted-foreground">
+            Train up. Get certified. Run the floor.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" data-ocid="home.explore_button">

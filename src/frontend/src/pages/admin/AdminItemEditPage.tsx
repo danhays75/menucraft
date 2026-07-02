@@ -163,17 +163,17 @@ export function AdminItemEditPage() {
       data-ocid="item_edit.page"
     >
       {/* Header */}
-      <header className="flex flex-wrap items-end justify-between gap-3">
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b-2 border-primary/60 pb-4">
         <div className="flex flex-col gap-1">
           <button
             type="button"
             onClick={() => navigate({ to: "/admin/items" })}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary"
             data-ocid="item_edit.back_link"
           >
             <ArrowLeft className="size-3.5" /> All items
           </button>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
+          <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
             {item.name}
           </h1>
           <p className="text-sm text-muted-foreground">

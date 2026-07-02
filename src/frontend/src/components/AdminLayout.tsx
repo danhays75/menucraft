@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Briefcase,
-  ChefHat,
   ClipboardList,
   LayoutDashboard,
   ListOrdered,
@@ -85,21 +84,21 @@ export function AdminLayout() {
         .slice(0, 2)
         .join("")
         .toUpperCase()
-    : "AD";
+    : "B3";
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar — distinct dark zone */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex">
-        <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-5">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <ChefHat className="size-4.5" />
+      {/* Sidebar — pure-black roadhouse zone with red accent */}
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-[#E4002B]/40 bg-sidebar text-sidebar-foreground md:flex">
+        <div className="flex h-16 items-center gap-2.5 border-b border-[#E4002B]/40 px-5">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-[#E4002B] font-display text-sm leading-none text-white">
+            33
           </span>
           <div className="flex flex-col leading-tight">
-            <span className="font-display text-base font-semibold">
-              MenuCraft
+            <span className="font-display text-base tracking-wide">
+              BUBBA'S 33
             </span>
-            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            <span className="text-[11px] uppercase tracking-wider text-[#F2A900]">
               Admin
             </span>
           </div>
@@ -118,8 +117,8 @@ export function AdminLayout() {
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    ? "bg-[#E4002B] text-white"
+                    : "text-sidebar-foreground/80 hover:bg-[#E4002B]/15 hover:text-white",
                 )}
                 data-ocid={item.ocid}
               >
@@ -130,10 +129,10 @@ export function AdminLayout() {
           })}
         </nav>
 
-        <div className="border-t border-sidebar-border p-3">
+        <div className="border-t border-[#E4002B]/40 p-3">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            className="w-full justify-start gap-3 text-sidebar-foreground/80 hover:bg-[#E4002B]/15 hover:text-white"
             onClick={() => navigate({ to: "/" })}
             data-ocid="admin.nav.storefront"
           >
@@ -145,14 +144,14 @@ export function AdminLayout() {
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border bg-card px-4 sm:px-6">
+        {/* Top bar — pure-black roadhouse bar with red bottom border */}
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b-2 border-[#E4002B] bg-topbar text-topbar-foreground px-4 sm:px-6">
           <div className="flex items-center gap-3 md:hidden">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <ChefHat className="size-4" />
+            <span className="flex size-8 items-center justify-center rounded-lg bg-[#E4002B] font-display text-sm leading-none text-white">
+              33
             </span>
-            <span className="font-display text-lg font-semibold">
-              MenuCraft Admin
+            <span className="font-display text-lg tracking-wide">
+              BUBBA'S 33 Admin
             </span>
           </div>
           <div className="hidden md:block" />
@@ -183,9 +182,9 @@ export function AdminLayout() {
           </div>
         </header>
 
-        {/* Mobile nav — horizontal scroll */}
+        {/* Mobile nav — horizontal scroll on the dark roadhouse bar */}
         <nav
-          className="flex gap-1 overflow-x-auto border-b border-border bg-card px-4 py-2 md:hidden"
+          className="flex gap-1 overflow-x-auto border-b border-[#E4002B]/40 bg-topbar px-4 py-2 md:hidden"
           aria-label="Admin mobile"
         >
           {NAV.map((item) => {
@@ -199,8 +198,8 @@ export function AdminLayout() {
                 className={cn(
                   "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
+                    ? "bg-[#E4002B] text-white"
+                    : "text-topbar-foreground/80 hover:bg-[#E4002B]/15 hover:text-white",
                 )}
                 data-ocid={`${item.ocid}.mobile`}
               >

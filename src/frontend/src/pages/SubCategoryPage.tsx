@@ -82,10 +82,10 @@ export function SubCategoryPage() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <UtensilsCrossed className="size-3" /> Sub-category
             </span>
-            <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+            <h1 className="font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl">
               {subsLoading ? (
                 <Skeleton
                   className="h-10 w-56"

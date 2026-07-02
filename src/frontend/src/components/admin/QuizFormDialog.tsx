@@ -135,7 +135,9 @@ export function QuizFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" data-ocid="quiz.dialog">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit quiz" : "New quiz"}</DialogTitle>
+          <DialogTitle className="font-display uppercase tracking-wide">
+            {isEdit ? "Edit quiz" : "New quiz"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Update the position, title, description, and passing percentage for this quiz."
@@ -145,7 +147,12 @@ export function QuizFormDialog({
 
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <Label data-ocid="quiz.position.label">Position</Label>
+            <Label
+              className="font-heading uppercase tracking-wide"
+              data-ocid="quiz.position.label"
+            >
+              Position
+            </Label>
             <Select
               value={positionId !== null ? String(positionId) : undefined}
               onValueChange={(v) => setPositionId(BigInt(v))}
@@ -179,7 +186,11 @@ export function QuizFormDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="quiz-title" data-ocid="quiz.title.label">
+            <Label
+              htmlFor="quiz-title"
+              className="font-heading uppercase tracking-wide"
+              data-ocid="quiz.title.label"
+            >
               Title
             </Label>
             <Input
@@ -205,10 +216,11 @@ export function QuizFormDialog({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="quiz-description"
+              className="font-heading uppercase tracking-wide"
               data-ocid="quiz.description.label"
             >
               Description{" "}
-              <span className="font-normal text-muted-foreground">
+              <span className="font-normal normal-case tracking-normal text-muted-foreground">
                 (optional)
               </span>
             </Label>
@@ -223,9 +235,13 @@ export function QuizFormDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="quiz-percent" data-ocid="quiz.percent.label">
+            <Label
+              htmlFor="quiz-percent"
+              className="font-heading uppercase tracking-wide"
+              data-ocid="quiz.percent.label"
+            >
               Passing percentage{" "}
-              <span className="font-normal text-muted-foreground">
+              <span className="font-normal normal-case tracking-normal text-muted-foreground">
                 ({MIN_PERCENT}–{MAX_PERCENT})
               </span>
             </Label>

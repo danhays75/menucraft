@@ -2,18 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MenuCraft fonts — Fraunces (display) + DM Sans (body).
-   Font files must be copied to src/frontend/public/assets/fonts/
-   from .opencode/skills/designing-with-oklch/fonts/ by the frontend agent. */
+/* Bubba's 33 roadhouse fonts — Anton (display) + Oswald (headings) + Barlow (body).
+   Font files must be copied to src/frontend/public/assets/fonts/ by the frontend
+   engineer. Anton/Oswald/Barlow are NOT in the bundled skill font set; source them
+   from Google Fonts (woff2, subset latin) and drop the .woff2 files here. */
 @font-face {
-  font-family: "Fraunces";
-  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "Anton";
+  src: url("/assets/fonts/Anton-Regular.woff2") format("woff2");
+  font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: "DM Sans";
-  src: url("/assets/fonts/DMSans.woff2") format("woff2");
+  font-family: "Oswald";
+  src: url("/assets/fonts/Oswald-Variable.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("/assets/fonts/Barlow-Variable.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
 }
@@ -23,130 +30,123 @@
     /* Token system is built on CSS custom properties so the admin
        theme-customization feature can override --primary, --accent,
        --font-display, --font-body at runtime via inline style on :root. */
-    --font-display: "Fraunces", serif;
-    --font-body: "DM Sans", sans-serif;
+    --font-display: "Anton", "Oswald", sans-serif;
+    --font-heading: "Oswald", "Barlow", sans-serif;
+    --font-body: "Barlow", "Oswald", sans-serif;
     --font-mono: ui-monospace, monospace;
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
-    /* Warm Analog (light) — cream canvas, terracotta primary, sage accent.
-       Food photography pops against the warm neutral background. */
-    --background: 0.965 0.012 75;
-    --foreground: 0.2 0.025 50;
-    --card: 0.985 0.008 75;
-    --card-foreground: 0.2 0.025 50;
-    --popover: 0.99 0.006 75;
-    --popover-foreground: 0.2 0.025 50;
+    /* Bubba's 33 Roadhouse (dark-first) — exact hex values per brand spec.
+       The same dark palette is applied to :root and .dark so the app is
+       dark-first; light mode mirrors it for parity. No OKLCH approximations. */
+    --background: #141412;
+    --foreground: #f5f1e8;
+    --card: #1e1e1b;
+    --card-foreground: #f5f1e8;
+    --popover: #1e1e1b;
+    --popover-foreground: #f5f1e8;
 
-    --primary: 0.55 0.14 32;
-    --primary-foreground: 0.98 0.012 75;
+    --primary: #e4002b;
+    --primary-foreground: #f5f1e8;
 
-    --secondary: 0.92 0.018 75;
-    --secondary-foreground: 0.3 0.03 50;
-    --muted: 0.93 0.015 75;
-    --muted-foreground: 0.5 0.02 50;
+    --secondary: #1e1e1b;
+    --secondary-foreground: #f5f1e8;
+    --muted: #141412;
+    --muted-foreground: #9a9a92;
 
-    --accent: 0.5 0.09 160;
-    --accent-foreground: 0.98 0.01 160;
+    --accent: #f2a900;
+    --accent-foreground: #141412;
 
-    --destructive: 0.5 0.2 25;
-    --destructive-foreground: 0.98 0.012 25;
+    --destructive: #b00020;
+    --destructive-foreground: #f5f1e8;
 
-    --success: 0.55 0.14 150;
-    --success-foreground: 0.98 0.01 150;
-    --warning: 0.7 0.15 80;
-    --warning-foreground: 0.2 0.03 80;
+    --success: #2e7d32;
+    --success-foreground: #f5f1e8;
+    --warning: #f2a900;
+    --warning-foreground: #141412;
 
-    --border: 0.88 0.02 70;
-    --input: 0.88 0.02 70;
-    --ring: 0.55 0.14 32;
+    --border: #2a2a26;
+    --input: #2a2a26;
+    --ring: #e4002b;
 
-    --chart-1: 0.55 0.14 32;
-    --chart-2: 0.5 0.09 160;
-    --chart-3: 0.7 0.15 80;
-    --chart-4: 0.55 0.2 25;
-    --chart-5: 0.6 0.12 260;
+    --chart-1: #e4002b;
+    --chart-2: #f2a900;
+    --chart-3: #b00020;
+    --chart-4: #9a9a92;
+    --chart-5: #2e7d32;
 
-    --sidebar: 0.985 0.008 75;
-    --sidebar-foreground: 0.2 0.025 50;
-    --sidebar-primary: 0.55 0.14 32;
-    --sidebar-primary-foreground: 0.98 0.012 75;
-    --sidebar-accent: 0.93 0.015 75;
-    --sidebar-accent-foreground: 0.3 0.03 50;
-    --sidebar-border: 0.88 0.02 70;
-    --sidebar-ring: 0.55 0.14 32;
+    --sidebar: #000000;
+    --sidebar-foreground: #f5f1e8;
+    --sidebar-primary: #e4002b;
+    --sidebar-primary-foreground: #f5f1e8;
+    --sidebar-accent: #1e1e1b;
+    --sidebar-accent-foreground: #f5f1e8;
+    --sidebar-border: #2a2a26;
+    --sidebar-ring: #e4002b;
+
+    /* Top bar is pure black; surfaced as a token so the header zone can use it. */
+    --topbar: #000000;
+    --topbar-foreground: #f5f1e8;
 
     /* Reusable gradient tokens for hero backgrounds and buttons. */
-    --gradient-primary: linear-gradient(
-      135deg,
-      oklch(0.55 0.14 32),
-      oklch(0.5 0.1 50)
-    );
-    --gradient-subtle: linear-gradient(
-      180deg,
-      oklch(0.985 0.008 75),
-      oklch(0.965 0.012 75)
-    );
+    --gradient-primary: linear-gradient(135deg, #e4002b, #b00020);
+    --gradient-subtle: linear-gradient(180deg, #1e1e1b, #141412);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    /* Warm Night (dark) — warm charcoal, same terracotta primary, sage accent.
-       Tuned for readability, not just inverted lightness. */
-    --background: 0.16 0.012 55;
-    --foreground: 0.92 0.012 60;
-    --card: 0.2 0.015 55;
-    --card-foreground: 0.92 0.012 60;
-    --popover: 0.22 0.015 55;
-    --popover-foreground: 0.92 0.012 60;
+    /* Bubba's 33 Roadhouse (dark) — identical to :root. The app is dark-first;
+       .dark mirrors the same roadhouse palette so dark mode matches the brand. */
+    --background: #141412;
+    --foreground: #f5f1e8;
+    --card: #1e1e1b;
+    --card-foreground: #f5f1e8;
+    --popover: #1e1e1b;
+    --popover-foreground: #f5f1e8;
 
-    --primary: 0.72 0.15 55;
-    --primary-foreground: 0.16 0.012 55;
+    --primary: #e4002b;
+    --primary-foreground: #f5f1e8;
 
-    --secondary: 0.24 0.018 55;
-    --secondary-foreground: 0.82 0.012 60;
-    --muted: 0.24 0.018 55;
-    --muted-foreground: 0.55 0.014 58;
+    --secondary: #1e1e1b;
+    --secondary-foreground: #f5f1e8;
+    --muted: #141412;
+    --muted-foreground: #9a9a92;
 
-    --accent: 0.6 0.1 160;
-    --accent-foreground: 0.14 0.015 160;
+    --accent: #f2a900;
+    --accent-foreground: #141412;
 
-    --destructive: 0.6 0.19 25;
-    --destructive-foreground: 0.95 0.012 25;
+    --destructive: #b00020;
+    --destructive-foreground: #f5f1e8;
 
-    --success: 0.6 0.14 150;
-    --success-foreground: 0.14 0.015 150;
-    --warning: 0.75 0.15 80;
-    --warning-foreground: 0.16 0.02 80;
+    --success: #2e7d32;
+    --success-foreground: #f5f1e8;
+    --warning: #f2a900;
+    --warning-foreground: #141412;
 
-    --border: 0.3 0.018 55;
-    --input: 0.3 0.018 55;
-    --ring: 0.72 0.15 55;
+    --border: #2a2a26;
+    --input: #2a2a26;
+    --ring: #e4002b;
 
-    --chart-1: 0.72 0.15 55;
-    --chart-2: 0.6 0.1 160;
-    --chart-3: 0.75 0.15 80;
-    --chart-4: 0.6 0.19 25;
-    --chart-5: 0.65 0.12 260;
+    --chart-1: #e4002b;
+    --chart-2: #f2a900;
+    --chart-3: #b00020;
+    --chart-4: #9a9a92;
+    --chart-5: #2e7d32;
 
-    --sidebar: 0.2 0.015 55;
-    --sidebar-foreground: 0.92 0.012 60;
-    --sidebar-primary: 0.72 0.15 55;
-    --sidebar-primary-foreground: 0.16 0.012 55;
-    --sidebar-accent: 0.24 0.018 55;
-    --sidebar-accent-foreground: 0.82 0.012 60;
-    --sidebar-border: 0.3 0.018 55;
-    --sidebar-ring: 0.72 0.15 55;
+    --sidebar: #000000;
+    --sidebar-foreground: #f5f1e8;
+    --sidebar-primary: #e4002b;
+    --sidebar-primary-foreground: #f5f1e8;
+    --sidebar-accent: #1e1e1b;
+    --sidebar-accent-foreground: #f5f1e8;
+    --sidebar-border: #2a2a26;
+    --sidebar-ring: #e4002b;
 
-    --gradient-primary: linear-gradient(
-      135deg,
-      oklch(0.72 0.15 55),
-      oklch(0.68 0.12 70)
-    );
-    --gradient-subtle: linear-gradient(
-      180deg,
-      oklch(0.2 0.015 55),
-      oklch(0.16 0.012 55)
-    );
+    --topbar: #000000;
+    --topbar-foreground: #f5f1e8;
+
+    --gradient-primary: linear-gradient(135deg, #e4002b, #b00020);
+    --gradient-subtle: linear-gradient(180deg, #1e1e1b, #141412);
   }
 
   * {
@@ -180,5 +180,14 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+  .bg-topbar {
+    background-color: var(--topbar);
+  }
+  .text-topbar-foreground {
+    color: var(--topbar-foreground);
   }
 }

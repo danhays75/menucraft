@@ -92,13 +92,13 @@ export function LogoUpload({ value, onChange, ocid }: LogoUploadProps) {
       <span className="text-sm font-medium text-foreground">Brand logo</span>
 
       <div className="flex items-start gap-4">
-        {/* Preview — wide to suit a horizontal logo, checkerboard bg for transparency */}
+        {/* Preview — wide to suit a horizontal logo, dark checkerboard bg for transparency */}
         <div
           className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-input"
           style={{
-            backgroundColor: "oklch(0.985 0.008 75)",
+            backgroundColor: "oklch(0.2 0.005 75)",
             backgroundImage:
-              "linear-gradient(45deg, oklch(0.93 0.015 75) 25%, transparent 25%), linear-gradient(-45deg, oklch(0.93 0.015 75) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, oklch(0.93 0.015 75) 75%), linear-gradient(-45deg, transparent 75%, oklch(0.93 0.015 75) 75%)",
+              "linear-gradient(45deg, oklch(0.24 0.005 75) 25%, transparent 25%), linear-gradient(-45deg, oklch(0.24 0.005 75) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, oklch(0.24 0.005 75) 75%), linear-gradient(-45deg, transparent 75%, oklch(0.24 0.005 75) 75%)",
             backgroundSize: "12px 12px",
             backgroundPosition: "0 0, 0 6px, 6px -6px, -6px 0",
           }}

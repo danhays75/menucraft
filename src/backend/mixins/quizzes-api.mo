@@ -182,8 +182,8 @@ mixin (
       Runtime.trap("Unauthorized: admin login required");
     };
     switch (Lib.removeQuestion(questions, questionId)) {
-      case (?question) {
-        Lib.renumberQuestions(questions, question.quizId);
+      case (?_question) {
+        Lib.renumberQuestions(questions);
         true;
       };
       case null false;

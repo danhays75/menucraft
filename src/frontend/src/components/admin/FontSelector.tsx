@@ -28,16 +28,16 @@ interface FontOption {
 
 const OPTIONS: FontOption[] = [
   {
-    value: FontChoice.serif,
-    label: "Fraunces (serif)",
-    description: "Editorial, warm — pairs with food photography.",
-    stack: '"Fraunces", serif',
+    value: FontChoice.sansSerif,
+    label: "Anton / Oswald / Barlow",
+    description: "Anton — bold condensed athletic display.",
+    stack: '"Anton", "Oswald", "Barlow", sans-serif',
   },
   {
-    value: FontChoice.sansSerif,
-    label: "DM Sans (sans)",
-    description: "Clean, modern — neutral and highly legible.",
-    stack: '"DM Sans", sans-serif',
+    value: FontChoice.serif,
+    label: "Oswald / Barlow",
+    description: "Oswald — strong condensed headings.",
+    stack: '"Oswald", "Barlow", sans-serif',
   },
   {
     value: FontChoice.systemFont,
@@ -48,7 +48,7 @@ const OPTIONS: FontOption[] = [
   {
     value: FontChoice.monospace,
     label: "Monospace",
-    description: "Fixed-width — technical, retro feel.",
+    description: "Barlow — clean readable body. Fixed-width fallback.",
     stack: 'ui-monospace, "JetBrains Mono", monospace',
   },
 ];

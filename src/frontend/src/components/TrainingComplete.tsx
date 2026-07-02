@@ -1,7 +1,7 @@
 // Completion confirmation shown after the final training step. Celebratory
-// but calm — a check badge, headline, supporting copy, and two CTAs (review
-// the recipe again, or return to the storefront). Animates in with a gentle
-// scale+fade.
+// but on-brand — a gold check badge, Oswald headline, supporting copy, and
+// two CTAs (review the recipe again, or return to the storefront). Animates
+// in with a gentle scale+fade. Dark roadhouse palette with red/gold accents.
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,7 +29,7 @@ export function TrainingComplete({
       className="mx-auto max-w-xl"
       data-ocid="training.complete"
     >
-      <Card className="overflow-hidden border-primary/30 shadow-md">
+      <Card className="overflow-hidden border-primary/40 bg-card shadow-elevated">
         <CardContent className="flex flex-col items-center gap-5 px-6 py-12 text-center">
           <motion.div
             initial={{ scale: 0 }}
@@ -40,20 +40,20 @@ export function TrainingComplete({
               stiffness: 200,
               damping: 14,
             }}
-            className="flex size-16 items-center justify-center rounded-full bg-success/15 text-success"
+            className="flex size-16 items-center justify-center rounded-full border border-accent/40 bg-accent/15 text-accent"
             data-ocid="training.complete.badge"
           >
             <CheckCircle2 className="size-9" />
           </motion.div>
 
           <div className="space-y-2">
-            <h2 className="font-display text-3xl font-semibold tracking-tight">
+            <h2 className="font-heading text-3xl font-bold uppercase tracking-wide">
               Training complete
             </h2>
             <p className="text-muted-foreground">
               You&apos;ve walked through all {totalSteps} step
               {totalSteps === 1 ? "" : "s"} for{" "}
-              <span className="font-medium text-foreground">{itemName}</span>.
+              <span className="font-semibold text-foreground">{itemName}</span>.
               You&apos;re ready to plate it.
             </p>
           </div>

@@ -117,7 +117,9 @@ export function PositionList({ positions, onEdit }: PositionListProps) {
         <div className="rounded-full bg-primary/10 p-3 text-primary">
           <Briefcase className="size-5" />
         </div>
-        <p className="font-display text-lg font-semibold">No positions yet</p>
+        <p className="font-heading text-lg font-semibold uppercase tracking-wide">
+          No positions yet
+        </p>
         <p className="max-w-sm text-sm text-muted-foreground">
           Create your first position to start grouping menu categories on the
           storefront.
@@ -128,16 +130,28 @@ export function PositionList({ positions, onEdit }: PositionListProps) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <Table data-ocid="position.table">
           <TableHeader>
-            <TableRow className="bg-muted/40">
-              <TableHead className="w-12 text-center">#</TableHead>
-              <TableHead className="w-16">Photo</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="text-right">Categories</TableHead>
-              <TableHead className="w-32 text-center">Order</TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+            <TableRow className="border-b-2 border-primary/50 bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-12 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                #
+              </TableHead>
+              <TableHead className="w-16 font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Photo
+              </TableHead>
+              <TableHead className="font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </TableHead>
+              <TableHead className="text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Categories
+              </TableHead>
+              <TableHead className="w-32 text-center font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Order
+              </TableHead>
+              <TableHead className="w-28 text-right font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -174,6 +188,7 @@ export function PositionList({ positions, onEdit }: PositionListProps) {
                   <TableCell className="text-right">
                     <Badge
                       variant="secondary"
+                      className="border-accent/40 bg-accent/10 text-accent"
                       data-ocid={`position.category_count.${index + 1}`}
                     >
                       {pos.categoryCount}

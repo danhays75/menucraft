@@ -95,10 +95,10 @@ export function PositionPage() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
               <Briefcase className="size-3" /> Position
             </span>
-            <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+            <h1 className="font-heading text-3xl font-bold uppercase tracking-wide sm:text-4xl md:text-5xl">
               {positionLoading ? (
                 <Skeleton
                   className="h-10 w-48"
@@ -144,11 +144,11 @@ export function PositionPage() {
             className="mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
             data-ocid="position.error_state"
           >
-            <div className="flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <div className="flex size-14 items-center justify-center rounded-full border border-destructive/40 bg-destructive/10 text-destructive">
               <Briefcase className="size-7" />
             </div>
             <div className="space-y-2">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
+              <h2 className="font-heading text-2xl font-semibold uppercase tracking-wide">
                 Position not found
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -177,7 +177,7 @@ export function PositionPage() {
           <section className="space-y-5" data-ocid="position.category.section">
             <div className="flex items-center gap-2.5">
               <UtensilsCrossed className="size-5 text-primary" />
-              <h2 className="font-display text-xl font-semibold tracking-tight">
+              <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
                 Categories
               </h2>
               <span className="text-sm text-muted-foreground">
@@ -219,7 +219,7 @@ export function PositionPage() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2.5">
                   <ClipboardList className="size-5 text-primary" />
-                  <h2 className="font-display text-xl font-semibold tracking-tight">
+                  <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
                     Quizzes
                   </h2>
                   <span className="text-sm text-muted-foreground">
@@ -265,11 +265,11 @@ export function PositionPage() {
                 className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-10 text-center"
                 data-ocid="position.quiz.empty_state"
               >
-                <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <div className="flex size-12 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary">
                   <ClipboardList className="size-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-display text-lg font-semibold tracking-tight">
+                  <h3 className="font-heading text-lg font-semibold uppercase tracking-wide">
                     No quizzes for this position yet
                   </h3>
                   <p className="max-w-md text-sm text-muted-foreground">

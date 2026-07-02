@@ -56,25 +56,41 @@ const storefrontLayoutRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/",
-  component: StorefrontHomePage,
+  component: () => (
+    <ProtectedRoute>
+      <StorefrontHomePage />
+    </ProtectedRoute>
+  ),
 });
 
 const categoryRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/category/$id",
-  component: CategoryPage,
+  component: () => (
+    <ProtectedRoute>
+      <CategoryPage />
+    </ProtectedRoute>
+  ),
 });
 
 const subCategoryRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/category/$id/sub/$subId",
-  component: SubCategoryPage,
+  component: () => (
+    <ProtectedRoute>
+      <SubCategoryPage />
+    </ProtectedRoute>
+  ),
 });
 
 const itemRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/item/$id",
-  component: RecipeCardPage,
+  component: () => (
+    <ProtectedRoute>
+      <RecipeCardPage />
+    </ProtectedRoute>
+  ),
 });
 
 const trainingRoute = createRoute({
@@ -90,13 +106,21 @@ const trainingRoute = createRoute({
 const positionRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/position/$id",
-  component: PositionPage,
+  component: () => (
+    <ProtectedRoute>
+      <PositionPage />
+    </ProtectedRoute>
+  ),
 });
 
 const positionQuizzesRoute = createRoute({
   getParentRoute: () => storefrontLayoutRoute,
   path: "/position/$id/quizzes",
-  component: PositionQuizzesPage,
+  component: () => (
+    <ProtectedRoute>
+      <PositionQuizzesPage />
+    </ProtectedRoute>
+  ),
 });
 
 const quizTakeRoute = createRoute({

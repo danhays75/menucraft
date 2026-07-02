@@ -102,7 +102,7 @@ export function TrainingPage() {
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
             <ChefHat className="size-8 text-muted-foreground" />
-            <h2 className="font-display text-xl font-semibold">
+            <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">
               No training steps yet
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -154,11 +154,11 @@ export function TrainingPage() {
         <div className="mb-8 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
-              <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <ChefHat className="size-3.5 text-primary" />
                 Staff training
               </span>
-              <h1 className="mt-1 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h1 className="mt-1 truncate font-heading text-2xl font-bold uppercase tracking-wide sm:text-3xl">
                 {item.name}
               </h1>
             </div>

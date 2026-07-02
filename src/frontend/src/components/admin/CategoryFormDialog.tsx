@@ -114,7 +114,9 @@ export function CategoryFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" data-ocid="category.dialog">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit category" : "New category"}</DialogTitle>
+          <DialogTitle className="font-display uppercase tracking-wide">
+            {isEdit ? "Edit category" : "New category"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Update the position, name, and cover photo for this category."
@@ -124,7 +126,12 @@ export function CategoryFormDialog({
 
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <Label data-ocid="category.position.label">Position</Label>
+            <Label
+              className="font-heading uppercase tracking-wide"
+              data-ocid="category.position.label"
+            >
+              Position
+            </Label>
             <Select
               value={positionId !== null ? String(positionId) : undefined}
               onValueChange={(v) => setPositionId(BigInt(v))}
@@ -158,7 +165,11 @@ export function CategoryFormDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="category-name" data-ocid="category.name.label">
+            <Label
+              htmlFor="category-name"
+              className="font-heading uppercase tracking-wide"
+              data-ocid="category.name.label"
+            >
               Name
             </Label>
             <Input

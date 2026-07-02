@@ -95,7 +95,9 @@ export function PositionFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" data-ocid="position.dialog">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit position" : "New position"}</DialogTitle>
+          <DialogTitle className="font-display uppercase tracking-wide">
+            {isEdit ? "Edit position" : "New position"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Update the name, description, and cover photo for this position."
@@ -105,7 +107,11 @@ export function PositionFormDialog({
 
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="position-name" data-ocid="position.name.label">
+            <Label
+              htmlFor="position-name"
+              className="font-heading uppercase tracking-wide"
+              data-ocid="position.name.label"
+            >
               Name
             </Label>
             <Input
@@ -131,10 +137,11 @@ export function PositionFormDialog({
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="position-description"
+              className="font-heading uppercase tracking-wide"
               data-ocid="position.description.label"
             >
               Description{" "}
-              <span className="font-normal text-muted-foreground">
+              <span className="font-normal normal-case tracking-normal text-muted-foreground">
                 (optional)
               </span>
             </Label>

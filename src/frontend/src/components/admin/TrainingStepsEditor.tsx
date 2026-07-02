@@ -116,7 +116,7 @@ export function TrainingStepsEditor({ itemId }: TrainingStepsEditorProps) {
     <div className="flex flex-col gap-4" data-ocid="training.editor">
       <header className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <h3 className="font-display text-base font-semibold">
+          <h3 className="font-heading text-base font-semibold uppercase tracking-wide">
             Training steps
           </h3>
           <span className="text-xs text-muted-foreground">
@@ -157,7 +157,7 @@ export function TrainingStepsEditor({ itemId }: TrainingStepsEditorProps) {
           {sorted.map((step, index) => (
             <li
               key={String(step.id)}
-              className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
+              className="flex items-start gap-3 rounded-lg border border-border border-t-2 border-t-primary/40 bg-card p-4"
               data-ocid={`training.item.${index + 1}`}
             >
               <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
