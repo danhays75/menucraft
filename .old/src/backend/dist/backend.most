@@ -1,4 +1,5 @@
 // Version: 4.0.0
+type AnswerOption__552923127 = {correct : Bool; id : Nat; text : Text};
 type AnyAccessControlState__1021952625 =
   {
     var adminAssigned : Bool;
@@ -9,10 +10,29 @@ type AnyAccessControlState__564162505 =
     var adminAssigned : Bool;
     userRoles : Map__222667396<Principal__871080897, AnyRole__725367181>
   };
+type AnyAccessControlState__6554567 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__222667396<Principal__871080897, AnyRole__596332834>
+  };
 type AnyAccessControlState__846822158 =
   {
     var adminAssigned : Bool;
     userRoles : Map__222667396<Principal__871080897, AnyRole__481757906>
+  };
+type AnyAnswerOption__385840579 = {correct : Bool; id : Nat; text : Text};
+type AnyAttemptAnswer__61571559 =
+  {questionId : Nat; selectedOptionIds : [Nat]};
+type AnyAttempt__43178172 =
+  {
+    var answers : [AnyAttemptAnswer__61571559];
+    var createdAt : Nat;
+    id : Nat;
+    var maxScore : Nat;
+    var passed : Bool;
+    principal : Principal__871080897;
+    quizId : Nat;
+    var score : Nat
   };
 type AnyCategory__546378695 =
   {
@@ -42,11 +62,23 @@ type AnyCategory__812379711 =
     var sortOrder : Nat;
     var updatedAt : Nat
   };
+type AnyCategory__894243833 =
+  {
+    coverPhoto : AnyExternalBlob__27012975;
+    var createdAt : Nat;
+    id : Nat;
+    name : Text;
+    positionId : Nat;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
 type AnyExternalBlob__1041556916 = Blob;
+type AnyExternalBlob__27012975 = Blob;
 type AnyExternalBlob__414948987 = Blob;
 type AnyExternalBlob__477178507 = Blob;
 type AnyFontChoice__180407186 = {#monospace; #sansSerif; #serif; #systemFont};
 type AnyFontChoice__392477474 = {#monospace; #sansSerif; #serif; #systemFont};
+type AnyFontChoice__60447436 = {#monospace; #sansSerif; #serif; #systemFont};
 type AnyFontChoice__761133966 = {#monospace; #sansSerif; #serif; #systemFont};
 type AnyMenuItem__1012582222 =
   {
@@ -86,6 +118,19 @@ type AnyMenuItem__323188333 =
     var subCategoryId : ?Nat;
     var updatedAt : Nat
   };
+type AnyMenuItem__847862917 =
+  {
+    categoryId : Nat;
+    var createdAt : Nat;
+    description : Text;
+    id : Nat;
+    var ingredients : [Text];
+    var instructions : [Text];
+    itemPhoto : AnyExternalBlob__27012975;
+    name : Text;
+    var subCategoryId : ?Nat;
+    var updatedAt : Nat
+  };
 type AnyOldCategory__112940999 =
   {
     coverPhoto : AnyExternalBlob__414948987;
@@ -107,6 +152,16 @@ type AnyOldMenuItem__904553129 =
     name : Text;
     var updatedAt : Nat
   };
+type AnyPosition__933173596 =
+  {
+    coverPhoto : ?AnyExternalBlob__27012975;
+    var createdAt : Nat;
+    description : ?Text;
+    id : Nat;
+    name : Text;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
 type AnyPosition__970573521 =
   {
     coverPhoto : ?AnyExternalBlob__414948987;
@@ -117,9 +172,42 @@ type AnyPosition__970573521 =
     var sortOrder : Nat;
     var updatedAt : Nat
   };
+type AnyQuestionType__1064158906 = {#multiple; #single};
+type AnyQuestion__526863235 =
+  {
+    var createdAt : Nat;
+    id : Nat;
+    var options : [AnyAnswerOption__385840579];
+    var order : Nat;
+    var questionType : AnyQuestionType__1064158906;
+    quizId : Nat;
+    var text : Text;
+    var updatedAt : Nat
+  };
+type AnyQuiz__877978373 =
+  {
+    var createdAt : Nat;
+    var description : ?Text;
+    id : Nat;
+    var passingPercentage : Nat;
+    positionId : Nat;
+    var title : Text;
+    var updatedAt : Nat
+  };
 type AnyRole__459838729 = {#admin; #guest; #user};
 type AnyRole__481757906 = {#admin; #guest; #user};
+type AnyRole__596332834 = {#admin; #guest; #user};
 type AnyRole__725367181 = {#admin; #guest; #user};
+type AnySubCategory__11431704 =
+  {
+    coverPhoto : AnyExternalBlob__27012975;
+    var createdAt : Nat;
+    id : Nat;
+    name : Text;
+    parentCategoryId : Nat;
+    var sortOrder : Nat;
+    var updatedAt : Nat
+  };
 type AnySubCategory__517504942 =
   {
     coverPhoto : AnyExternalBlob__1041556916;
@@ -145,6 +233,14 @@ type AnyTheme__438712298 =
     var accentColor : Text;
     var font : AnyFontChoice__392477474;
     var logo : ?AnyExternalBlob__414948987;
+    var primaryColor : Text;
+    var updatedAt : Nat
+  };
+type AnyTheme__532231643 =
+  {
+    var accentColor : Text;
+    var font : AnyFontChoice__60447436;
+    var logo : ?AnyExternalBlob__27012975;
     var primaryColor : Text;
     var updatedAt : Nat
   };
@@ -186,6 +282,17 @@ type AnyTrainingStep__154836696 =
     var updatedAt : Nat;
     var video : ?AnyExternalBlob__477178507
   };
+type AnyTrainingStep__224148987 =
+  {
+    var createdAt : Nat;
+    id : Nat;
+    itemId : Nat;
+    var order : Nat;
+    var photo : ?AnyExternalBlob__27012975;
+    var text : Text;
+    var updatedAt : Nat;
+    var video : ?AnyExternalBlob__27012975
+  };
 type AnyTrainingStep__398198938 =
   {
     var createdAt : Nat;
@@ -204,6 +311,13 @@ type AnyUserProfile__155761253 =
     principal : Principal__871080897;
     var role : AnyRole__725367181
   };
+type AnyUserProfile__467360798 =
+  {
+    var createdAt : Nat;
+    var displayName : Text;
+    principal : Principal__871080897;
+    var role : AnyRole__596332834
+  };
 type AnyUserProfile__574867580 =
   {
     var createdAt : Nat;
@@ -217,6 +331,21 @@ type AnyUserProfile__926617919 =
     var displayName : Text;
     principal : Principal__871080897;
     var role : AnyRole__481757906
+  };
+type AttemptAnswer__168035959 =
+  {questionId : QuestionId__363905317; selectedOptionIds : [Nat]};
+type AttemptId__173561908 = Nat;
+type AttemptId__334346547 = AttemptId__173561908;
+type Attempt__924394871 =
+  {
+    var answers : [AttemptAnswer__168035959];
+    var createdAt : Timestamp__336048791;
+    id : AttemptId__334346547;
+    var maxScore : Nat;
+    var passed : Bool;
+    principal : Principal__423615223;
+    quizId : QuizId__775050758;
+    var score : Nat
   };
 type CategoryId__14729845 = Nat;
 type CategoryId__284655563 = CategoryId__14729845;
@@ -316,8 +445,57 @@ type NewActor__721354561 =
     var users :
       Map__222667396<Principal__871080897, AnyUserProfile__926617919>
   };
+type NewActor__98746884 =
+  {
+    var accessControlState : AnyAccessControlState__6554567;
+    var categories : List__560604548<AnyCategory__894243833>;
+    var items : Map__222667396<Nat, AnyMenuItem__847862917>;
+    var positions : List__560604548<AnyPosition__933173596>;
+    var quizAttempts : List__560604548<AnyAttempt__43178172>;
+    var quizQuestions : List__560604548<AnyQuestion__526863235>;
+    var quizState :
+      {
+        var nextAttemptId : Nat;
+        var nextQuestionId : Nat;
+        var nextQuizId : Nat
+      };
+    var quizzes : List__560604548<AnyQuiz__877978373>;
+    var state :
+      {
+        var nextCategoryId : Nat;
+        var nextItemId : Nat;
+        var nextPositionId : Nat;
+        var nextSubCategoryId : Nat
+      };
+    var steps : List__560604548<AnyTrainingStep__224148987>;
+    var subCategories : List__560604548<AnySubCategory__11431704>;
+    var theme : AnyTheme__532231643;
+    var trainingState : {var nextStepId : Nat};
+    var users :
+      Map__222667396<Principal__871080897, AnyUserProfile__467360798>
+  };
 type Node__1000929467<K, V> =
   {#internal : Internal__41346355<K, V>; #leaf : Leaf__712614010<K, V>};
+type OldActor__1001730022 =
+  {
+    var accessControlState : AnyAccessControlState__6554567;
+    var categories : List__560604548<AnyCategory__894243833>;
+    var items : Map__222667396<Nat, AnyMenuItem__847862917>;
+    var positions : List__560604548<AnyPosition__933173596>;
+    var state :
+      {
+        var nextCategoryId : Nat;
+        var nextItemId : Nat;
+        var nextPositionId : Nat;
+        var nextSubCategoryId : Nat
+      };
+    var steps : List__560604548<AnyTrainingStep__224148987>;
+    var subCategories : List__560604548<AnySubCategory__11431704>;
+    var theme : AnyTheme__532231643;
+    var trainingState : {var nextStepId : Nat};
+    var users :
+      Map__222667396<Principal__871080897, AnyUserProfile__467360798>
+  };
 type OldActor__196187416 = {};
 type OldActor__491511655 =
   {
@@ -349,6 +527,7 @@ type OldActor__88934355 =
     var users :
       Map__222667396<Principal__871080897, AnyUserProfile__155761253>
   };
+type PositionId__1032880636 = PositionId__406149913;
 type PositionId__406149913 = Nat;
 type PositionId__809995169 = PositionId__406149913;
 type Position__245301647 =
@@ -362,8 +541,35 @@ type Position__245301647 =
     var updatedAt : Timestamp__157245557
   };
 type Principal__224692764 = Principal;
+type Principal__423615223 = Principal__871080897;
 type Principal__808603310 = Principal__871080897;
 type Principal__871080897 = Principal__224692764;
+type QuestionId__363905317 = QuestionId__77764146;
+type QuestionId__77764146 = Nat;
+type QuestionType__994445877 = {#multiple; #single};
+type Question__322196058 =
+  {
+    var createdAt : Timestamp__336048791;
+    id : QuestionId__363905317;
+    var options : [AnswerOption__552923127];
+    var order : Nat;
+    var questionType : QuestionType__994445877;
+    quizId : QuizId__775050758;
+    var text : Text;
+    var updatedAt : Timestamp__336048791
+  };
+type QuizId__438791917 = Nat;
+type QuizId__775050758 = QuizId__438791917;
+type Quiz__109335985 =
+  {
+    var createdAt : Timestamp__336048791;
+    var description : ?Text;
+    id : QuizId__775050758;
+    var passingPercentage : Nat;
+    positionId : PositionId__1032880636;
+    var title : Text;
+    var updatedAt : Timestamp__336048791
+  };
 type SubCategoryId__653108217 = SubCategoryId__968378135;
 type SubCategoryId__968378135 = Nat;
 type SubCategory__462660570 =
@@ -378,6 +584,7 @@ type SubCategory__462660570 =
   };
 type Timestamp__157245557 = Timestamp__301639476;
 type Timestamp__301639476 = Nat;
+type Timestamp__336048791 = Timestamp__301639476;
 type Timestamp__543189133 = Timestamp__301639476;
 type Timestamp__669240042 = Timestamp__301639476;
 type TrainingStep__353917301 =
@@ -403,7 +610,8 @@ type UserRole__854305015 = UserRole__686137147;
 {
   "20260630_000000" : (_old : OldActor__196187416) -> NewActor__721354561;
   "20260630_000100" : (old : OldActor__491511655) -> NewActor__594375439;
-  "20260630_000200" : (old : OldActor__88934355) -> NewActor__637173900
+  "20260630_000200" : (old : OldActor__88934355) -> NewActor__637173900;
+  "20260630_000300" : (old : OldActor__1001730022) -> NewActor__98746884
 }
 actor  {
   stable accessControlState :
@@ -426,6 +634,30 @@ actor  {
     {
       var blockIndex : Nat__1040412405;
       var blocks : [var [var ?Position__245301647]];
+      var elementIndex : Nat__1040412405
+    };
+  stable quizAttempts :
+    {
+      var blockIndex : Nat__1040412405;
+      var blocks : [var [var ?Attempt__924394871]];
+      var elementIndex : Nat__1040412405
+    };
+  stable quizQuestions :
+    {
+      var blockIndex : Nat__1040412405;
+      var blocks : [var [var ?Question__322196058]];
+      var elementIndex : Nat__1040412405
+    };
+  stable quizState :
+    {
+      var nextAttemptId : AttemptId__173561908;
+      var nextQuestionId : QuestionId__77764146;
+      var nextQuizId : QuizId__438791917
+    };
+  stable quizzes :
+    {
+      var blockIndex : Nat__1040412405;
+      var blocks : [var [var ?Quiz__109335985]];
       var elementIndex : Nat__1040412405
     };
   stable state :

@@ -9,10 +9,12 @@ import Types "types/categories-items";
 import Common "types/common";
 import UsersTheme "types/users-theme";
 import Training "types/training";
+import Quizzes "types/quizzes";
 import CategoriesItemsApi "mixins/categories-items-api";
 import TrainingApi "mixins/training-api";
 import UsersThemeApi "mixins/users-theme-api";
 import PositionsApi "mixins/positions-api";
+import QuizzesApi "mixins/quizzes-api";
 
 actor {
   // Stable state — initial values come from the migration chain.
@@ -36,6 +38,16 @@ actor {
   let steps : List.List<Training.TrainingStep>;
   let trainingState : { var nextStepId : Nat };
 
+  // Quizzes / questions / attempts stable state.
+  let quizzes : List.List<Quizzes.Quiz>;
+  let quizQuestions : List.List<Quizzes.Question>;
+  let quizAttempts : List.List<Quizzes.Attempt>;
+  let quizState : {
+    var nextQuizId : Common.QuizId;
+    var nextQuestionId : Common.QuestionId;
+    var nextAttemptId : Common.AttemptId;
+  };
+
   // Platform mixins.
   include MixinViews();
   include MixinObjectStorage();
@@ -46,4 +58,5 @@ actor {
   include CategoriesItemsApi(positions, categories, subCategories, items, state, accessControlState);
   include TrainingApi(steps, trainingState, accessControlState);
   include UsersThemeApi(accessControlState, users, theme);
+  include QuizzesApi(quizzes, quizQuestions, quizAttempts, quizState, accessControlState);
 };

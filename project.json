@@ -1,18 +1,21 @@
 {
-  "overview": "MenuCraft is a staff training menu app where positions organize categories, sub-categories, menu items, and training steps.",
+  "overview": "MenuCraft is a staff training app for bar and restaurant teams, with drink library, menu items, training steps, and quizzes per position.",
   "features": [
-    "Browse staff positions and their menu categories",
-    "Drill into sub-categories, menu items, and training steps",
-    "Admin management of positions, categories, items, and training",
-    "Internet Identity login with admin and staff roles",
-    "Customizable theme with colors, fonts, and logo"
+    "Positions with categories, sub-categories, and menu items",
+    "Drink library with recipes and training steps",
+    "Internet Identity login with admin and trainee roles",
+    "Theme customization with logo and color accents",
+    "Quizzes per position with single and multiple-answer questions",
+    "Trainee quiz taking with scoring, pass/fail, and attempt history",
+    "Admin quiz management with question editor and reordering"
   ],
   "category": "productivity",
   "tags": [
-    "menu",
     "staff-training",
-    "positions",
-    "admin"
+    "menu",
+    "quizzes",
+    "hospitality",
+    "internet-identity"
   ],
-  "last_updated": "2026-06-30T17:43:23.313Z"
+  "last_updated": "2026-06-30T20:34:39.180Z"
 }

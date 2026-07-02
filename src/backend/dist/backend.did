@@ -69,6 +69,57 @@ type Result =
    err: Error;
    ok;
  };
+type QuizPublic = 
+ record {
+   createdAt: Timestamp;
+   description: opt text;
+   id: QuizId;
+   passingPercentage: nat;
+   positionId: PositionId;
+   questionCount: nat;
+   title: text;
+   updatedAt: Timestamp;
+ };
+type QuizInput = 
+ record {
+   description: opt text;
+   passingPercentage: nat;
+   title: text;
+ };
+type QuizId = nat;
+type QuizEdit = 
+ record {
+   description: opt text;
+   passingPercentage: nat;
+   title: text;
+ };
+type QuestionType = 
+ variant {
+   multiple;
+   single;
+ };
+type QuestionPublic = 
+ record {
+   id: QuestionId;
+   options: vec AnswerOption;
+   order: nat;
+   questionType: QuestionType;
+   quizId: QuizId;
+   "text": text;
+ };
+type QuestionInput = 
+ record {
+   options: vec AnswerOptionInput;
+   questionType: QuestionType;
+   "text": text;
+ };
+type QuestionId = nat;
+type QuestionEdit = 
+ record {
+   options: vec AnswerOptionInput;
+   questionType: QuestionType;
+   "text": text;
+ };
 type Principal = principal;
 type PositionPublic = 
  record {
@@ -134,11 +185,47 @@ type CategoryPublic =
    sortOrder: nat;
  };
 type CategoryId = nat;
+type AttemptPublic = 
+ record {
+   answers: vec AttemptAnswer;
+   createdAt: Timestamp;
+   id: AttemptId;
+   maxScore: nat;
+   passed: bool;
+   quizId: QuizId;
+   score: nat;
+ };
+type AttemptInput = 
+ record {
+   answers: vec AttemptAnswer;
+   quizId: QuizId;
+ };
+type AttemptId = nat;
+type AttemptAnswer = 
+ record {
+   questionId: QuestionId;
+   selectedOptionIds: vec nat;
+ };
+type AnswerOptionInput = 
+ record {
+   correct: bool;
+   "text": text;
+ };
+type AnswerOption = 
+ record {
+   correct: bool;
+   id: nat;
+   "text": text;
+ };
 service : {
   __accessControlState: () -> (reserved) query;
   __categories: () -> (reserved) query;
   __items: () -> (reserved) query;
   __positions: () -> (reserved) query;
+  __quizAttempts: () -> (reserved) query;
+  __quizQuestions: () -> (reserved) query;
+  __quizState: () -> (reserved) query;
+  __quizzes: () -> (reserved) query;
   __state: () -> (reserved) query;
   __steps: () -> (reserved) query;
   __subCategories: () -> (reserved) query;
@@ -165,6 +252,8 @@ service : {
    name: text, description: text, itemPhoto: ExternalBlob) -> (ItemId);
   createPosition: (name: text, description: opt text, coverPhoto:
    opt ExternalBlob) -> (PositionId);
+  createQuestion: (quizId: QuizId, input: QuestionInput) -> (QuestionPublic);
+  createQuiz: (positionId: PositionId, input: QuizInput) -> (QuizId);
   createSubCategory: (parentCategoryId: CategoryId, name: text, coverPhoto:
    ExternalBlob) -> (SubCategoryPublic);
   createTrainingStep: (itemId: ItemId, input: TrainingStepInput) ->
@@ -172,6 +261,8 @@ service : {
   deleteCategory: (id: CategoryId) -> (nat);
   deleteMenuItem: (id: ItemId) -> ();
   deletePosition: (id: PositionId) -> (nat);
+  deleteQuestion: (questionId: QuestionId) -> (bool);
+  deleteQuiz: (quizId: QuizId) -> (bool);
   deleteSubCategory: (id: SubCategoryId) -> (record {itemCount: nat;});
   deleteTrainingStep: (stepId: nat) -> (bool);
   editTrainingStep: (stepId: nat, edit: TrainingStepEdit) ->
@@ -180,6 +271,11 @@ service : {
   getCallerUserRole: () -> (UserRole) query;
   getMenuItem: (itemId: ItemId) -> (opt MenuItemPublic) query;
   getPosition: (id: PositionId) -> (opt PositionPublic) query;
+  getQuizWithQuestions: (quizId: QuizId) ->
+   (opt record {
+          questions: vec QuestionPublic;
+          quiz: QuizPublic;
+        }) query;
   getTheme: () -> (ThemePublic) query;
   getTrainingStep: (stepId: nat) -> (opt TrainingStepPublic) query;
   isCallerAdmin: () -> (bool) query;
@@ -187,11 +283,14 @@ service : {
   listItemsByCategory: (categoryId: CategoryId) -> (vec MenuItemPublic) query;
   listItemsBySubCategory: (subCategoryId: SubCategoryId) ->
    (vec MenuItemPublic) query;
+  listMyQuizAttempts: (quizId: QuizId) -> (vec AttemptPublic) query;
   listPositions: () -> (vec PositionPublic) query;
+  listQuizzesByPosition: (positionId: PositionId) -> (vec QuizPublic) query;
   listSubCategories: (categoryId: CategoryId) ->
    (vec SubCategoryPublic) query;
   listTrainingSteps: (itemId: ItemId) -> (vec TrainingStepPublic) query;
   listUsers: () -> (vec UserProfilePublic) query;
+  moveQuestion: (questionId: QuestionId, newOrder: nat) -> (bool);
   moveTrainingStep: (stepId: nat, newOrder: nat) -> (bool);
   resetTheme: () -> (ThemePublic);
   revokeRole: (user: Principal) -> (UserProfilePublic);
@@ -202,6 +301,7 @@ service : {
   setCategorySortOrder: (id: CategoryId, sortOrder: nat) -> ();
   setPositionSortOrder: (id: PositionId, sortOrder: nat) -> ();
   setSubCategorySortOrder: (id: SubCategoryId, sortOrder: nat) -> ();
+  submitQuizAttempt: (input: AttemptInput) -> (AttemptPublic);
   updateCategory: (id: CategoryId, positionId: PositionId, name: text,
    coverPhoto: ExternalBlob) -> ();
   updateLogo: (logo: opt ExternalBlob) -> (ThemePublic);
@@ -212,6 +312,9 @@ service : {
    vec text) -> ();
   updatePosition: (id: PositionId, name: text, description: opt text,
    coverPhoto: opt ExternalBlob) -> ();
+  updateQuestion: (questionId: QuestionId, edit: QuestionEdit) ->
+   (QuestionPublic);
+  updateQuiz: (quizId: QuizId, edit: QuizEdit) -> ();
   updateSubCategory: (id: SubCategoryId, name: text, coverPhoto:
    ExternalBlob) -> (SubCategoryPublic);
   updateTheme: (primaryColor: opt text, accentColor: opt text, font:

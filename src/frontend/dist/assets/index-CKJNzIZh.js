@@ -31893,6 +31893,39 @@ const ExternalBlob$1 = Vec(Nat8);
 const CategoryId = Nat;
 const SubCategoryId = Nat;
 const ItemId = Nat;
+const QuizId = Nat;
+const QuestionType$1 = Variant({
+  "multiple": Null,
+  "single": Null
+});
+const AnswerOptionInput = Record({
+  "text": Text,
+  "correct": Bool
+});
+const QuestionInput = Record({
+  "text": Text,
+  "questionType": QuestionType$1,
+  "options": Vec(AnswerOptionInput)
+});
+const QuestionId = Nat;
+const AnswerOption = Record({
+  "id": Nat,
+  "text": Text,
+  "correct": Bool
+});
+const QuestionPublic = Record({
+  "id": QuestionId,
+  "order": Nat,
+  "text": Text,
+  "questionType": QuestionType$1,
+  "quizId": QuizId,
+  "options": Vec(AnswerOption)
+});
+const QuizInput = Record({
+  "title": Text,
+  "description": Opt(Text),
+  "passingPercentage": Nat
+});
 const SubCategoryPublic = Record({
   "id": SubCategoryId,
   "sortOrder": Nat,
@@ -31939,6 +31972,16 @@ const PositionPublic = Record({
   "updatedAt": Timestamp,
   "categoryCount": Nat
 });
+const QuizPublic = Record({
+  "id": QuizId,
+  "title": Text,
+  "createdAt": Timestamp,
+  "description": Opt(Text),
+  "positionId": PositionId,
+  "updatedAt": Timestamp,
+  "passingPercentage": Nat,
+  "questionCount": Nat
+});
 const FontChoice$1 = Variant({
   "sansSerif": Null,
   "monospace": Null,
@@ -31960,11 +32003,43 @@ const CategoryPublic = Record({
   "positionId": PositionId,
   "coverPhoto": ExternalBlob$1
 });
+const AttemptId = Nat;
+const AttemptAnswer = Record({
+  "questionId": QuestionId,
+  "selectedOptionIds": Vec(Nat)
+});
+const AttemptPublic = Record({
+  "id": AttemptId,
+  "maxScore": Nat,
+  "answers": Vec(AttemptAnswer),
+  "createdAt": Timestamp,
+  "score": Nat,
+  "quizId": QuizId,
+  "passed": Bool
+});
+const AttemptInput = Record({
+  "answers": Vec(AttemptAnswer),
+  "quizId": QuizId
+});
+const QuestionEdit = Record({
+  "text": Text,
+  "questionType": QuestionType$1,
+  "options": Vec(AnswerOptionInput)
+});
+const QuizEdit = Record({
+  "title": Text,
+  "description": Opt(Text),
+  "passingPercentage": Nat
+});
 Service({
   "__accessControlState": Func([], [Reserved], ["query"]),
   "__categories": Func([], [Reserved], ["query"]),
   "__items": Func([], [Reserved], ["query"]),
   "__positions": Func([], [Reserved], ["query"]),
+  "__quizAttempts": Func([], [Reserved], ["query"]),
+  "__quizQuestions": Func([], [Reserved], ["query"]),
+  "__quizState": Func([], [Reserved], ["query"]),
+  "__quizzes": Func([], [Reserved], ["query"]),
   "__state": Func([], [Reserved], ["query"]),
   "__steps": Func([], [Reserved], ["query"]),
   "__subCategories": Func([], [Reserved], ["query"]),
@@ -32017,6 +32092,8 @@ Service({
     [PositionId],
     []
   ),
+  "createQuestion": Func([QuizId, QuestionInput], [QuestionPublic], []),
+  "createQuiz": Func([PositionId, QuizInput], [QuizId], []),
   "createSubCategory": Func(
     [CategoryId, Text, ExternalBlob$1],
     [SubCategoryPublic],
@@ -32030,6 +32107,8 @@ Service({
   "deleteCategory": Func([CategoryId], [Nat], []),
   "deleteMenuItem": Func([ItemId], [], []),
   "deletePosition": Func([PositionId], [Nat], []),
+  "deleteQuestion": Func([QuestionId], [Bool], []),
+  "deleteQuiz": Func([QuizId], [Bool], []),
   "deleteSubCategory": Func(
     [SubCategoryId],
     [Record({ "itemCount": Nat })],
@@ -32049,6 +32128,18 @@ Service({
   "getCallerUserRole": Func([], [UserRole$1], ["query"]),
   "getMenuItem": Func([ItemId], [Opt(MenuItemPublic)], ["query"]),
   "getPosition": Func([PositionId], [Opt(PositionPublic)], ["query"]),
+  "getQuizWithQuestions": Func(
+    [QuizId],
+    [
+      Opt(
+        Record({
+          "quiz": QuizPublic,
+          "questions": Vec(QuestionPublic)
+        })
+      )
+    ],
+    ["query"]
+  ),
   "getTheme": Func([], [ThemePublic], ["query"]),
   "getTrainingStep": Func(
     [Nat],
@@ -32067,7 +32158,17 @@ Service({
     [Vec(MenuItemPublic)],
     ["query"]
   ),
+  "listMyQuizAttempts": Func(
+    [QuizId],
+    [Vec(AttemptPublic)],
+    ["query"]
+  ),
   "listPositions": Func([], [Vec(PositionPublic)], ["query"]),
+  "listQuizzesByPosition": Func(
+    [PositionId],
+    [Vec(QuizPublic)],
+    ["query"]
+  ),
   "listSubCategories": Func(
     [CategoryId],
     [Vec(SubCategoryPublic)],
@@ -32079,6 +32180,7 @@ Service({
     ["query"]
   ),
   "listUsers": Func([], [Vec(UserProfilePublic)], ["query"]),
+  "moveQuestion": Func([QuestionId, Nat], [Bool], []),
   "moveTrainingStep": Func([Nat, Nat], [Bool], []),
   "resetTheme": Func([], [ThemePublic], []),
   "revokeRole": Func([Principal2], [UserProfilePublic], []),
@@ -32092,6 +32194,7 @@ Service({
   "setCategorySortOrder": Func([CategoryId, Nat], [], []),
   "setPositionSortOrder": Func([PositionId, Nat], [], []),
   "setSubCategorySortOrder": Func([SubCategoryId, Nat], [], []),
+  "submitQuizAttempt": Func([AttemptInput], [AttemptPublic], []),
   "updateCategory": Func(
     [CategoryId, PositionId, Text, ExternalBlob$1],
     [],
@@ -32120,6 +32223,8 @@ Service({
     [],
     []
   ),
+  "updateQuestion": Func([QuestionId, QuestionEdit], [QuestionPublic], []),
+  "updateQuiz": Func([QuizId, QuizEdit], [], []),
   "updateSubCategory": Func(
     [SubCategoryId, Text, ExternalBlob$1],
     [SubCategoryPublic],
@@ -32183,6 +32288,39 @@ const idlFactory = ({ IDL: IDL2 }) => {
   const CategoryId2 = IDL2.Nat;
   const SubCategoryId2 = IDL2.Nat;
   const ItemId2 = IDL2.Nat;
+  const QuizId2 = IDL2.Nat;
+  const QuestionType2 = IDL2.Variant({
+    "multiple": IDL2.Null,
+    "single": IDL2.Null
+  });
+  const AnswerOptionInput2 = IDL2.Record({
+    "text": IDL2.Text,
+    "correct": IDL2.Bool
+  });
+  const QuestionInput2 = IDL2.Record({
+    "text": IDL2.Text,
+    "questionType": QuestionType2,
+    "options": IDL2.Vec(AnswerOptionInput2)
+  });
+  const QuestionId2 = IDL2.Nat;
+  const AnswerOption2 = IDL2.Record({
+    "id": IDL2.Nat,
+    "text": IDL2.Text,
+    "correct": IDL2.Bool
+  });
+  const QuestionPublic2 = IDL2.Record({
+    "id": QuestionId2,
+    "order": IDL2.Nat,
+    "text": IDL2.Text,
+    "questionType": QuestionType2,
+    "quizId": QuizId2,
+    "options": IDL2.Vec(AnswerOption2)
+  });
+  const QuizInput2 = IDL2.Record({
+    "title": IDL2.Text,
+    "description": IDL2.Opt(IDL2.Text),
+    "passingPercentage": IDL2.Nat
+  });
   const SubCategoryPublic2 = IDL2.Record({
     "id": SubCategoryId2,
     "sortOrder": IDL2.Nat,
@@ -32229,6 +32367,16 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "updatedAt": Timestamp2,
     "categoryCount": IDL2.Nat
   });
+  const QuizPublic2 = IDL2.Record({
+    "id": QuizId2,
+    "title": IDL2.Text,
+    "createdAt": Timestamp2,
+    "description": IDL2.Opt(IDL2.Text),
+    "positionId": PositionId2,
+    "updatedAt": Timestamp2,
+    "passingPercentage": IDL2.Nat,
+    "questionCount": IDL2.Nat
+  });
   const FontChoice2 = IDL2.Variant({
     "sansSerif": IDL2.Null,
     "monospace": IDL2.Null,
@@ -32250,11 +32398,43 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "positionId": PositionId2,
     "coverPhoto": ExternalBlob3
   });
+  const AttemptId2 = IDL2.Nat;
+  const AttemptAnswer2 = IDL2.Record({
+    "questionId": QuestionId2,
+    "selectedOptionIds": IDL2.Vec(IDL2.Nat)
+  });
+  const AttemptPublic2 = IDL2.Record({
+    "id": AttemptId2,
+    "maxScore": IDL2.Nat,
+    "answers": IDL2.Vec(AttemptAnswer2),
+    "createdAt": Timestamp2,
+    "score": IDL2.Nat,
+    "quizId": QuizId2,
+    "passed": IDL2.Bool
+  });
+  const AttemptInput2 = IDL2.Record({
+    "answers": IDL2.Vec(AttemptAnswer2),
+    "quizId": QuizId2
+  });
+  const QuestionEdit2 = IDL2.Record({
+    "text": IDL2.Text,
+    "questionType": QuestionType2,
+    "options": IDL2.Vec(AnswerOptionInput2)
+  });
+  const QuizEdit2 = IDL2.Record({
+    "title": IDL2.Text,
+    "description": IDL2.Opt(IDL2.Text),
+    "passingPercentage": IDL2.Nat
+  });
   return IDL2.Service({
     "__accessControlState": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__categories": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__items": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__positions": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizAttempts": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizQuestions": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizState": IDL2.Func([], [IDL2.Reserved], ["query"]),
+    "__quizzes": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__state": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__steps": IDL2.Func([], [IDL2.Reserved], ["query"]),
     "__subCategories": IDL2.Func([], [IDL2.Reserved], ["query"]),
@@ -32307,6 +32487,8 @@ const idlFactory = ({ IDL: IDL2 }) => {
       [PositionId2],
       []
     ),
+    "createQuestion": IDL2.Func([QuizId2, QuestionInput2], [QuestionPublic2], []),
+    "createQuiz": IDL2.Func([PositionId2, QuizInput2], [QuizId2], []),
     "createSubCategory": IDL2.Func(
       [CategoryId2, IDL2.Text, ExternalBlob3],
       [SubCategoryPublic2],
@@ -32320,6 +32502,8 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "deleteCategory": IDL2.Func([CategoryId2], [IDL2.Nat], []),
     "deleteMenuItem": IDL2.Func([ItemId2], [], []),
     "deletePosition": IDL2.Func([PositionId2], [IDL2.Nat], []),
+    "deleteQuestion": IDL2.Func([QuestionId2], [IDL2.Bool], []),
+    "deleteQuiz": IDL2.Func([QuizId2], [IDL2.Bool], []),
     "deleteSubCategory": IDL2.Func(
       [SubCategoryId2],
       [IDL2.Record({ "itemCount": IDL2.Nat })],
@@ -32343,6 +32527,18 @@ const idlFactory = ({ IDL: IDL2 }) => {
       [IDL2.Opt(PositionPublic2)],
       ["query"]
     ),
+    "getQuizWithQuestions": IDL2.Func(
+      [QuizId2],
+      [
+        IDL2.Opt(
+          IDL2.Record({
+            "quiz": QuizPublic2,
+            "questions": IDL2.Vec(QuestionPublic2)
+          })
+        )
+      ],
+      ["query"]
+    ),
     "getTheme": IDL2.Func([], [ThemePublic2], ["query"]),
     "getTrainingStep": IDL2.Func(
       [IDL2.Nat],
@@ -32361,7 +32557,17 @@ const idlFactory = ({ IDL: IDL2 }) => {
       [IDL2.Vec(MenuItemPublic2)],
       ["query"]
     ),
+    "listMyQuizAttempts": IDL2.Func(
+      [QuizId2],
+      [IDL2.Vec(AttemptPublic2)],
+      ["query"]
+    ),
     "listPositions": IDL2.Func([], [IDL2.Vec(PositionPublic2)], ["query"]),
+    "listQuizzesByPosition": IDL2.Func(
+      [PositionId2],
+      [IDL2.Vec(QuizPublic2)],
+      ["query"]
+    ),
     "listSubCategories": IDL2.Func(
       [CategoryId2],
       [IDL2.Vec(SubCategoryPublic2)],
@@ -32373,6 +32579,7 @@ const idlFactory = ({ IDL: IDL2 }) => {
       ["query"]
     ),
     "listUsers": IDL2.Func([], [IDL2.Vec(UserProfilePublic2)], ["query"]),
+    "moveQuestion": IDL2.Func([QuestionId2, IDL2.Nat], [IDL2.Bool], []),
     "moveTrainingStep": IDL2.Func([IDL2.Nat, IDL2.Nat], [IDL2.Bool], []),
     "resetTheme": IDL2.Func([], [ThemePublic2], []),
     "revokeRole": IDL2.Func([Principal3], [UserProfilePublic2], []),
@@ -32386,6 +32593,7 @@ const idlFactory = ({ IDL: IDL2 }) => {
     "setCategorySortOrder": IDL2.Func([CategoryId2, IDL2.Nat], [], []),
     "setPositionSortOrder": IDL2.Func([PositionId2, IDL2.Nat], [], []),
     "setSubCategorySortOrder": IDL2.Func([SubCategoryId2, IDL2.Nat], [], []),
+    "submitQuizAttempt": IDL2.Func([AttemptInput2], [AttemptPublic2], []),
     "updateCategory": IDL2.Func(
       [CategoryId2, PositionId2, IDL2.Text, ExternalBlob3],
       [],
@@ -32414,6 +32622,12 @@ const idlFactory = ({ IDL: IDL2 }) => {
       [],
       []
     ),
+    "updateQuestion": IDL2.Func(
+      [QuestionId2, QuestionEdit2],
+      [QuestionPublic2],
+      []
+    ),
+    "updateQuiz": IDL2.Func([QuizId2, QuizEdit2], [], []),
     "updateSubCategory": IDL2.Func(
       [SubCategoryId2, IDL2.Text, ExternalBlob3],
       [SubCategoryPublic2],
@@ -32482,6 +32696,11 @@ var FontChoice = /* @__PURE__ */ ((FontChoice2) => {
   FontChoice2["systemFont"] = "systemFont";
   return FontChoice2;
 })(FontChoice || {});
+var QuestionType = /* @__PURE__ */ ((QuestionType2) => {
+  QuestionType2["multiple"] = "multiple";
+  QuestionType2["single"] = "single";
+  return QuestionType2;
+})(QuestionType || {});
 var UserRole = /* @__PURE__ */ ((UserRole2) => {
   UserRole2["admin"] = "admin";
   UserRole2["user"] = "user";
@@ -32548,6 +32767,62 @@ class Backend {
       }
     } else {
       const result = await this.actor.__positions();
+      return result;
+    }
+  }
+  async __quizAttempts() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizAttempts();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizAttempts();
+      return result;
+    }
+  }
+  async __quizQuestions() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizQuestions();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizQuestions();
+      return result;
+    }
+  }
+  async __quizState() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizState();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizState();
+      return result;
+    }
+  }
+  async __quizzes() {
+    if (this.processError) {
+      try {
+        const result = await this.actor.__quizzes();
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.__quizzes();
       return result;
     }
   }
@@ -32831,32 +33106,60 @@ class Backend {
       return result;
     }
   }
+  async createQuestion(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createQuestion(arg0, to_candid_QuestionInput_n22(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createQuestion(arg0, to_candid_QuestionInput_n22(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async createQuiz(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.createQuiz(arg0, to_candid_QuizInput_n30(this._uploadFile, this._downloadFile, arg1));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.createQuiz(arg0, to_candid_QuizInput_n30(this._uploadFile, this._downloadFile, arg1));
+      return result;
+    }
+  }
   async createSubCategory(arg0, arg1, arg2) {
     if (this.processError) {
       try {
         const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
+        return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.createSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
+      return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
     }
   }
   async createTrainingStep(arg0, arg1) {
     if (this.processError) {
       try {
-        const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n25(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n35(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n25(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.createTrainingStep(arg0, await to_candid_TrainingStepInput_n35(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
     }
   }
   async deleteCategory(arg0) {
@@ -32901,6 +33204,34 @@ class Backend {
       return result;
     }
   }
+  async deleteQuestion(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteQuestion(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteQuestion(arg0);
+      return result;
+    }
+  }
+  async deleteQuiz(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.deleteQuiz(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.deleteQuiz(arg0);
+      return result;
+    }
+  }
   async deleteSubCategory(arg0) {
     if (this.processError) {
       try {
@@ -32932,29 +33263,29 @@ class Backend {
   async editTrainingStep(arg0, arg1) {
     if (this.processError) {
       try {
-        const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n30(this._uploadFile, this._downloadFile, arg1));
-        return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n40(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n30(this._uploadFile, this._downloadFile, arg1));
-      return from_candid_TrainingStepPublic_n27(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.editTrainingStep(arg0, await to_candid_TrainingStepEdit_n40(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_TrainingStepPublic_n37(this._uploadFile, this._downloadFile, result);
     }
   }
   async getCallerUserProfile() {
     if (this.processError) {
       try {
         const result = await this.actor.getCallerUserProfile();
-        return from_candid_opt_n31(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n41(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getCallerUserProfile();
-      return from_candid_opt_n31(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n41(this._uploadFile, this._downloadFile, result);
     }
   }
   async getCallerUserRole() {
@@ -32975,56 +33306,70 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.getMenuItem(arg0);
-        return from_candid_opt_n32(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n42(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getMenuItem(arg0);
-      return from_candid_opt_n32(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n42(this._uploadFile, this._downloadFile, result);
     }
   }
   async getPosition(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.getPosition(arg0);
-        return from_candid_opt_n36(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n46(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getPosition(arg0);
-      return from_candid_opt_n36(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n46(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async getQuizWithQuestions(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.getQuizWithQuestions(arg0);
+        return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.getQuizWithQuestions(arg0);
+      return from_candid_opt_n50(this._uploadFile, this._downloadFile, result);
     }
   }
   async getTheme() {
     if (this.processError) {
       try {
         const result = await this.actor.getTheme();
-        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getTheme();
-      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
     }
   }
   async getTrainingStep(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.getTrainingStep(arg0);
-        return from_candid_opt_n44(this._uploadFile, this._downloadFile, result);
+        return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.getTrainingStep(arg0);
-      return from_candid_opt_n44(this._uploadFile, this._downloadFile, result);
+      return from_candid_opt_n59(this._uploadFile, this._downloadFile, result);
     }
   }
   async isCallerAdmin() {
@@ -33045,98 +33390,140 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.listCategories();
-        return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listCategories();
-      return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n60(this._uploadFile, this._downloadFile, result);
     }
   }
   async listItemsByCategory(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.listItemsByCategory(arg0);
-        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listItemsByCategory(arg0);
-      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
     }
   }
   async listItemsBySubCategory(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.listItemsBySubCategory(arg0);
-        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listItemsBySubCategory(arg0);
-      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listMyQuizAttempts(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listMyQuizAttempts(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listMyQuizAttempts(arg0);
+      return result;
     }
   }
   async listPositions() {
     if (this.processError) {
       try {
         const result = await this.actor.listPositions();
-        return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n64(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listPositions();
-      return from_candid_vec_n49(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n64(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async listQuizzesByPosition(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.listQuizzesByPosition(arg0);
+        return from_candid_vec_n65(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.listQuizzesByPosition(arg0);
+      return from_candid_vec_n65(this._uploadFile, this._downloadFile, result);
     }
   }
   async listSubCategories(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.listSubCategories(arg0);
-        return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listSubCategories(arg0);
-      return from_candid_vec_n50(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n66(this._uploadFile, this._downloadFile, result);
     }
   }
   async listTrainingSteps(arg0) {
     if (this.processError) {
       try {
         const result = await this.actor.listTrainingSteps(arg0);
-        return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n67(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listTrainingSteps(arg0);
-      return from_candid_vec_n51(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n67(this._uploadFile, this._downloadFile, result);
     }
   }
   async listUsers() {
     if (this.processError) {
       try {
         const result = await this.actor.listUsers();
-        return from_candid_vec_n52(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n68(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.listUsers();
-      return from_candid_vec_n52(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n68(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async moveQuestion(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.moveQuestion(arg0, arg1);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.moveQuestion(arg0, arg1);
+      return result;
     }
   }
   async moveTrainingStep(arg0, arg1) {
@@ -33157,14 +33544,14 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.resetTheme();
-        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.resetTheme();
-      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
     }
   }
   async revokeRole(arg0) {
@@ -33199,28 +33586,28 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.searchItems(arg0);
-        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.searchItems(arg0);
-      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
     }
   }
   async searchItemsInCategory(arg0, arg1) {
     if (this.processError) {
       try {
         const result = await this.actor.searchItemsInCategory(arg0, arg1);
-        return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+        return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.searchItemsInCategory(arg0, arg1);
-      return from_candid_vec_n48(this._uploadFile, this._downloadFile, result);
+      return from_candid_vec_n63(this._uploadFile, this._downloadFile, result);
     }
   }
   async setCategorySortOrder(arg0, arg1) {
@@ -33265,6 +33652,20 @@ class Backend {
       return result;
     }
   }
+  async submitQuizAttempt(arg0) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.submitQuizAttempt(arg0);
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.submitQuizAttempt(arg0);
+      return result;
+    }
+  }
   async updateCategory(arg0, arg1, arg2, arg3) {
     if (this.processError) {
       try {
@@ -33283,14 +33684,14 @@ class Backend {
     if (this.processError) {
       try {
         const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
-        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.updateLogo(await to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
-      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
     }
   }
   async updateMenuItem(arg0, arg1, arg2, arg3, arg4, arg5) {
@@ -33335,64 +33736,101 @@ class Backend {
       return result;
     }
   }
+  async updateQuestion(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateQuestion(arg0, to_candid_QuestionEdit_n69(this._uploadFile, this._downloadFile, arg1));
+        return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateQuestion(arg0, to_candid_QuestionEdit_n69(this._uploadFile, this._downloadFile, arg1));
+      return from_candid_QuestionPublic_n26(this._uploadFile, this._downloadFile, result);
+    }
+  }
+  async updateQuiz(arg0, arg1) {
+    if (this.processError) {
+      try {
+        const result = await this.actor.updateQuiz(arg0, to_candid_QuizEdit_n70(this._uploadFile, this._downloadFile, arg1));
+        return result;
+      } catch (e) {
+        this.processError(e);
+        throw new Error("unreachable");
+      }
+    } else {
+      const result = await this.actor.updateQuiz(arg0, to_candid_QuizEdit_n70(this._uploadFile, this._downloadFile, arg1));
+      return result;
+    }
+  }
   async updateSubCategory(arg0, arg1, arg2) {
     if (this.processError) {
       try {
         const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
+        return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
       const result = await this.actor.updateSubCategory(arg0, arg1, await to_candid_ExternalBlob_n18(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_SubCategoryPublic_n22(this._uploadFile, this._downloadFile, result);
+      return from_candid_SubCategoryPublic_n32(this._uploadFile, this._downloadFile, result);
     }
   }
   async updateTheme(arg0, arg1, arg2) {
     if (this.processError) {
       try {
-        const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n53(this._uploadFile, this._downloadFile, arg2));
-        return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+        const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n71(this._uploadFile, this._downloadFile, arg2));
+        return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
       } catch (e) {
         this.processError(e);
         throw new Error("unreachable");
       }
     } else {
-      const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n53(this._uploadFile, this._downloadFile, arg2));
-      return from_candid_ThemePublic_n40(this._uploadFile, this._downloadFile, result);
+      const result = await this.actor.updateTheme(to_candid_opt_n20(this._uploadFile, this._downloadFile, arg0), to_candid_opt_n20(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n71(this._uploadFile, this._downloadFile, arg2));
+      return from_candid_ThemePublic_n55(this._uploadFile, this._downloadFile, result);
     }
   }
 }
-async function from_candid_CategoryPublic_n46(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n47(_uploadFile, _downloadFile, value);
+async function from_candid_CategoryPublic_n61(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n62(_uploadFile, _downloadFile, value);
 }
 function from_candid_Error_n10(_uploadFile, _downloadFile, value) {
   return from_candid_variant_n11(_uploadFile, _downloadFile, value);
 }
-async function from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value) {
+async function from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value) {
   return await _downloadFile(value);
 }
-function from_candid_FontChoice_n42(_uploadFile, _downloadFile, value) {
-  return from_candid_variant_n43(_uploadFile, _downloadFile, value);
+function from_candid_FontChoice_n57(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n58(_uploadFile, _downloadFile, value);
 }
-async function from_candid_MenuItemPublic_n33(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n34(_uploadFile, _downloadFile, value);
+async function from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n44(_uploadFile, _downloadFile, value);
 }
-async function from_candid_PositionPublic_n37(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n38(_uploadFile, _downloadFile, value);
+async function from_candid_PositionPublic_n47(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n48(_uploadFile, _downloadFile, value);
+}
+function from_candid_QuestionPublic_n26(_uploadFile, _downloadFile, value) {
+  return from_candid_record_n27(_uploadFile, _downloadFile, value);
+}
+function from_candid_QuestionType_n28(_uploadFile, _downloadFile, value) {
+  return from_candid_variant_n29(_uploadFile, _downloadFile, value);
+}
+function from_candid_QuizPublic_n52(_uploadFile, _downloadFile, value) {
+  return from_candid_record_n53(_uploadFile, _downloadFile, value);
 }
 function from_candid_Result_n8(_uploadFile, _downloadFile, value) {
   return from_candid_variant_n9(_uploadFile, _downloadFile, value);
 }
-async function from_candid_SubCategoryPublic_n22(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n23(_uploadFile, _downloadFile, value);
+async function from_candid_SubCategoryPublic_n32(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n33(_uploadFile, _downloadFile, value);
 }
-async function from_candid_ThemePublic_n40(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n41(_uploadFile, _downloadFile, value);
+async function from_candid_ThemePublic_n55(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n56(_uploadFile, _downloadFile, value);
 }
-async function from_candid_TrainingStepPublic_n27(_uploadFile, _downloadFile, value) {
-  return await from_candid_record_n28(_uploadFile, _downloadFile, value);
+async function from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, value) {
+  return await from_candid_record_n38(_uploadFile, _downloadFile, value);
 }
 function from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value) {
   return from_candid_record_n15(_uploadFile, _downloadFile, value);
@@ -33403,26 +33841,29 @@ function from_candid_UserRole_n16(_uploadFile, _downloadFile, value) {
 function from_candid__ImmutableObjectStorageRefillResult_n4(_uploadFile, _downloadFile, value) {
   return from_candid_record_n5(_uploadFile, _downloadFile, value);
 }
-async function from_candid_opt_n29(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value[0]);
+async function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_opt_n31(_uploadFile, _downloadFile, value) {
+function from_candid_opt_n41(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, value[0]);
 }
-async function from_candid_opt_n32(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_MenuItemPublic_n33(_uploadFile, _downloadFile, value[0]);
+async function from_candid_opt_n42(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_opt_n35(_uploadFile, _downloadFile, value) {
+function from_candid_opt_n45(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : value[0];
 }
-async function from_candid_opt_n36(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_PositionPublic_n37(_uploadFile, _downloadFile, value[0]);
+async function from_candid_opt_n46(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_PositionPublic_n47(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_opt_n39(_uploadFile, _downloadFile, value) {
+function from_candid_opt_n49(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : value[0];
 }
-async function from_candid_opt_n44(_uploadFile, _downloadFile, value) {
-  return value.length === 0 ? null : await from_candid_TrainingStepPublic_n27(_uploadFile, _downloadFile, value[0]);
+function from_candid_opt_n50(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : from_candid_record_n51(_uploadFile, _downloadFile, value[0]);
+}
+async function from_candid_opt_n59(_uploadFile, _downloadFile, value) {
+  return value.length === 0 ? null : await from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n6(_uploadFile, _downloadFile, value) {
   return value.length === 0 ? null : value[0];
@@ -33438,73 +33879,101 @@ function from_candid_record_n15(_uploadFile, _downloadFile, value) {
     role: from_candid_UserRole_n16(_uploadFile, _downloadFile, value.role)
   };
 }
-async function from_candid_record_n23(_uploadFile, _downloadFile, value) {
+function from_candid_record_n27(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    order: value.order,
+    text: value.text,
+    questionType: from_candid_QuestionType_n28(_uploadFile, _downloadFile, value.questionType),
+    quizId: value.quizId,
+    options: value.options
+  };
+}
+async function from_candid_record_n33(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     sortOrder: value.sortOrder,
     name: value.name,
     itemCount: value.itemCount,
     parentCategoryId: value.parentCategoryId,
-    coverPhoto: await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value.coverPhoto)
+    coverPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.coverPhoto)
   };
 }
-async function from_candid_record_n28(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n38(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     itemId: value.itemId,
     order: value.order,
-    video: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.video)),
+    video: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.video)),
     text: value.text,
-    photo: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.photo))
+    photo: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.photo))
   };
 }
-async function from_candid_record_n34(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n44(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     categoryId: value.categoryId,
     name: value.name,
     description: value.description,
     instructions: value.instructions,
-    subCategoryId: record_opt_to_undefined(from_candid_opt_n35(_uploadFile, _downloadFile, value.subCategoryId)),
-    itemPhoto: await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value.itemPhoto),
+    subCategoryId: record_opt_to_undefined(from_candid_opt_n45(_uploadFile, _downloadFile, value.subCategoryId)),
+    itemPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.itemPhoto),
     ingredients: value.ingredients
   };
 }
-async function from_candid_record_n38(_uploadFile, _downloadFile, value) {
+async function from_candid_record_n48(_uploadFile, _downloadFile, value) {
   return {
     id: value.id,
     sortOrder: value.sortOrder,
     name: value.name,
     createdAt: value.createdAt,
-    description: record_opt_to_undefined(from_candid_opt_n39(_uploadFile, _downloadFile, value.description)),
-    coverPhoto: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.coverPhoto)),
+    description: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.description)),
+    coverPhoto: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.coverPhoto)),
     updatedAt: value.updatedAt,
     categoryCount: value.categoryCount
-  };
-}
-async function from_candid_record_n41(_uploadFile, _downloadFile, value) {
-  return {
-    font: from_candid_FontChoice_n42(_uploadFile, _downloadFile, value.font),
-    primaryColor: value.primaryColor,
-    logo: record_opt_to_undefined(await from_candid_opt_n29(_uploadFile, _downloadFile, value.logo)),
-    accentColor: value.accentColor,
-    updatedAt: value.updatedAt
-  };
-}
-async function from_candid_record_n47(_uploadFile, _downloadFile, value) {
-  return {
-    id: value.id,
-    sortOrder: value.sortOrder,
-    name: value.name,
-    itemCount: value.itemCount,
-    positionId: value.positionId,
-    coverPhoto: await from_candid_ExternalBlob_n24(_uploadFile, _downloadFile, value.coverPhoto)
   };
 }
 function from_candid_record_n5(_uploadFile, _downloadFile, value) {
   return {
     success: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.success)),
     topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
+  };
+}
+function from_candid_record_n51(_uploadFile, _downloadFile, value) {
+  return {
+    quiz: from_candid_QuizPublic_n52(_uploadFile, _downloadFile, value.quiz),
+    questions: from_candid_vec_n54(_uploadFile, _downloadFile, value.questions)
+  };
+}
+function from_candid_record_n53(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    title: value.title,
+    createdAt: value.createdAt,
+    description: record_opt_to_undefined(from_candid_opt_n49(_uploadFile, _downloadFile, value.description)),
+    positionId: value.positionId,
+    updatedAt: value.updatedAt,
+    passingPercentage: value.passingPercentage,
+    questionCount: value.questionCount
+  };
+}
+async function from_candid_record_n56(_uploadFile, _downloadFile, value) {
+  return {
+    font: from_candid_FontChoice_n57(_uploadFile, _downloadFile, value.font),
+    primaryColor: value.primaryColor,
+    logo: record_opt_to_undefined(await from_candid_opt_n39(_uploadFile, _downloadFile, value.logo)),
+    accentColor: value.accentColor,
+    updatedAt: value.updatedAt
+  };
+}
+async function from_candid_record_n62(_uploadFile, _downloadFile, value) {
+  return {
+    id: value.id,
+    sortOrder: value.sortOrder,
+    name: value.name,
+    itemCount: value.itemCount,
+    positionId: value.positionId,
+    coverPhoto: await from_candid_ExternalBlob_n34(_uploadFile, _downloadFile, value.coverPhoto)
   };
 }
 function from_candid_variant_n11(_uploadFile, _downloadFile, value) {
@@ -33543,7 +34012,10 @@ function from_candid_variant_n11(_uploadFile, _downloadFile, value) {
 function from_candid_variant_n17(_uploadFile, _downloadFile, value) {
   return "admin" in value ? "admin" : "user" in value ? "user" : "guest" in value ? "guest" : value;
 }
-function from_candid_variant_n43(_uploadFile, _downloadFile, value) {
+function from_candid_variant_n29(_uploadFile, _downloadFile, value) {
+  return "multiple" in value ? "multiple" : "single" in value ? "single" : value;
+}
+function from_candid_variant_n58(_uploadFile, _downloadFile, value) {
   return "sansSerif" in value ? "sansSerif" : "monospace" in value ? "monospace" : "serif" in value ? "serif" : "systemFont" in value ? "systemFont" : value;
 }
 function from_candid_variant_n9(_uploadFile, _downloadFile, value) {
@@ -33555,35 +34027,56 @@ function from_candid_variant_n9(_uploadFile, _downloadFile, value) {
     err: from_candid_Error_n10(_uploadFile, _downloadFile, value.err)
   } : value;
 }
-async function from_candid_vec_n45(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_CategoryPublic_n46(_uploadFile, _downloadFile, x2)));
+function from_candid_vec_n54(_uploadFile, _downloadFile, value) {
+  return value.map((x2) => from_candid_QuestionPublic_n26(_uploadFile, _downloadFile, x2));
 }
-async function from_candid_vec_n48(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_MenuItemPublic_n33(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n60(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_CategoryPublic_n61(_uploadFile, _downloadFile, x2)));
 }
-async function from_candid_vec_n49(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_PositionPublic_n37(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n63(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_MenuItemPublic_n43(_uploadFile, _downloadFile, x2)));
 }
-async function from_candid_vec_n50(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_SubCategoryPublic_n22(_uploadFile, _downloadFile, x2)));
+async function from_candid_vec_n64(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_PositionPublic_n47(_uploadFile, _downloadFile, x2)));
 }
-async function from_candid_vec_n51(_uploadFile, _downloadFile, value) {
-  return await Promise.all(value.map(async (x2) => await from_candid_TrainingStepPublic_n27(_uploadFile, _downloadFile, x2)));
+function from_candid_vec_n65(_uploadFile, _downloadFile, value) {
+  return value.map((x2) => from_candid_QuizPublic_n52(_uploadFile, _downloadFile, x2));
 }
-function from_candid_vec_n52(_uploadFile, _downloadFile, value) {
+async function from_candid_vec_n66(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_SubCategoryPublic_n32(_uploadFile, _downloadFile, x2)));
+}
+async function from_candid_vec_n67(_uploadFile, _downloadFile, value) {
+  return await Promise.all(value.map(async (x2) => await from_candid_TrainingStepPublic_n37(_uploadFile, _downloadFile, x2)));
+}
+function from_candid_vec_n68(_uploadFile, _downloadFile, value) {
   return value.map((x2) => from_candid_UserProfilePublic_n14(_uploadFile, _downloadFile, x2));
 }
 async function to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value) {
   return await _uploadFile(value);
 }
-function to_candid_FontChoice_n54(_uploadFile, _downloadFile, value) {
-  return to_candid_variant_n55(_uploadFile, _downloadFile, value);
+function to_candid_FontChoice_n72(_uploadFile, _downloadFile, value) {
+  return to_candid_variant_n73(_uploadFile, _downloadFile, value);
 }
-async function to_candid_TrainingStepEdit_n30(_uploadFile, _downloadFile, value) {
-  return await to_candid_record_n26(_uploadFile, _downloadFile, value);
+function to_candid_QuestionEdit_n69(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n23(_uploadFile, _downloadFile, value);
 }
-async function to_candid_TrainingStepInput_n25(_uploadFile, _downloadFile, value) {
-  return await to_candid_record_n26(_uploadFile, _downloadFile, value);
+function to_candid_QuestionInput_n22(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n23(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuestionType_n24(_uploadFile, _downloadFile, value) {
+  return to_candid_variant_n25(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuizEdit_n70(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n31(_uploadFile, _downloadFile, value);
+}
+function to_candid_QuizInput_n30(_uploadFile, _downloadFile, value) {
+  return to_candid_record_n31(_uploadFile, _downloadFile, value);
+}
+async function to_candid_TrainingStepEdit_n40(_uploadFile, _downloadFile, value) {
+  return await to_candid_record_n36(_uploadFile, _downloadFile, value);
+}
+async function to_candid_TrainingStepInput_n35(_uploadFile, _downloadFile, value) {
+  return await to_candid_record_n36(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n12(_uploadFile, _downloadFile, value) {
   return to_candid_variant_n13(_uploadFile, _downloadFile, value);
@@ -33603,19 +34096,33 @@ function to_candid_opt_n20(_uploadFile, _downloadFile, value) {
 async function to_candid_opt_n21(_uploadFile, _downloadFile, value) {
   return value === null ? candid_none() : candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value));
 }
-function to_candid_opt_n53(_uploadFile, _downloadFile, value) {
-  return value === null ? candid_none() : candid_some(to_candid_FontChoice_n54(_uploadFile, _downloadFile, value));
+function to_candid_opt_n71(_uploadFile, _downloadFile, value) {
+  return value === null ? candid_none() : candid_some(to_candid_FontChoice_n72(_uploadFile, _downloadFile, value));
 }
-async function to_candid_record_n26(_uploadFile, _downloadFile, value) {
+function to_candid_record_n23(_uploadFile, _downloadFile, value) {
   return {
-    video: value.video ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.video)) : candid_none(),
     text: value.text,
-    photo: value.photo ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.photo)) : candid_none()
+    questionType: to_candid_QuestionType_n24(_uploadFile, _downloadFile, value.questionType),
+    options: value.options
   };
 }
 function to_candid_record_n3(_uploadFile, _downloadFile, value) {
   return {
     proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
+  };
+}
+function to_candid_record_n31(_uploadFile, _downloadFile, value) {
+  return {
+    title: value.title,
+    description: value.description ? candid_some(value.description) : candid_none(),
+    passingPercentage: value.passingPercentage
+  };
+}
+async function to_candid_record_n36(_uploadFile, _downloadFile, value) {
+  return {
+    video: value.video ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.video)) : candid_none(),
+    text: value.text,
+    photo: value.photo ? candid_some(await to_candid_ExternalBlob_n18(_uploadFile, _downloadFile, value.photo)) : candid_none()
   };
 }
 function to_candid_variant_n13(_uploadFile, _downloadFile, value) {
@@ -33627,7 +34134,14 @@ function to_candid_variant_n13(_uploadFile, _downloadFile, value) {
     guest: null
   } : value;
 }
-function to_candid_variant_n55(_uploadFile, _downloadFile, value) {
+function to_candid_variant_n25(_uploadFile, _downloadFile, value) {
+  return value == "multiple" ? {
+    multiple: null
+  } : value == "single" ? {
+    single: null
+  } : value;
+}
+function to_candid_variant_n73(_uploadFile, _downloadFile, value) {
   return value == "sansSerif" ? {
     sansSerif: null
   } : value == "monospace" ? {
@@ -34345,11 +34859,11 @@ function createRandomKey() {
 function last(arr) {
   return arr[arr.length - 1];
 }
-function isFunction$1(d2) {
+function isFunction$2(d2) {
   return typeof d2 === "function";
 }
 function functionalUpdate(updater, previous) {
-  if (isFunction$1(updater)) {
+  if (isFunction$2(updater)) {
     return updater(previous);
   }
   return updater;
@@ -38961,70 +39475,70 @@ const createLucideIcon = (iconName, iconNode) => {
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$G = [
+const __iconNode$N = [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$G);
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$N);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$F = [
+const __iconNode$M = [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
   ["path", { d: "M19 12H5", key: "x3x0zl" }]
 ];
-const ArrowLeft = createLucideIcon("arrow-left", __iconNode$F);
+const ArrowLeft = createLucideIcon("arrow-left", __iconNode$M);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$E = [
+const __iconNode$L = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
 ];
-const ArrowRight = createLucideIcon("arrow-right", __iconNode$E);
+const ArrowRight = createLucideIcon("arrow-right", __iconNode$L);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$D = [
+const __iconNode$K = [
   ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
   ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$D);
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$K);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$C = [
+const __iconNode$J = [
   ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
   ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
 ];
-const Briefcase = createLucideIcon("briefcase", __iconNode$C);
+const Briefcase = createLucideIcon("briefcase", __iconNode$J);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$B = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$B);
+const __iconNode$I = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$I);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$A = [
+const __iconNode$H = [
   [
     "path",
     {
@@ -39034,60 +39548,101 @@ const __iconNode$A = [
   ],
   ["path", { d: "M6 17h12", key: "1jwigz" }]
 ];
-const ChefHat = createLucideIcon("chef-hat", __iconNode$A);
+const ChefHat = createLucideIcon("chef-hat", __iconNode$H);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$z = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$z);
+const __iconNode$G = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$G);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$y = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$y);
+const __iconNode$F = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$F);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$x = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode$x);
+const __iconNode$E = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$E);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$w = [
+const __iconNode$D = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$w);
+const CircleCheck = createLucideIcon("circle-check", __iconNode$D);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$v = [
+const __iconNode$C = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+  ["path", { d: "m9 9 6 6", key: "z0biqf" }]
+];
+const CircleX = createLucideIcon("circle-x", __iconNode$C);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$B = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+const Circle = createLucideIcon("circle", __iconNode$B);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$A = [
+  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
+  [
+    "path",
+    {
+      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+      key: "116196"
+    }
+  ],
+  ["path", { d: "M12 11h4", key: "1jrz19" }],
+  ["path", { d: "M12 16h4", key: "n85exb" }],
+  ["path", { d: "M8 11h.01", key: "1dfujw" }],
+  ["path", { d: "M8 16h.01", key: "18s6g9" }]
+];
+const ClipboardList = createLucideIcon("clipboard-list", __iconNode$A);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$z = [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
 ];
-const Copy = createLucideIcon("copy", __iconNode$v);
+const Copy = createLucideIcon("copy", __iconNode$z);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$u = [
+const __iconNode$y = [
   [
     "path",
     {
@@ -39097,14 +39652,14 @@ const __iconNode$u = [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Eye = createLucideIcon("eye", __iconNode$u);
+const Eye = createLucideIcon("eye", __iconNode$y);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$t = [
+const __iconNode$x = [
   [
     "path",
     {
@@ -39122,14 +39677,14 @@ const __iconNode$t = [
   ["path", { d: "M3 5a2 2 0 0 0 2 2h3", key: "f2jnh7" }],
   ["path", { d: "M3 3v13a2 2 0 0 0 2 2h3", key: "k8epm1" }]
 ];
-const FolderTree = createLucideIcon("folder-tree", __iconNode$t);
+const FolderTree = createLucideIcon("folder-tree", __iconNode$x);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$s = [
+const __iconNode$w = [
   [
     "path",
     {
@@ -39140,7 +39695,58 @@ const __iconNode$s = [
   ["path", { d: "M22 10v6", key: "1lu8f3" }],
   ["path", { d: "M6 12.5V16a6 3 0 0 0 12 0v-3.5", key: "1r8lef" }]
 ];
-const GraduationCap = createLucideIcon("graduation-cap", __iconNode$s);
+const GraduationCap = createLucideIcon("graduation-cap", __iconNode$w);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$v = [
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
+  ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
+];
+const History = createLucideIcon("history", __iconNode$v);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$u = [
+  ["path", { d: "M16 5h6", key: "1vod17" }],
+  ["path", { d: "M19 2v6", key: "4bpg5p" }],
+  ["path", { d: "M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5", key: "1ue2ih" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }]
+];
+const ImagePlus = createLucideIcon("image-plus", __iconNode$u);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$t = [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+];
+const Image = createLucideIcon("image", __iconNode$t);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$s = [
+  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+];
+const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$s);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39148,13 +39754,13 @@ const GraduationCap = createLucideIcon("graduation-cap", __iconNode$s);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$r = [
-  ["path", { d: "M16 5h6", key: "1vod17" }],
-  ["path", { d: "M19 2v6", key: "4bpg5p" }],
-  ["path", { d: "M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5", key: "1ue2ih" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }]
+  ["path", { d: "m3 17 2 2 4-4", key: "1jhpwq" }],
+  ["path", { d: "m3 7 2 2 4-4", key: "1obspn" }],
+  ["path", { d: "M13 6h8", key: "15sg57" }],
+  ["path", { d: "M13 12h8", key: "h98zly" }],
+  ["path", { d: "M13 18h8", key: "oe0vm4" }]
 ];
-const ImagePlus = createLucideIcon("image-plus", __iconNode$r);
+const ListChecks = createLucideIcon("list-checks", __iconNode$r);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39162,31 +39768,6 @@ const ImagePlus = createLucideIcon("image-plus", __iconNode$r);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$q = [
-  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
-];
-const Image = createLucideIcon("image", __iconNode$q);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$p = [
-  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
-  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
-  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
-  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
-];
-const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$p);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$o = [
   ["path", { d: "M10 12h11", key: "6m4ad9" }],
   ["path", { d: "M10 18h11", key: "11hvi2" }],
   ["path", { d: "M10 6h11", key: "c7qv1k" }],
@@ -39194,15 +39775,39 @@ const __iconNode$o = [
   ["path", { d: "M4 6h1v4", key: "cnovpq" }],
   ["path", { d: "M6 18H4c0-1 2-2 2-3s-1-1.5-2-1", key: "m9a95d" }]
 ];
-const ListOrdered = createLucideIcon("list-ordered", __iconNode$o);
+const ListOrdered = createLucideIcon("list-ordered", __iconNode$q);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$n = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("loader-circle", __iconNode$n);
+const __iconNode$p = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("loader-circle", __iconNode$p);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$o = [
+  ["circle", { cx: "12", cy: "16", r: "1", key: "1au0dj" }],
+  ["rect", { x: "3", y: "10", width: "18", height: "12", rx: "2", key: "6s8ecr" }],
+  ["path", { d: "M7 10V7a5 5 0 0 1 10 0v3", key: "1pqi11" }]
+];
+const LockKeyhole = createLucideIcon("lock-keyhole", __iconNode$o);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$n = [
+  ["path", { d: "m10 17 5-5-5-5", key: "1bsop3" }],
+  ["path", { d: "M15 12H3", key: "6jk70r" }],
+  ["path", { d: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4", key: "u53s6r" }]
+];
+const LogIn = createLucideIcon("log-in", __iconNode$n);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39210,23 +39815,19 @@ const LoaderCircle = createLucideIcon("loader-circle", __iconNode$n);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$m = [
-  ["circle", { cx: "12", cy: "16", r: "1", key: "1au0dj" }],
-  ["rect", { x: "3", y: "10", width: "18", height: "12", rx: "2", key: "6s8ecr" }],
-  ["path", { d: "M7 10V7a5 5 0 0 1 10 0v3", key: "1pqi11" }]
+  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+  ["path", { d: "M21 12H9", key: "dn1m92" }],
+  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
 ];
-const LockKeyhole = createLucideIcon("lock-keyhole", __iconNode$m);
+const LogOut = createLucideIcon("log-out", __iconNode$m);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$l = [
-  ["path", { d: "m10 17 5-5-5-5", key: "1bsop3" }],
-  ["path", { d: "M15 12H3", key: "6jk70r" }],
-  ["path", { d: "M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4", key: "u53s6r" }]
-];
-const LogIn = createLucideIcon("log-in", __iconNode$l);
+const __iconNode$l = [["path", { d: "M5 12h14", key: "1ays0h" }]];
+const Minus = createLucideIcon("minus", __iconNode$l);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39234,18 +39835,6 @@ const LogIn = createLucideIcon("log-in", __iconNode$l);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$k = [
-  ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-  ["path", { d: "M21 12H9", key: "dn1m92" }],
-  ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
-];
-const LogOut = createLucideIcon("log-out", __iconNode$k);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$j = [
   [
     "path",
     {
@@ -39257,14 +39846,14 @@ const __iconNode$j = [
   ["polyline", { points: "3.29 7 12 12 20.71 7", key: "ousv84" }],
   ["path", { d: "m7.5 4.27 9 5.15", key: "1c824w" }]
 ];
-const Package = createLucideIcon("package", __iconNode$j);
+const Package = createLucideIcon("package", __iconNode$k);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$i = [
+const __iconNode$j = [
   [
     "path",
     {
@@ -39277,14 +39866,14 @@ const __iconNode$i = [
   ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
   ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
 ];
-const Palette = createLucideIcon("palette", __iconNode$i);
+const Palette = createLucideIcon("palette", __iconNode$j);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$h = [
+const __iconNode$i = [
   [
     "path",
     {
@@ -39294,7 +39883,18 @@ const __iconNode$h = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$h);
+const Pencil = createLucideIcon("pencil", __iconNode$i);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$h = [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "M12 5v14", key: "s699le" }]
+];
+const Plus = createLucideIcon("plus", __iconNode$h);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39302,10 +39902,10 @@ const Pencil = createLucideIcon("pencil", __iconNode$h);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$g = [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$g);
+const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$g);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39313,17 +39913,6 @@ const Plus = createLucideIcon("plus", __iconNode$g);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$f = [
-  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
-  ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
-];
-const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$f);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$e = [
   ["path", { d: "M7 21h10", key: "1b0cd5" }],
   ["path", { d: "M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z", key: "4rw317" }],
   [
@@ -39336,14 +39925,14 @@ const __iconNode$e = [
   ["path", { d: "m13 12 4-4", key: "1hckqy" }],
   ["path", { d: "M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2", key: "1p4srx" }]
 ];
-const Salad = createLucideIcon("salad", __iconNode$e);
+const Salad = createLucideIcon("salad", __iconNode$f);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$d = [
+const __iconNode$e = [
   [
     "path",
     {
@@ -39354,7 +39943,18 @@ const __iconNode$d = [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ];
-const Save = createLucideIcon("save", __iconNode$d);
+const Save = createLucideIcon("save", __iconNode$e);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$d = [
+  ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+];
+const Search = createLucideIcon("search", __iconNode$d);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39362,10 +39962,16 @@ const Save = createLucideIcon("save", __iconNode$d);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$c = [
-  ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
-  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
+  [
+    "path",
+    {
+      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
+      key: "1qme2f"
+    }
+  ],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Search = createLucideIcon("search", __iconNode$c);
+const Settings = createLucideIcon("settings", __iconNode$c);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39376,13 +39982,14 @@ const __iconNode$b = [
   [
     "path",
     {
-      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
-      key: "1qme2f"
+      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+      key: "oel41y"
     }
   ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+  ["path", { d: "M12 8v4", key: "1got3b" }],
+  ["path", { d: "M12 16h.01", key: "1drbdi" }]
 ];
-const Settings = createLucideIcon("settings", __iconNode$b);
+const ShieldAlert = createLucideIcon("shield-alert", __iconNode$b);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39397,10 +40004,9 @@ const __iconNode$a = [
       key: "oel41y"
     }
   ],
-  ["path", { d: "M12 8v4", key: "1got3b" }],
-  ["path", { d: "M12 16h.01", key: "1drbdi" }]
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
 ];
-const ShieldAlert = createLucideIcon("shield-alert", __iconNode$a);
+const ShieldCheck = createLucideIcon("shield-check", __iconNode$a);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39408,23 +40014,6 @@ const ShieldAlert = createLucideIcon("shield-alert", __iconNode$a);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$9 = [
-  [
-    "path",
-    {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
-  ],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-];
-const ShieldCheck = createLucideIcon("shield-check", __iconNode$9);
-/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$8 = [
   ["path", { d: "M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z", key: "4rw317" }],
   ["path", { d: "M7 21h10", key: "1b0cd5" }],
   ["path", { d: "M19.5 12 22 6", key: "shfsr5" }],
@@ -39447,14 +40036,14 @@ const __iconNode$8 = [
     { d: "M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62", key: "97tijn" }
   ]
 ];
-const Soup = createLucideIcon("soup", __iconNode$8);
+const Soup = createLucideIcon("soup", __iconNode$9);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$7 = [
+const __iconNode$8 = [
   ["path", { d: "m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7", key: "ztvudi" }],
   ["path", { d: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8", key: "1b2hhj" }],
   ["path", { d: "M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4", key: "2ebpfo" }],
@@ -39467,7 +40056,19 @@ const __iconNode$7 = [
     }
   ]
 ];
-const Store2 = createLucideIcon("store", __iconNode$7);
+const Store2 = createLucideIcon("store", __iconNode$8);
+/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$7 = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
+  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
+];
+const Target = createLucideIcon("target", __iconNode$7);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -39584,6 +40185,13 @@ const NAV = [
     to: "/admin/positions",
     icon: Briefcase,
     ocid: "admin.nav.positions",
+    end: false
+  },
+  {
+    label: "Quizzes",
+    to: "/admin/quizzes",
+    icon: ClipboardList,
+    ocid: "admin.nav.quizzes",
     end: false
   },
   {
@@ -40257,7 +40865,7 @@ function useControllableState({
     (nextValue) => {
       var _a2;
       if (isControlled) {
-        const value2 = isFunction(nextValue) ? nextValue(prop) : nextValue;
+        const value2 = isFunction$1(nextValue) ? nextValue(prop) : nextValue;
         if (value2 !== prop) {
           (_a2 = onChangeRef.current) == null ? void 0 : _a2.call(onChangeRef, value2);
         }
@@ -40288,7 +40896,7 @@ function useUncontrolledState({
   }, [value, prevValueRef]);
   return [value, setValue, onChangeRef];
 }
-function isFunction(value) {
+function isFunction$1(value) {
   return typeof value === "function";
 }
 // @__NO_SIDE_EFFECTS__
@@ -43166,7 +43774,7 @@ function getSideAndAlignFromPlacement(placement) {
   const [side, align = "center"] = placement.split("-");
   return [side, align];
 }
-var Root2$4 = Popper;
+var Root2$5 = Popper;
 var Anchor = PopperAnchor;
 var Content$2 = PopperContent;
 var Arrow = PopperArrow;
@@ -43408,7 +44016,7 @@ var RovingFocusGroupImpl = reactExports.forwardRef((props, forwardedRef) => {
     }
   );
 });
-var ITEM_NAME$3 = "RovingFocusGroupItem";
+var ITEM_NAME$4 = "RovingFocusGroupItem";
 var RovingFocusGroupItem = reactExports.forwardRef(
   (props, forwardedRef) => {
     const {
@@ -43421,7 +44029,7 @@ var RovingFocusGroupItem = reactExports.forwardRef(
     } = props;
     const autoId = useId();
     const id2 = tabStopId || autoId;
-    const context = useRovingFocusContext(ITEM_NAME$3, __scopeRovingFocusGroup);
+    const context = useRovingFocusContext(ITEM_NAME$4, __scopeRovingFocusGroup);
     const isCurrentTabStop = context.currentTabStopId === id2;
     const getItems = useCollection$2(__scopeRovingFocusGroup);
     const { onFocusableItemAdd, onFocusableItemRemove, currentTabStopId } = context;
@@ -43478,7 +44086,7 @@ var RovingFocusGroupItem = reactExports.forwardRef(
     );
   }
 );
-RovingFocusGroupItem.displayName = ITEM_NAME$3;
+RovingFocusGroupItem.displayName = ITEM_NAME$4;
 var MAP_KEY_TO_FOCUS_INTENT = {
   ArrowLeft: "prev",
   ArrowUp: "prev",
@@ -43820,11 +44428,11 @@ var SideCar$1 = function(_a2) {
   if (!sideCar) {
     throw new Error("Sidecar: please provide `sideCar` property to import the right car");
   }
-  var Target = sideCar.read();
-  if (!Target) {
+  var Target2 = sideCar.read();
+  if (!Target2) {
     throw new Error("Sidecar medium not found");
   }
-  return reactExports.createElement(Target, __assign({}, rest));
+  return reactExports.createElement(Target2, __assign({}, rest));
 };
 SideCar$1.isSideCarExport = true;
 function exportSidecar(medium, exported) {
@@ -44311,7 +44919,7 @@ var [createMenuContext, createMenuScope] = createContextScope(MENU_NAME, [
   createRovingFocusGroupScope
 ]);
 var usePopperScope$1 = createPopperScope();
-var useRovingFocusGroupScope$1 = createRovingFocusGroupScope();
+var useRovingFocusGroupScope$2 = createRovingFocusGroupScope();
 var [MenuProvider, useMenuContext] = createMenuContext(MENU_NAME);
 var [MenuRootProvider, useMenuRootContext] = createMenuContext(MENU_NAME);
 var Menu = (props) => {
@@ -44335,7 +44943,7 @@ var Menu = (props) => {
       document.removeEventListener("pointermove", handlePointer, { capture: true });
     };
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$4, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$5, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
     MenuProvider,
     {
       scope: __scopeMenu,
@@ -44451,7 +45059,7 @@ var MenuContentImpl = reactExports.forwardRef(
     const context = useMenuContext(CONTENT_NAME$5, __scopeMenu);
     const rootContext = useMenuRootContext(CONTENT_NAME$5, __scopeMenu);
     const popperScope = usePopperScope$1(__scopeMenu);
-    const rovingFocusGroupScope = useRovingFocusGroupScope$1(__scopeMenu);
+    const rovingFocusGroupScope = useRovingFocusGroupScope$2(__scopeMenu);
     const getItems = useCollection$1(__scopeMenu);
     const [currentItemId, setCurrentItemId] = reactExports.useState(null);
     const contentRef = reactExports.useRef(null);
@@ -44633,14 +45241,14 @@ var MenuLabel = reactExports.forwardRef(
   }
 );
 MenuLabel.displayName = LABEL_NAME$2;
-var ITEM_NAME$2 = "MenuItem";
+var ITEM_NAME$3 = "MenuItem";
 var ITEM_SELECT = "menu.itemSelect";
 var MenuItem = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { disabled = false, onSelect, ...itemProps } = props;
     const ref = reactExports.useRef(null);
-    const rootContext = useMenuRootContext(ITEM_NAME$2, props.__scopeMenu);
-    const contentContext = useMenuContentContext(ITEM_NAME$2, props.__scopeMenu);
+    const rootContext = useMenuRootContext(ITEM_NAME$3, props.__scopeMenu);
+    const contentContext = useMenuContentContext(ITEM_NAME$3, props.__scopeMenu);
     const composedRefs = useComposedRefs$1(forwardedRef, ref);
     const isPointerDownRef = reactExports.useRef(false);
     const handleSelect = () => {
@@ -44684,12 +45292,12 @@ var MenuItem = reactExports.forwardRef(
     );
   }
 );
-MenuItem.displayName = ITEM_NAME$2;
+MenuItem.displayName = ITEM_NAME$3;
 var MenuItemImpl = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeMenu, disabled = false, textValue, ...itemProps } = props;
-    const contentContext = useMenuContentContext(ITEM_NAME$2, __scopeMenu);
-    const rovingFocusGroupScope = useRovingFocusGroupScope$1(__scopeMenu);
+    const contentContext = useMenuContentContext(ITEM_NAME$3, __scopeMenu);
+    const rovingFocusGroupScope = useRovingFocusGroupScope$2(__scopeMenu);
     const ref = reactExports.useRef(null);
     const composedRefs = useComposedRefs$1(forwardedRef, ref);
     const [isFocused, setIsFocused] = reactExports.useState(false);
@@ -44749,13 +45357,13 @@ var MenuCheckboxItem = reactExports.forwardRef(
       MenuItem,
       {
         role: "menuitemcheckbox",
-        "aria-checked": isIndeterminate(checked) ? "mixed" : checked,
+        "aria-checked": isIndeterminate$1(checked) ? "mixed" : checked,
         ...checkboxItemProps,
         ref: forwardedRef,
         "data-state": getCheckedState(checked),
         onSelect: composeEventHandlers(
           checkboxItemProps.onSelect,
-          () => onCheckedChange == null ? void 0 : onCheckedChange(isIndeterminate(checked) ? true : !checked),
+          () => onCheckedChange == null ? void 0 : onCheckedChange(isIndeterminate$1(checked) ? true : !checked),
           { checkForDefaultPrevented: false }
         )
       }
@@ -44763,9 +45371,9 @@ var MenuCheckboxItem = reactExports.forwardRef(
   }
 );
 MenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME$1;
-var RADIO_GROUP_NAME$1 = "MenuRadioGroup";
-var [RadioGroupProvider, useRadioGroupContext] = createMenuContext(
-  RADIO_GROUP_NAME$1,
+var RADIO_GROUP_NAME$2 = "MenuRadioGroup";
+var [RadioGroupProvider$1, useRadioGroupContext$1] = createMenuContext(
+  RADIO_GROUP_NAME$2,
   { value: void 0, onValueChange: () => {
   } }
 );
@@ -44773,15 +45381,15 @@ var MenuRadioGroup = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { value, onValueChange, ...groupProps } = props;
     const handleValueChange = useCallbackRef$1(onValueChange);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioGroupProvider, { scope: props.__scopeMenu, value, onValueChange: handleValueChange, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuGroup, { ...groupProps, ref: forwardedRef }) });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioGroupProvider$1, { scope: props.__scopeMenu, value, onValueChange: handleValueChange, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuGroup, { ...groupProps, ref: forwardedRef }) });
   }
 );
-MenuRadioGroup.displayName = RADIO_GROUP_NAME$1;
+MenuRadioGroup.displayName = RADIO_GROUP_NAME$2;
 var RADIO_ITEM_NAME$1 = "MenuRadioItem";
 var MenuRadioItem = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { value, ...radioItemProps } = props;
-    const context = useRadioGroupContext(RADIO_ITEM_NAME$1, props.__scopeMenu);
+    const context = useRadioGroupContext$1(RADIO_ITEM_NAME$1, props.__scopeMenu);
     const checked = value === context.value;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ItemIndicatorProvider, { scope: props.__scopeMenu, checked, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuItem,
@@ -44816,7 +45424,7 @@ var MenuItemIndicator = reactExports.forwardRef(
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       Presence,
       {
-        present: forceMount || isIndeterminate(indicatorContext.checked) || indicatorContext.checked === true,
+        present: forceMount || isIndeterminate$1(indicatorContext.checked) || indicatorContext.checked === true,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Primitive.span,
           {
@@ -45014,11 +45622,11 @@ MenuSubContent.displayName = SUB_CONTENT_NAME$1;
 function getOpenState(open) {
   return open ? "open" : "closed";
 }
-function isIndeterminate(checked) {
+function isIndeterminate$1(checked) {
   return checked === "indeterminate";
 }
 function getCheckedState(checked) {
-  return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
+  return isIndeterminate$1(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
 function focusFirst(candidates) {
   const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
@@ -45072,9 +45680,9 @@ var Portal$2 = MenuPortal;
 var Content2$3 = MenuContent;
 var Group = MenuGroup;
 var Label$3 = MenuLabel;
-var Item2$1 = MenuItem;
+var Item2$2 = MenuItem;
 var CheckboxItem = MenuCheckboxItem;
-var RadioGroup = MenuRadioGroup;
+var RadioGroup$2 = MenuRadioGroup;
 var RadioItem = MenuRadioItem;
 var ItemIndicator$1 = MenuItemIndicator;
 var Separator$2 = MenuSeparator;
@@ -45122,11 +45730,11 @@ var DropdownMenu$1 = (props) => {
   );
 };
 DropdownMenu$1.displayName = DROPDOWN_MENU_NAME;
-var TRIGGER_NAME$4 = "DropdownMenuTrigger";
+var TRIGGER_NAME$5 = "DropdownMenuTrigger";
 var DropdownMenuTrigger$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
-    const context = useDropdownMenuContext(TRIGGER_NAME$4, __scopeDropdownMenu);
+    const context = useDropdownMenuContext(TRIGGER_NAME$5, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Anchor2, { asChild: true, ...menuScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       Primitive.button,
@@ -45157,7 +45765,7 @@ var DropdownMenuTrigger$1 = reactExports.forwardRef(
     ) });
   }
 );
-DropdownMenuTrigger$1.displayName = TRIGGER_NAME$4;
+DropdownMenuTrigger$1.displayName = TRIGGER_NAME$5;
 var PORTAL_NAME$3 = "DropdownMenuPortal";
 var DropdownMenuPortal = (props) => {
   const { __scopeDropdownMenu, ...portalProps } = props;
@@ -45226,15 +45834,15 @@ var DropdownMenuLabel$1 = reactExports.forwardRef(
   }
 );
 DropdownMenuLabel$1.displayName = LABEL_NAME$1;
-var ITEM_NAME$1 = "DropdownMenuItem";
+var ITEM_NAME$2 = "DropdownMenuItem";
 var DropdownMenuItem$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeDropdownMenu, ...itemProps } = props;
     const menuScope = useMenuScope(__scopeDropdownMenu);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Item2$1, { ...menuScope, ...itemProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Item2$2, { ...menuScope, ...itemProps, ref: forwardedRef });
   }
 );
-DropdownMenuItem$1.displayName = ITEM_NAME$1;
+DropdownMenuItem$1.displayName = ITEM_NAME$2;
 var CHECKBOX_ITEM_NAME = "DropdownMenuCheckboxItem";
 var DropdownMenuCheckboxItem = reactExports.forwardRef((props, forwardedRef) => {
   const { __scopeDropdownMenu, ...checkboxItemProps } = props;
@@ -45242,13 +45850,13 @@ var DropdownMenuCheckboxItem = reactExports.forwardRef((props, forwardedRef) => 
   return /* @__PURE__ */ jsxRuntimeExports.jsx(CheckboxItem, { ...menuScope, ...checkboxItemProps, ref: forwardedRef });
 });
 DropdownMenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
-var RADIO_GROUP_NAME = "DropdownMenuRadioGroup";
+var RADIO_GROUP_NAME$1 = "DropdownMenuRadioGroup";
 var DropdownMenuRadioGroup = reactExports.forwardRef((props, forwardedRef) => {
   const { __scopeDropdownMenu, ...radioGroupProps } = props;
   const menuScope = useMenuScope(__scopeDropdownMenu);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioGroup, { ...menuScope, ...radioGroupProps, ref: forwardedRef });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioGroup$2, { ...menuScope, ...radioGroupProps, ref: forwardedRef });
 });
-DropdownMenuRadioGroup.displayName = RADIO_GROUP_NAME;
+DropdownMenuRadioGroup.displayName = RADIO_GROUP_NAME$1;
 var RADIO_ITEM_NAME = "DropdownMenuRadioItem";
 var DropdownMenuRadioItem = reactExports.forwardRef((props, forwardedRef) => {
   const { __scopeDropdownMenu, ...radioItemProps } = props;
@@ -45256,13 +45864,13 @@ var DropdownMenuRadioItem = reactExports.forwardRef((props, forwardedRef) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioItem, { ...menuScope, ...radioItemProps, ref: forwardedRef });
 });
 DropdownMenuRadioItem.displayName = RADIO_ITEM_NAME;
-var INDICATOR_NAME$1 = "DropdownMenuItemIndicator";
+var INDICATOR_NAME$3 = "DropdownMenuItemIndicator";
 var DropdownMenuItemIndicator = reactExports.forwardRef((props, forwardedRef) => {
   const { __scopeDropdownMenu, ...itemIndicatorProps } = props;
   const menuScope = useMenuScope(__scopeDropdownMenu);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ItemIndicator$1, { ...menuScope, ...itemIndicatorProps, ref: forwardedRef });
 });
-DropdownMenuItemIndicator.displayName = INDICATOR_NAME$1;
+DropdownMenuItemIndicator.displayName = INDICATOR_NAME$3;
 var SEPARATOR_NAME$1 = "DropdownMenuSeparator";
 var DropdownMenuSeparator$1 = reactExports.forwardRef((props, forwardedRef) => {
   const { __scopeDropdownMenu, ...separatorProps } = props;
@@ -45311,17 +45919,17 @@ var DropdownMenuSubContent = reactExports.forwardRef((props, forwardedRef) => {
   );
 });
 DropdownMenuSubContent.displayName = SUB_CONTENT_NAME;
-var Root2$3 = DropdownMenu$1;
+var Root2$4 = DropdownMenu$1;
 var Trigger$3 = DropdownMenuTrigger$1;
 var Portal2$1 = DropdownMenuPortal;
 var Content2$2 = DropdownMenuContent$1;
 var Label2 = DropdownMenuLabel$1;
-var Item2 = DropdownMenuItem$1;
+var Item2$1 = DropdownMenuItem$1;
 var Separator2 = DropdownMenuSeparator$1;
 function DropdownMenu({
   ...props
 }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$3, { "data-slot": "dropdown-menu", ...props });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$4, { "data-slot": "dropdown-menu", ...props });
 }
 function DropdownMenuTrigger({
   ...props
@@ -45359,7 +45967,7 @@ function DropdownMenuItem({
   ...props
 }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Item2,
+    Item2$1,
     {
       "data-slot": "dropdown-menu-item",
       "data-inset": inset,
@@ -46316,6 +46924,175 @@ function useMoveTrainingStep() {
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["training", String(vars.itemId)] });
+    }
+  });
+}
+function useQuizzesByPosition(positionId) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["quizzes", "position", String(positionId)],
+    queryFn: async () => {
+      if (!actor || positionId === void 0) return [];
+      return actor.listQuizzesByPosition(positionId);
+    },
+    enabled: !!actor && !isFetching && positionId !== void 0
+  });
+}
+function useQuiz(quizId) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["quiz", String(quizId)],
+    queryFn: async () => {
+      if (!actor || quizId === void 0) return null;
+      const data = await actor.getQuizWithQuestions(quizId);
+      return (data == null ? void 0 : data.quiz) ?? null;
+    },
+    enabled: !!actor && !isFetching && quizId !== void 0
+  });
+}
+function useCreateQuiz() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createQuiz(vars.positionId, vars.input);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({
+        queryKey: ["quizzes", "position", String(vars.positionId)]
+      });
+    }
+  });
+}
+function useUpdateQuiz() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateQuiz(vars.quizId, vars.edit);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+    }
+  });
+}
+function useDeleteQuiz() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.deleteQuiz(vars.quizId);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({
+        queryKey: ["quizzes", "position", String(vars.positionId)]
+      });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+    }
+  });
+}
+function useQuestions(quizId) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["questions", String(quizId)],
+    queryFn: async () => {
+      if (!actor || quizId === void 0) return [];
+      const data = await actor.getQuizWithQuestions(quizId);
+      return (data == null ? void 0 : data.questions) ?? [];
+    },
+    enabled: !!actor && !isFetching && quizId !== void 0
+  });
+}
+function useCreateQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createQuestion(vars.quizId, vars.input);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+    }
+  });
+}
+function useUpdateQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateQuestion(vars.questionId, vars.edit);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+    }
+  });
+}
+function useDeleteQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.deleteQuestion(vars.questionId);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+    }
+  });
+}
+function useMoveQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.moveQuestion(vars.questionId, vars.newOrder);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+    }
+  });
+}
+function useMyAttempts(quizId) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery({
+    queryKey: ["attempts", "mine", String(quizId)],
+    queryFn: async () => {
+      if (!actor || quizId === void 0) return [];
+      return actor.listMyQuizAttempts(quizId);
+    },
+    enabled: !!actor && !isFetching && quizId !== void 0
+  });
+}
+function useSubmitAttempt() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars) => {
+      if (!actor) throw new Error("actor not ready");
+      const input = {
+        quizId: vars.quizId,
+        answers: vars.answers
+      };
+      return actor.submitQuizAttempt(input);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({
+        queryKey: ["attempts", "mine", String(vars.quizId)]
+      });
     }
   });
 }
@@ -54388,7 +55165,7 @@ const featureBundle = {
   ...layout
 };
 const motion = /* @__PURE__ */ createMotionProxy(featureBundle, createDomVisualElement);
-const GRID_CLASSES$1 = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+const GRID_CLASSES$2 = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
 function CategoryPage() {
   const { id: id2 } = useParams({ from: "/storefront-layout/category/$id" });
   const categoryId = BigInt(id2);
@@ -54453,7 +55230,7 @@ function CategoryPage() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-12", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-40" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: ["sub-skel-1", "sub-skel-2", "sub-skel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$2, children: ["sub-skel-1", "sub-skel-2", "sub-skel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
             className: "aspect-[4/3] w-full rounded-xl",
@@ -54464,7 +55241,7 @@ function CategoryPage() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-32" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$2, children: [
           "skel-1",
           "skel-2",
           "skel-3",
@@ -54504,7 +55281,7 @@ function CategoryPage() {
                 subCount === 1 ? "collection" : "collections"
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: subcategories.map((sub, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$2, children: subcategories.map((sub, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               motion.div,
               {
                 initial: { opacity: 0, y: 16 },
@@ -54532,7 +55309,7 @@ function CategoryPage() {
             itemCount === 1 ? "dish" : "dishes"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$2, children: items.map((item, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           motion.div,
           {
             initial: { opacity: 0, y: 16 },
@@ -54591,6 +55368,138 @@ function CategoryCard({
     }
   );
 }
+const badgeVariants = cva(
+  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+  {
+    variants: {
+      variant: {
+        default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+        destructive: "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+        outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground"
+      }
+    },
+    defaultVariants: {
+      variant: "default"
+    }
+  }
+);
+function Badge({
+  className,
+  variant,
+  asChild = false,
+  ...props
+}) {
+  const Comp = asChild ? Slot$3 : "span";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Comp,
+    {
+      "data-slot": "badge",
+      className: cn(badgeVariants({ variant }), className),
+      ...props
+    }
+  );
+}
+function QuizCard({
+  quiz,
+  index: index2
+}) {
+  const positionId = String(quiz.positionId);
+  const quizId = String(quiz.id);
+  const itemMarker = index2 + 1;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Card,
+    {
+      className: "h-full gap-0 py-0 transition-smooth hover:shadow-elevated",
+      "data-ocid": `quiz.item.${itemMarker}`,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex h-full flex-col gap-4 p-5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 space-y-1.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-3" }),
+              " Quiz"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold leading-tight tracking-tight line-clamp-2", children: quiz.title })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Badge,
+            {
+              variant: "secondary",
+              className: "shrink-0 gap-1",
+              "data-ocid": `quiz.question_count.${itemMarker}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListChecks, { className: "size-3" }),
+                quiz.questionCount,
+                " ",
+                quiz.questionCount === 1 ? "question" : "questions"
+              ]
+            }
+          )
+        ] }),
+        quiz.description ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground line-clamp-3", children: quiz.description }) : /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm italic text-muted-foreground/70", children: "No description provided." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "flex items-center gap-2 text-sm text-muted-foreground",
+            "data-ocid": `quiz.passing_percentage.${itemMarker}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { className: "size-4 text-accent" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                "Passing score:",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-medium text-foreground", children: [
+                  quiz.passingPercentage,
+                  "%"
+                ] })
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-auto flex flex-wrap items-center gap-2 pt-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              asChild: true,
+              size: "sm",
+              "data-ocid": `quiz.take_button.${itemMarker}`,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Link,
+                {
+                  to: "/position/$id/quizzes/$quizId/take",
+                  params: { id: positionId, quizId },
+                  "data-ocid": `quiz.take_link.${itemMarker}`,
+                  children: "Take quiz"
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              asChild: true,
+              variant: "ghost",
+              size: "sm",
+              className: "gap-1.5",
+              "data-ocid": `quiz.history_button.${itemMarker}`,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Link,
+                {
+                  to: "/position/$id/quizzes/$quizId/history",
+                  params: { id: positionId, quizId },
+                  "data-ocid": `quiz.history_link.${itemMarker}`,
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(History, { className: "size-3.5" }),
+                    "View history"
+                  ]
+                }
+              )
+            }
+          )
+        ] })
+      ] })
+    }
+  );
+}
 function toCategoryView(c2) {
   return {
     id: c2.id,
@@ -54612,17 +55521,70 @@ function toPositionView(p2) {
     updatedAt: p2.updatedAt
   };
 }
-const GRID_CLASSES = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+function toQuizView(q2) {
+  return {
+    id: q2.id,
+    positionId: q2.positionId,
+    title: q2.title,
+    description: q2.description ?? null,
+    passingPercentage: Number(q2.passingPercentage),
+    questionCount: Number(q2.questionCount),
+    createdAt: q2.createdAt,
+    updatedAt: q2.updatedAt
+  };
+}
+function toQuestionView(q2) {
+  return {
+    id: q2.id,
+    quizId: q2.quizId,
+    order: Number(q2.order),
+    text: q2.text,
+    type: q2.questionType,
+    options: q2.options.map((o, i) => ({
+      id: o.id,
+      questionId: q2.id,
+      order: i,
+      text: o.text,
+      isCorrect: o.correct
+    }))
+  };
+}
+function toAttemptView(a2) {
+  const score = Number(a2.score);
+  const total = Number(a2.maxScore);
+  const percentage = total > 0 ? Math.round(score / total * 100) : 0;
+  return {
+    id: a2.id,
+    quizId: a2.quizId,
+    score,
+    total,
+    percentage,
+    passed: a2.passed,
+    answers: a2.answers.map((ans) => ({
+      questionId: ans.questionId,
+      selectedOptionIds: ans.selectedOptionIds
+    })),
+    submittedAt: a2.createdAt
+  };
+}
+const GRID_CLASSES$1 = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
 function PositionPage() {
   const { id: id2 } = useParams({ from: "/storefront-layout/position/$id" });
   const positionId = BigInt(id2);
+  const { isAuthenticated } = useAuth();
   const { data: position, isLoading: positionLoading } = usePosition(positionId);
   const { data: categories, isLoading: categoriesLoading } = useCategoriesByPosition(positionId);
+  const { data: quizzes, isLoading: quizzesLoading } = useQuizzesByPosition(
+    isAuthenticated ? positionId : void 0
+  );
   const isLoading = positionLoading || categoriesLoading;
   const categoryCount = (categories == null ? void 0 : categories.length) ?? 0;
   const hasCategories = !categoriesLoading && categoryCount > 0;
   const showEmpty = !isLoading && !positionLoading && !hasCategories && !!position;
   const sortedCategories = (categories ?? []).map((c2) => ({ raw: c2, view: toCategoryView(c2) })).sort((a2, b2) => a2.view.sortOrder - b2.view.sortOrder);
+  const sortedQuizzes = (quizzes ?? []).map((q2) => toQuizView(q2)).sort((a2, b2) => Number(b2.updatedAt - a2.updatedAt));
+  const quizCount = sortedQuizzes.length;
+  const quizzesLoadingState = isAuthenticated && quizzesLoading;
   const positionView = position ? toPositionView(position) : null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { variant: "muted", className: "py-10 sm:py-12", children: [
@@ -54676,7 +55638,7 @@ function PositionPage() {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-7 w-40" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: ["skel-1", "skel-2", "skel-3", "skel-4", "skel-5", "skel-6"].map(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: ["skel-1", "skel-2", "skel-3", "skel-4", "skel-5", "skel-6"].map(
         (skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           Skeleton,
           {
@@ -54726,7 +55688,7 @@ function PositionPage() {
           categoryCount === 1 ? "category" : "categories"
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: sortedCategories.map(({ raw }, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES$1, children: sortedCategories.map(({ raw }, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         motion.div,
         {
           initial: { opacity: 0, y: 16 },
@@ -54741,8 +55703,2027 @@ function PositionPage() {
         },
         String(raw.id)
       )) })
+    ] }) }),
+    isAuthenticated && position ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Section,
+      {
+        variant: "muted",
+        className: "py-16 sm:py-20",
+        "data-ocid": "position.quiz.section",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-5 text-primary" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Quizzes" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-muted-foreground", children: quizzesLoadingState ? "Loading…" : `${quizCount} ${quizCount === 1 ? "quiz" : "quizzes"}` })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Test your knowledge of this position. Retakes are unlimited." })
+            ] }),
+            quizCount > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "outline",
+                size: "sm",
+                "data-ocid": "position.quiz.view_all_button",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link,
+                  {
+                    to: "/position/$id/quizzes",
+                    params: { id: id2 },
+                    "data-ocid": "position.quiz.view_all_link",
+                    children: "View all quizzes"
+                  }
+                )
+              }
+            ) : null
+          ] }),
+          quizzesLoadingState ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3", children: ["qskel-1", "qskel-2", "qskel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Skeleton,
+            {
+              className: "h-56 w-full rounded-xl",
+              "data-ocid": `position.quiz.loading_state.${i + 1}`
+            },
+            skel
+          )) }) : quizCount === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card px-6 py-10 text-center",
+              "data-ocid": "position.quiz.empty_state",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-6" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold tracking-tight", children: "No quizzes for this position yet" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-md text-sm text-muted-foreground", children: "Your training team hasn't published any quizzes for this position yet. Check back soon." })
+                ] })
+              ]
+            }
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3", children: sortedQuizzes.map((quiz, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              initial: { opacity: 0, y: 16 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true, margin: "-80px" },
+              transition: {
+                duration: 0.4,
+                ease: "easeOut",
+                delay: index2 * 0.08
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(QuizCard, { quiz, index: index2 })
+            },
+            String(quiz.id)
+          )) })
+        ] })
+      }
+    ) : null
+  ] });
+}
+const GRID_CLASSES = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3";
+function PositionQuizzesPage() {
+  const { id: id2 } = useParams({ from: "/storefront-layout/position/$id/quizzes" });
+  const positionId = BigInt(id2);
+  const { data: position, isLoading: positionLoading } = usePosition(positionId);
+  const { data: quizzes, isLoading: quizzesLoading } = useQuizzesByPosition(positionId);
+  const isLoading = positionLoading || quizzesLoading;
+  const quizCount = (quizzes == null ? void 0 : quizzes.length) ?? 0;
+  const hasQuizzes = !quizzesLoading && quizCount > 0;
+  const showEmpty = !isLoading && !hasQuizzes && !!position;
+  const sortedQuizzes = (quizzes ?? []).map((q2) => toQuizView(q2)).sort((a2, b2) => Number(b2.updatedAt - a2.updatedAt));
+  const positionView = position ? toPositionView(position) : null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { variant: "muted", className: "py-10 sm:py-12", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "nav",
+        {
+          className: "mb-6 flex items-center gap-1.5 text-sm text-muted-foreground",
+          "aria-label": "Breadcrumb",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "ghost",
+                size: "sm",
+                className: "gap-1.5",
+                "data-ocid": "position_quizzes.breadcrumb_home",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/", "data-ocid": "position_quizzes.breadcrumb_home_link", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
+                  " Home"
+                ] })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3.5 text-muted-foreground/60" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "ghost",
+                size: "sm",
+                className: "gap-1.5",
+                "data-ocid": "position_quizzes.breadcrumb_position",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link,
+                  {
+                    to: "/position/$id",
+                    params: { id: id2 },
+                    "data-ocid": "position_quizzes.breadcrumb_position_link",
+                    children: positionLoading ? "Loading…" : (positionView == null ? void 0 : positionView.name) ?? "Position"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3.5 text-muted-foreground/60" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "font-medium text-foreground",
+                "data-ocid": "position_quizzes.breadcrumb_current",
+                children: "Quizzes"
+              }
+            )
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-3" }),
+          " Quizzes"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl", children: positionLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Skeleton,
+          {
+            className: "h-10 w-56",
+            "data-ocid": "position_quizzes.title.loading_state"
+          }
+        ) : `${(positionView == null ? void 0 : positionView.name) ?? "Position"} quizzes` }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-2xl text-muted-foreground", children: isLoading ? "Loading quizzes…" : `${quizCount} ${quizCount === 1 ? "quiz" : "quizzes"} available. Take any quiz to test your knowledge — retakes are unlimited.` })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-muted-foreground", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "Loading quizzes…" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: ["skel-1", "skel-2", "skel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Skeleton,
+        {
+          className: "h-56 w-full rounded-xl",
+          "data-ocid": `position_quizzes.quiz.loading_state.${i + 1}`
+        },
+        skel
+      )) })
+    ] }) : !position ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
+        "data-ocid": "position_quizzes.error_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Position not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "The position you're looking for doesn't exist or has been removed." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              asChild: true,
+              variant: "outline",
+              "data-ocid": "position_quizzes.error_state.back_button",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/", "data-ocid": "position_quizzes.error_state.back_link", children: "Back to home" })
+            }
+          )
+        ]
+      }
+    ) : showEmpty ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      EmptyState,
+      {
+        ocid: "position_quizzes.empty_state",
+        title: "No quizzes for this position yet",
+        description: "This position doesn't have any quizzes published yet. Check back soon — new quizzes may be added by your training team.",
+        backLabel: "Back to position"
+      }
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-5", "data-ocid": "position_quizzes.section", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-5 text-primary" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Available quizzes" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
+          quizCount,
+          " ",
+          quizCount === 1 ? "quiz" : "quizzes"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: GRID_CLASSES, children: sortedQuizzes.map((quiz, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        motion.div,
+        {
+          initial: { opacity: 0, y: 16 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, margin: "-80px" },
+          transition: {
+            duration: 0.4,
+            ease: "easeOut",
+            delay: index2 * 0.08
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(QuizCard, { quiz, index: index2 })
+        },
+        String(quiz.id)
+      )) })
     ] }) })
   ] });
+}
+function formatTimestamp(ns) {
+  const ms = Number(ns / 1000000n);
+  if (Number.isNaN(ms)) return "Unknown date";
+  return new Date(ms).toLocaleString(void 0, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+function QuizHistoryPage() {
+  const { id: id2, quizId } = useParams({
+    from: "/storefront-layout/position/$id/quizzes/$quizId/history"
+  });
+  const positionId = BigInt(id2);
+  const quizIdBig = BigInt(quizId);
+  const { data: position, isLoading: positionLoading } = usePosition(positionId);
+  const { data: quiz, isLoading: quizLoading } = useQuiz(quizIdBig);
+  const { data: attempts, isLoading: attemptsLoading } = useMyAttempts(quizIdBig);
+  const { data: positionQuizzes } = useQuizzesByPosition(positionId);
+  const isLoading = positionLoading || quizLoading || attemptsLoading;
+  const attemptCount = (attempts == null ? void 0 : attempts.length) ?? 0;
+  const hasAttempts = !attemptsLoading && attemptCount > 0;
+  const showEmpty = !isLoading && !hasAttempts && !!quiz;
+  const quizView = quiz ? toQuizView(quiz) : null;
+  const positionView = position ? toPositionView(position) : null;
+  const sortedAttempts = (attempts ?? []).map((a2) => toAttemptView(a2)).sort((a2, b2) => Number(b2.submittedAt - a2.submittedAt));
+  const bestPercentage = sortedAttempts.length > 0 ? Math.max(...sortedAttempts.map((a2) => a2.percentage)) : 0;
+  const hasPassed = sortedAttempts.some((a2) => a2.passed);
+  const quizBelongsToPosition = !positionQuizzes || positionQuizzes.some((q2) => q2.id === quizIdBig);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { variant: "muted", className: "py-10 sm:py-12", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "nav",
+        {
+          className: "mb-6 flex items-center gap-1.5 text-sm text-muted-foreground",
+          "aria-label": "Breadcrumb",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "ghost",
+                size: "sm",
+                className: "gap-1.5",
+                "data-ocid": "quiz_history.breadcrumb_home",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { to: "/", "data-ocid": "quiz_history.breadcrumb_home_link", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
+                  " Home"
+                ] })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3.5 text-muted-foreground/60" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "ghost",
+                size: "sm",
+                className: "gap-1.5",
+                "data-ocid": "quiz_history.breadcrumb_position",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link,
+                  {
+                    to: "/position/$id",
+                    params: { id: id2 },
+                    "data-ocid": "quiz_history.breadcrumb_position_link",
+                    children: positionLoading ? "Loading…" : (positionView == null ? void 0 : positionView.name) ?? "Position"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3.5 text-muted-foreground/60" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "ghost",
+                size: "sm",
+                className: "gap-1.5",
+                "data-ocid": "quiz_history.breadcrumb_quizzes",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Link,
+                  {
+                    to: "/position/$id/quizzes",
+                    params: { id: id2 },
+                    "data-ocid": "quiz_history.breadcrumb_quizzes_link",
+                    children: "Quizzes"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3.5 text-muted-foreground/60" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "truncate font-medium text-foreground",
+                "data-ocid": "quiz_history.breadcrumb_current",
+                children: quizLoading ? "Loading…" : (quizView == null ? void 0 : quizView.title) ?? "Quiz"
+              }
+            )
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(History, { className: "size-3" }),
+          " Attempt history"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight sm:text-4xl", children: quizLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Skeleton,
+          {
+            className: "h-10 w-56",
+            "data-ocid": "quiz_history.title.loading_state"
+          }
+        ) : (quizView == null ? void 0 : quizView.title) ?? "Quiz" }),
+        (quizView == null ? void 0 : quizView.description) ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-2xl text-muted-foreground line-clamp-2", children: quizView.description }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-muted-foreground", children: isLoading ? "Loading your attempts…" : `${attemptCount} ${attemptCount === 1 ? "attempt" : "attempts"} on record. Retakes are unlimited.` })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-muted-foreground", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "Loading your attempts…" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: ["skel-1", "skel-2", "skel-3"].map((skel, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Skeleton,
+        {
+          className: "h-20 w-full rounded-xl",
+          "data-ocid": `quiz_history.attempt.loading_state.${i + 1}`
+        },
+        skel
+      )) })
+    ] }) : !quiz || !quizBelongsToPosition ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "mx-auto flex max-w-md flex-col items-center gap-5 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center",
+        "data-ocid": "quiz_history.error_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-7" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight", children: "Quiz not found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "This quiz doesn't exist or doesn't belong to this position." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              asChild: true,
+              variant: "outline",
+              "data-ocid": "quiz_history.error_state.back_button",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Link,
+                {
+                  to: "/position/$id/quizzes",
+                  params: { id: id2 },
+                  "data-ocid": "quiz_history.error_state.back_link",
+                  children: "Back to quizzes"
+                }
+              )
+            }
+          )
+        ]
+      }
+    ) : showEmpty ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      EmptyState,
+      {
+        ocid: "quiz_history.empty_state",
+        title: "No attempts yet",
+        description: "You haven't taken this quiz yet. Take it now to see your score and pass/fail status here — retakes are unlimited.",
+        backLabel: "Back to quizzes"
+      }
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-6", "data-ocid": "quiz_history.section", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "bg-muted/30", "data-ocid": "quiz_history.summary", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-wrap items-center justify-between gap-4 py-5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: "Best score" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-display text-2xl font-semibold tracking-tight", children: [
+            bestPercentage,
+            "%"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: "Passing threshold" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "flex items-center gap-1.5 font-display text-2xl font-semibold tracking-tight", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { className: "size-4 text-accent" }),
+            (quizView == null ? void 0 : quizView.passingPercentage) ?? 0,
+            "%"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Badge,
+          {
+            variant: hasPassed ? "default" : "secondary",
+            className: "gap-1 px-3 py-1 text-sm",
+            "data-ocid": "quiz_history.summary.status",
+            children: hasPassed ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3.5" }),
+              " Passed"
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "size-3.5" }),
+              " Not yet passed"
+            ] })
+          }
+        )
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(History, { className: "size-5 text-primary" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Your attempts" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
+            attemptCount,
+            " ",
+            attemptCount === 1 ? "attempt" : "attempts"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "space-y-3", children: sortedAttempts.map((attempt, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.li,
+          {
+            initial: { opacity: 0, y: 12 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, margin: "-60px" },
+            transition: {
+              duration: 0.3,
+              ease: "easeOut",
+              delay: index2 * 0.05
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Card,
+              {
+                className: "py-0",
+                "data-ocid": `quiz_history.attempt.item.${index2 + 1}`,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-wrap items-center justify-between gap-4 p-4 sm:p-5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 min-w-0", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "span",
+                      {
+                        className: "flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary",
+                        "data-ocid": `quiz_history.attempt.number.${index2 + 1}`,
+                        children: attemptCount - index2
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 space-y-0.5", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-medium leading-tight", children: [
+                        "Attempt ",
+                        attemptCount - index2
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "p",
+                        {
+                          className: "text-xs text-muted-foreground",
+                          "data-ocid": `quiz_history.attempt.timestamp.${index2 + 1}`,
+                          children: formatTimestamp(attempt.submittedAt)
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: "text-right",
+                        "data-ocid": `quiz_history.attempt.score.${index2 + 1}`,
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-display text-lg font-semibold leading-tight tracking-tight", children: [
+                            attempt.score,
+                            "/",
+                            attempt.total
+                          ] }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-muted-foreground", children: [
+                            attempt.percentage,
+                            "%"
+                          ] })
+                        ]
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Badge,
+                      {
+                        variant: attempt.passed ? "default" : "destructive",
+                        className: "gap-1",
+                        "data-ocid": `quiz_history.attempt.status.${index2 + 1}`,
+                        children: attempt.passed ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-3.5" }),
+                          " Passed"
+                        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "size-3.5" }),
+                          " Failed"
+                        ] })
+                      }
+                    )
+                  ] })
+                ] })
+              }
+            )
+          },
+          String(attempt.id)
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center pt-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, "data-ocid": "quiz_history.retake_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Link,
+        {
+          to: "/position/$id/quizzes/$quizId/take",
+          params: { id: id2, quizId },
+          "data-ocid": "quiz_history.retake_link",
+          children: "Take this quiz again"
+        }
+      ) }) })
+    ] }) })
+  ] });
+}
+var PROGRESS_NAME = "Progress";
+var DEFAULT_MAX = 100;
+var [createProgressContext] = createContextScope$1(PROGRESS_NAME);
+var [ProgressProvider, useProgressContext] = createProgressContext(PROGRESS_NAME);
+var Progress$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeProgress,
+      value: valueProp = null,
+      max: maxProp,
+      getValueLabel = defaultGetValueLabel,
+      ...progressProps
+    } = props;
+    if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) {
+      console.error(getInvalidMaxError(`${maxProp}`, "Progress"));
+    }
+    const max2 = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+    if (valueProp !== null && !isValidValueNumber(valueProp, max2)) {
+      console.error(getInvalidValueError(`${valueProp}`, "Progress"));
+    }
+    const value = isValidValueNumber(valueProp, max2) ? valueProp : null;
+    const valueLabel = isNumber(value) ? getValueLabel(value, max2) : void 0;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressProvider, { scope: __scopeProgress, value, max: max2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.div,
+      {
+        "aria-valuemax": max2,
+        "aria-valuemin": 0,
+        "aria-valuenow": isNumber(value) ? value : void 0,
+        "aria-valuetext": valueLabel,
+        role: "progressbar",
+        "data-state": getProgressState(value, max2),
+        "data-value": value ?? void 0,
+        "data-max": max2,
+        ...progressProps,
+        ref: forwardedRef
+      }
+    ) });
+  }
+);
+Progress$1.displayName = PROGRESS_NAME;
+var INDICATOR_NAME$2 = "ProgressIndicator";
+var ProgressIndicator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeProgress, ...indicatorProps } = props;
+    const context = useProgressContext(INDICATOR_NAME$2, __scopeProgress);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive$1.div,
+      {
+        "data-state": getProgressState(context.value, context.max),
+        "data-value": context.value ?? void 0,
+        "data-max": context.max,
+        ...indicatorProps,
+        ref: forwardedRef
+      }
+    );
+  }
+);
+ProgressIndicator.displayName = INDICATOR_NAME$2;
+function defaultGetValueLabel(value, max2) {
+  return `${Math.round(value / max2 * 100)}%`;
+}
+function getProgressState(value, maxValue) {
+  return value == null ? "indeterminate" : value === maxValue ? "complete" : "loading";
+}
+function isNumber(value) {
+  return typeof value === "number";
+}
+function isValidMaxNumber(max2) {
+  return isNumber(max2) && !isNaN(max2) && max2 > 0;
+}
+function isValidValueNumber(value, max2) {
+  return isNumber(value) && !isNaN(value) && value <= max2 && value >= 0;
+}
+function getInvalidMaxError(propValue, componentName) {
+  return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
+}
+function getInvalidValueError(propValue, componentName) {
+  return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+  - a positive number
+  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
+  - \`null\` or \`undefined\` if the progress is indeterminate.
+
+Defaulting to \`null\`.`;
+}
+var Root$3 = Progress$1;
+var Indicator$1 = ProgressIndicator;
+function Progress({
+  className,
+  value,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root$3,
+    {
+      "data-slot": "progress",
+      className: cn(
+        "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Indicator$1,
+        {
+          "data-slot": "progress-indicator",
+          className: "bg-primary h-full w-full flex-1 transition-all",
+          style: { transform: `translateX(-${100 - (value || 0)}%)` }
+        }
+      )
+    }
+  );
+}
+function QuizResultsPage() {
+  const { id: id2, quizId } = useParams({
+    from: "/storefront-layout/position/$id/quizzes/$quizId/results"
+  });
+  const positionId = BigInt(id2);
+  const quizIdBig = BigInt(quizId);
+  const location2 = useLocation();
+  const state = location2.state ?? {};
+  const quizQuery = useQuiz(quizIdBig);
+  const questionsQuery = useQuestions(quizIdBig);
+  const myAttemptsQuery = useMyAttempts(quizIdBig);
+  const quiz = quizQuery.data ? toQuizView(quizQuery.data) : null;
+  const questions = reactExports.useMemo(
+    () => (questionsQuery.data ?? []).map(toQuestionView).sort((a2, b2) => a2.order - b2.order),
+    [questionsQuery.data]
+  );
+  const attemptRaw = state.attempt ?? (myAttemptsQuery.data && myAttemptsQuery.data.length > 0 ? [...myAttemptsQuery.data].sort(
+    (a2, b2) => Number(b2.createdAt) - Number(a2.createdAt)
+  )[0] : void 0);
+  const attempt = attemptRaw ? toAttemptView(attemptRaw) : null;
+  const isLoading = !state.attempt && (quizQuery.isLoading || questionsQuery.isLoading || myAttemptsQuery.isLoading);
+  if (isLoading) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Section,
+      {
+        className: "py-12 sm:py-16",
+        "data-ocid": "quiz.results.loading_state",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto max-w-3xl space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "mx-auto h-32 w-full rounded-xl" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-64 w-full rounded-xl" })
+        ] })
+      }
+    );
+  }
+  if (!attempt) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", "data-ocid": "quiz.results.empty_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "mx-auto max-w-md text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-8 text-muted-foreground" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "No attempt to review" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "You haven't taken this quiz yet. Start an attempt to see your results here." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap justify-center gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, "data-ocid": "quiz.results.empty_state.take_button", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            href: `/position/${positionId}/quizzes/${quizId}/take`,
+            "data-ocid": "quiz.results.empty_state.take_link",
+            children: "Take quiz"
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            asChild: true,
+            variant: "outline",
+            "data-ocid": "quiz.results.empty_state.back_button",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                href: `/position/${positionId}/quizzes`,
+                "data-ocid": "quiz.results.empty_state.back_link",
+                children: "Back to quizzes"
+              }
+            )
+          }
+        )
+      ] })
+    ] }) }) });
+  }
+  const passed = attempt.passed;
+  const percentage = attempt.percentage;
+  const passingPct = (quiz == null ? void 0 : quiz.passingPercentage) ?? 0;
+  const scorePct = Math.max(0, Math.min(100, percentage));
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-10 sm:py-14", "data-ocid": "quiz.results.page", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl space-y-8", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "nav",
+      {
+        className: "flex items-center gap-1.5 text-sm text-muted-foreground",
+        "aria-label": "Breadcrumb",
+        "data-ocid": "quiz.results.breadcrumb",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            asChild: true,
+            variant: "ghost",
+            size: "sm",
+            className: "gap-1.5",
+            "data-ocid": "quiz.results.breadcrumb_back",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "a",
+              {
+                href: `/position/${positionId}/quizzes`,
+                "data-ocid": "quiz.results.breadcrumb_back_link",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
+                  " Quizzes"
+                ]
+              }
+            )
+          }
+        )
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      motion.div,
+      {
+        initial: { opacity: 0, y: 12 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.35, ease: "easeOut" },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { "data-ocid": "quiz.results.summary", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-4 text-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: `flex size-16 items-center justify-center rounded-full ${passed ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`,
+                "data-ocid": "quiz.results.summary.icon",
+                children: passed ? /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-8" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "size-8" })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-3xl font-semibold tracking-tight", children: passed ? "You passed!" : "Not quite yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
+                (quiz == null ? void 0 : quiz.title) ?? "Quiz",
+                " ·",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "tabular-nums", children: [
+                  attempt.score,
+                  " of ",
+                  attempt.total,
+                  " correct"
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Badge,
+              {
+                variant: passed ? "default" : "destructive",
+                className: "px-3 py-1 text-sm",
+                "data-ocid": "quiz.results.summary.status_badge",
+                children: passed ? "Passed" : "Failed"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", "data-ocid": "quiz.results.score_bar", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline justify-between gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-foreground", children: "Your score" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "span",
+                {
+                  className: "font-display text-2xl font-semibold tabular-nums text-primary",
+                  "data-ocid": "quiz.results.summary.percentage",
+                  children: [
+                    percentage,
+                    "%"
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Progress,
+                {
+                  value: scorePct,
+                  className: "h-3",
+                  "data-ocid": "quiz.results.summary.progress"
+                }
+              ),
+              passingPct > 0 && passingPct < 100 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: "absolute top-1/2 h-4 w-0.5 -translate-y-1/2 bg-foreground/60",
+                  style: { left: `${passingPct}%` },
+                  "aria-label": `Passing threshold: ${passingPct}%`,
+                  "data-ocid": "quiz.results.summary.threshold"
+                }
+              ) : null
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between text-xs text-muted-foreground", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                "Passing threshold:",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-medium text-foreground", children: [
+                  passingPct,
+                  "%"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                "Score:",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-medium text-foreground tabular-nums", children: [
+                  attempt.score,
+                  "/",
+                  attempt.total
+                ] })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { asChild: true, "data-ocid": "quiz.results.retake_button", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "a",
+              {
+                href: `/position/${positionId}/quizzes/${quizId}/take`,
+                "data-ocid": "quiz.results.retake_link",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "size-4" }),
+                  "Retake quiz"
+                ]
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                asChild: true,
+                variant: "outline",
+                "data-ocid": "quiz.results.back_button",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    href: `/position/${positionId}/quizzes`,
+                    "data-ocid": "quiz.results.back_link",
+                    children: "Back to quizzes"
+                  }
+                )
+              }
+            )
+          ] })
+        ] }) })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", "data-ocid": "quiz.results.review.section", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ListChecks, { className: "size-5 text-primary" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold tracking-tight", children: "Answer review" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm text-muted-foreground", children: [
+          questions.length,
+          " ",
+          questions.length === 1 ? "question" : "questions"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: questions.map((q2, index2) => {
+        const answer = attempt.answers.find((a2) => a2.questionId === q2.id);
+        const selectedIds = new Set((answer == null ? void 0 : answer.selectedOptionIds) ?? []);
+        const correctIds = new Set(
+          q2.options.filter((o) => o.isCorrect).map((o) => o.id)
+        );
+        const isCorrect = selectedIds.size === correctIds.size && [...selectedIds].every((id22) => correctIds.has(id22));
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ReviewQuestion,
+          {
+            question: q2,
+            index: index2,
+            selectedIds,
+            correctIds,
+            isCorrect
+          },
+          String(q2.id)
+        );
+      }) })
+    ] })
+  ] }) });
+}
+function ReviewQuestion({
+  question,
+  index: index2,
+  selectedIds,
+  correctIds,
+  isCorrect
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    motion.div,
+    {
+      initial: { opacity: 0, y: 12 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, margin: "-60px" },
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+        delay: index2 * 0.05
+      },
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Card,
+        {
+          "data-ocid": `quiz.results.review.item.${index2 + 1}`,
+          className: isCorrect ? void 0 : "border-destructive/40 bg-destructive/5",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "span",
+                {
+                  className: `flex size-8 shrink-0 items-center justify-center rounded-full ${isCorrect ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`,
+                  "data-ocid": `quiz.results.review.status.${index2 + 1}`,
+                  children: isCorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "size-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1 space-y-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: [
+                    "Question ",
+                    index2 + 1
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Badge,
+                    {
+                      variant: isCorrect ? "secondary" : "destructive",
+                      className: "text-[10px]",
+                      "data-ocid": `quiz.results.review.badge.${index2 + 1}`,
+                      children: isCorrect ? "Correct" : "Incorrect"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold leading-snug", children: question.text })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "ul",
+              {
+                className: "space-y-2",
+                "data-ocid": `quiz.results.review.options.${index2 + 1}`,
+                children: question.options.map((opt, i) => {
+                  const wasSelected = selectedIds.has(opt.id);
+                  const isCorrectOpt = correctIds.has(opt.id);
+                  const tone = isCorrectOpt ? wasSelected ? "correct-selected" : "correct-missed" : wasSelected ? "incorrect-selected" : "neutral";
+                  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "li",
+                    {
+                      className: `flex items-start gap-2.5 rounded-lg border px-3.5 py-2.5 text-sm ${tone === "correct-selected" ? "border-success/50 bg-success/10 text-foreground" : tone === "correct-missed" ? "border-success/40 bg-success/5 text-foreground" : tone === "incorrect-selected" ? "border-destructive/50 bg-destructive/10 text-foreground" : "border-border bg-background text-muted-foreground"}`,
+                      "data-ocid": `quiz.results.review.option.${index2 + 1}.${i + 1}`,
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-0.5 flex shrink-0 items-center gap-1", children: wasSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          CircleCheck,
+                          {
+                            className: `size-4 ${isCorrectOpt ? "text-success" : "text-destructive"}`
+                          }
+                        ) : isCorrectOpt ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "span",
+                          {
+                            className: "size-4 rounded-full border-2 border-success/60",
+                            "aria-label": "Correct answer (not selected)"
+                          }
+                        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "size-4 rounded-full border border-border" }) }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "min-w-0 flex-1 leading-snug", children: opt.text }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex shrink-0 flex-wrap justify-end gap-1", children: [
+                          wasSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Badge,
+                            {
+                              variant: "outline",
+                              className: "border-current/30 text-[10px]",
+                              "data-ocid": `quiz.results.review.your_answer.${index2 + 1}.${i + 1}`,
+                              children: "Your answer"
+                            }
+                          ) : null,
+                          isCorrectOpt ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Badge,
+                            {
+                              variant: "outline",
+                              className: "border-success/40 text-[10px] text-success",
+                              "data-ocid": `quiz.results.review.correct_answer.${index2 + 1}.${i + 1}`,
+                              children: "Correct"
+                            }
+                          ) : null
+                        ] })
+                      ]
+                    },
+                    String(opt.id)
+                  );
+                })
+              }
+            ),
+            !isCorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "text-xs text-muted-foreground",
+                "data-ocid": `quiz.results.review.summary.${index2 + 1}`,
+                children: selectedIds.size === 0 ? "You didn't select an answer for this question." : "Compare your selection with the marked correct answer(s) above."
+              }
+            ) : null
+          ] })
+        }
+      )
+    }
+  ) });
+}
+function usePrevious(value) {
+  const ref = reactExports.useRef({ value, previous: value });
+  return reactExports.useMemo(() => {
+    if (ref.current.value !== value) {
+      ref.current.previous = ref.current.value;
+      ref.current.value = value;
+    }
+    return ref.current.previous;
+  }, [value]);
+}
+var CHECKBOX_NAME = "Checkbox";
+var [createCheckboxContext] = createContextScope(CHECKBOX_NAME);
+var [CheckboxProviderImpl, useCheckboxContext] = createCheckboxContext(CHECKBOX_NAME);
+function CheckboxProvider(props) {
+  const {
+    __scopeCheckbox,
+    checked: checkedProp,
+    children,
+    defaultChecked,
+    disabled,
+    form,
+    name,
+    onCheckedChange,
+    required,
+    value = "on",
+    // @ts-expect-error
+    internal_do_not_use_render
+  } = props;
+  const [checked, setChecked] = useControllableState({
+    prop: checkedProp,
+    defaultProp: defaultChecked ?? false,
+    onChange: onCheckedChange,
+    caller: CHECKBOX_NAME
+  });
+  const [control, setControl] = reactExports.useState(null);
+  const [bubbleInput, setBubbleInput] = reactExports.useState(null);
+  const hasConsumerStoppedPropagationRef = reactExports.useRef(false);
+  const isFormControl = control ? !!form || !!control.closest("form") : (
+    // We set this to true by default so that events bubble to forms without JS (SSR)
+    true
+  );
+  const context = {
+    checked,
+    disabled,
+    setChecked,
+    control,
+    setControl,
+    name,
+    form,
+    value,
+    hasConsumerStoppedPropagationRef,
+    required,
+    defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
+    isFormControl,
+    bubbleInput,
+    setBubbleInput
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    CheckboxProviderImpl,
+    {
+      scope: __scopeCheckbox,
+      ...context,
+      children: isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
+    }
+  );
+}
+var TRIGGER_NAME$4 = "CheckboxTrigger";
+var CheckboxTrigger = reactExports.forwardRef(
+  ({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
+    const {
+      control,
+      value,
+      disabled,
+      checked,
+      required,
+      setControl,
+      setChecked,
+      hasConsumerStoppedPropagationRef,
+      isFormControl,
+      bubbleInput
+    } = useCheckboxContext(TRIGGER_NAME$4, __scopeCheckbox);
+    const composedRefs = useComposedRefs$1(forwardedRef, setControl);
+    const initialCheckedStateRef = reactExports.useRef(checked);
+    reactExports.useEffect(() => {
+      const form = control == null ? void 0 : control.form;
+      if (form) {
+        const reset = () => setChecked(initialCheckedStateRef.current);
+        form.addEventListener("reset", reset);
+        return () => form.removeEventListener("reset", reset);
+      }
+    }, [control, setChecked]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.button,
+      {
+        type: "button",
+        role: "checkbox",
+        "aria-checked": isIndeterminate(checked) ? "mixed" : checked,
+        "aria-required": required,
+        "data-state": getState$2(checked),
+        "data-disabled": disabled ? "" : void 0,
+        disabled,
+        value,
+        ...checkboxProps,
+        ref: composedRefs,
+        onKeyDown: composeEventHandlers(onKeyDown, (event) => {
+          if (event.key === "Enter") event.preventDefault();
+        }),
+        onClick: composeEventHandlers(onClick, (event) => {
+          setChecked((prevChecked) => isIndeterminate(prevChecked) ? true : !prevChecked);
+          if (bubbleInput && isFormControl) {
+            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+          }
+        })
+      }
+    );
+  }
+);
+CheckboxTrigger.displayName = TRIGGER_NAME$4;
+var Checkbox$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeCheckbox,
+      name,
+      checked,
+      defaultChecked,
+      required,
+      disabled,
+      value,
+      onCheckedChange,
+      form,
+      ...checkboxProps
+    } = props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      CheckboxProvider,
+      {
+        __scopeCheckbox,
+        checked,
+        defaultChecked,
+        disabled,
+        required,
+        onCheckedChange,
+        name,
+        form,
+        value,
+        internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CheckboxTrigger,
+            {
+              ...checkboxProps,
+              ref: forwardedRef,
+              __scopeCheckbox
+            }
+          ),
+          isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CheckboxBubbleInput,
+            {
+              __scopeCheckbox
+            }
+          )
+        ] })
+      }
+    );
+  }
+);
+Checkbox$1.displayName = CHECKBOX_NAME;
+var INDICATOR_NAME$1 = "CheckboxIndicator";
+var CheckboxIndicator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
+    const context = useCheckboxContext(INDICATOR_NAME$1, __scopeCheckbox);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Presence,
+      {
+        present: forceMount || isIndeterminate(context.checked) || context.checked === true,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Primitive.span,
+          {
+            "data-state": getState$2(context.checked),
+            "data-disabled": context.disabled ? "" : void 0,
+            ...indicatorProps,
+            ref: forwardedRef,
+            style: { pointerEvents: "none", ...props.style }
+          }
+        )
+      }
+    );
+  }
+);
+CheckboxIndicator.displayName = INDICATOR_NAME$1;
+var BUBBLE_INPUT_NAME$2 = "CheckboxBubbleInput";
+var CheckboxBubbleInput = reactExports.forwardRef(
+  ({ __scopeCheckbox, ...props }, forwardedRef) => {
+    const {
+      control,
+      hasConsumerStoppedPropagationRef,
+      checked,
+      defaultChecked,
+      required,
+      disabled,
+      name,
+      value,
+      form,
+      bubbleInput,
+      setBubbleInput
+    } = useCheckboxContext(BUBBLE_INPUT_NAME$2, __scopeCheckbox);
+    const composedRefs = useComposedRefs$1(forwardedRef, setBubbleInput);
+    const prevChecked = usePrevious(checked);
+    const controlSize = useSize(control);
+    reactExports.useEffect(() => {
+      const input = bubbleInput;
+      if (!input) return;
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        inputProto,
+        "checked"
+      );
+      const setChecked = descriptor.set;
+      const bubbles = !hasConsumerStoppedPropagationRef.current;
+      if (prevChecked !== checked && setChecked) {
+        const event = new Event("click", { bubbles });
+        input.indeterminate = isIndeterminate(checked);
+        setChecked.call(input, isIndeterminate(checked) ? false : checked);
+        input.dispatchEvent(event);
+      }
+    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+    const defaultCheckedRef = reactExports.useRef(isIndeterminate(checked) ? false : checked);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.input,
+      {
+        type: "checkbox",
+        "aria-hidden": true,
+        defaultChecked: defaultChecked ?? defaultCheckedRef.current,
+        required,
+        disabled,
+        name,
+        value,
+        form,
+        ...props,
+        tabIndex: -1,
+        ref: composedRefs,
+        style: {
+          ...props.style,
+          ...controlSize,
+          position: "absolute",
+          pointerEvents: "none",
+          opacity: 0,
+          margin: 0,
+          // We transform because the input is absolutely positioned but we have
+          // rendered it **after** the button. This pulls it back to sit on top
+          // of the button.
+          transform: "translateX(-100%)"
+        }
+      }
+    );
+  }
+);
+CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
+function isFunction(value) {
+  return typeof value === "function";
+}
+function isIndeterminate(checked) {
+  return checked === "indeterminate";
+}
+function getState$2(checked) {
+  return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
+}
+function Checkbox({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Checkbox$1,
+    {
+      "data-slot": "checkbox",
+      className: cn(
+        "peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CheckboxIndicator,
+        {
+          "data-slot": "checkbox-indicator",
+          className: "flex items-center justify-center text-current transition-none",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "size-3.5" })
+        }
+      )
+    }
+  );
+}
+var NAME$2 = "Label";
+var Label$2 = reactExports.forwardRef((props, forwardedRef) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Primitive$1.label,
+    {
+      ...props,
+      ref: forwardedRef,
+      onMouseDown: (event) => {
+        var _a2;
+        const target = event.target;
+        if (target.closest("button, input, select, textarea")) return;
+        (_a2 = props.onMouseDown) == null ? void 0 : _a2.call(props, event);
+        if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
+      }
+    }
+  );
+});
+Label$2.displayName = NAME$2;
+var Root$2 = Label$2;
+function Label$1({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root$2,
+    {
+      "data-slot": "label",
+      className: cn(
+        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        className
+      ),
+      ...props
+    }
+  );
+}
+var RADIO_NAME = "Radio";
+var [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
+var [RadioProvider, useRadioContext] = createRadioContext(RADIO_NAME);
+var Radio = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeRadio,
+      name,
+      checked = false,
+      required,
+      disabled,
+      value = "on",
+      onCheck,
+      form,
+      ...radioProps
+    } = props;
+    const [button, setButton] = reactExports.useState(null);
+    const composedRefs = useComposedRefs$1(forwardedRef, (node) => setButton(node));
+    const hasConsumerStoppedPropagationRef = reactExports.useRef(false);
+    const isFormControl = button ? form || !!button.closest("form") : true;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(RadioProvider, { scope: __scopeRadio, checked, disabled, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Primitive.button,
+        {
+          type: "button",
+          role: "radio",
+          "aria-checked": checked,
+          "data-state": getState$1(checked),
+          "data-disabled": disabled ? "" : void 0,
+          disabled,
+          value,
+          ...radioProps,
+          ref: composedRefs,
+          onClick: composeEventHandlers(props.onClick, (event) => {
+            if (!checked) onCheck == null ? void 0 : onCheck();
+            if (isFormControl) {
+              hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+              if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+            }
+          })
+        }
+      ),
+      isFormControl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RadioBubbleInput,
+        {
+          control: button,
+          bubbles: !hasConsumerStoppedPropagationRef.current,
+          name,
+          value,
+          checked,
+          required,
+          disabled,
+          form,
+          style: { transform: "translateX(-100%)" }
+        }
+      )
+    ] });
+  }
+);
+Radio.displayName = RADIO_NAME;
+var INDICATOR_NAME = "RadioIndicator";
+var RadioIndicator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeRadio, forceMount, ...indicatorProps } = props;
+    const context = useRadioContext(INDICATOR_NAME, __scopeRadio);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || context.checked, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.span,
+      {
+        "data-state": getState$1(context.checked),
+        "data-disabled": context.disabled ? "" : void 0,
+        ...indicatorProps,
+        ref: forwardedRef
+      }
+    ) });
+  }
+);
+RadioIndicator.displayName = INDICATOR_NAME;
+var BUBBLE_INPUT_NAME$1 = "RadioBubbleInput";
+var RadioBubbleInput = reactExports.forwardRef(
+  ({
+    __scopeRadio,
+    control,
+    checked,
+    bubbles = true,
+    ...props
+  }, forwardedRef) => {
+    const ref = reactExports.useRef(null);
+    const composedRefs = useComposedRefs$1(ref, forwardedRef);
+    const prevChecked = usePrevious(checked);
+    const controlSize = useSize(control);
+    reactExports.useEffect(() => {
+      const input = ref.current;
+      if (!input) return;
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        inputProto,
+        "checked"
+      );
+      const setChecked = descriptor.set;
+      if (prevChecked !== checked && setChecked) {
+        const event = new Event("click", { bubbles });
+        setChecked.call(input, checked);
+        input.dispatchEvent(event);
+      }
+    }, [prevChecked, checked, bubbles]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Primitive.input,
+      {
+        type: "radio",
+        "aria-hidden": true,
+        defaultChecked: checked,
+        ...props,
+        tabIndex: -1,
+        ref: composedRefs,
+        style: {
+          ...props.style,
+          ...controlSize,
+          position: "absolute",
+          pointerEvents: "none",
+          opacity: 0,
+          margin: 0
+        }
+      }
+    );
+  }
+);
+RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+function getState$1(checked) {
+  return checked ? "checked" : "unchecked";
+}
+var ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+var RADIO_GROUP_NAME = "RadioGroup";
+var [createRadioGroupContext] = createContextScope(RADIO_GROUP_NAME, [
+  createRovingFocusGroupScope,
+  createRadioScope
+]);
+var useRovingFocusGroupScope$1 = createRovingFocusGroupScope();
+var useRadioScope = createRadioScope();
+var [RadioGroupProvider, useRadioGroupContext] = createRadioGroupContext(RADIO_GROUP_NAME);
+var RadioGroup$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const {
+      __scopeRadioGroup,
+      name,
+      defaultValue,
+      value: valueProp,
+      required = false,
+      disabled = false,
+      orientation,
+      dir,
+      loop = true,
+      onValueChange,
+      ...groupProps
+    } = props;
+    const rovingFocusGroupScope = useRovingFocusGroupScope$1(__scopeRadioGroup);
+    const direction = useDirection(dir);
+    const [value, setValue] = useControllableState({
+      prop: valueProp,
+      defaultProp: defaultValue ?? null,
+      onChange: onValueChange,
+      caller: RADIO_GROUP_NAME
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      RadioGroupProvider,
+      {
+        scope: __scopeRadioGroup,
+        name,
+        required,
+        disabled,
+        value,
+        onValueChange: setValue,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Root$4,
+          {
+            asChild: true,
+            ...rovingFocusGroupScope,
+            orientation,
+            dir: direction,
+            loop,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Primitive.div,
+              {
+                role: "radiogroup",
+                "aria-required": required,
+                "aria-orientation": orientation,
+                "data-disabled": disabled ? "" : void 0,
+                dir: direction,
+                ...groupProps,
+                ref: forwardedRef
+              }
+            )
+          }
+        )
+      }
+    );
+  }
+);
+RadioGroup$1.displayName = RADIO_GROUP_NAME;
+var ITEM_NAME$1 = "RadioGroupItem";
+var RadioGroupItem$1 = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeRadioGroup, disabled, ...itemProps } = props;
+    const context = useRadioGroupContext(ITEM_NAME$1, __scopeRadioGroup);
+    const isDisabled = context.disabled || disabled;
+    const rovingFocusGroupScope = useRovingFocusGroupScope$1(__scopeRadioGroup);
+    const radioScope = useRadioScope(__scopeRadioGroup);
+    const ref = reactExports.useRef(null);
+    const composedRefs = useComposedRefs$1(forwardedRef, ref);
+    const checked = context.value === itemProps.value;
+    const isArrowKeyPressedRef = reactExports.useRef(false);
+    reactExports.useEffect(() => {
+      const handleKeyDown = (event) => {
+        if (ARROW_KEYS.includes(event.key)) {
+          isArrowKeyPressedRef.current = true;
+        }
+      };
+      const handleKeyUp = () => isArrowKeyPressedRef.current = false;
+      document.addEventListener("keydown", handleKeyDown);
+      document.addEventListener("keyup", handleKeyUp);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+        document.removeEventListener("keyup", handleKeyUp);
+      };
+    }, []);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Item$1,
+      {
+        asChild: true,
+        ...rovingFocusGroupScope,
+        focusable: !isDisabled,
+        active: checked,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Radio,
+          {
+            disabled: isDisabled,
+            required: context.required,
+            checked,
+            ...radioScope,
+            ...itemProps,
+            name: context.name,
+            ref: composedRefs,
+            onCheck: () => context.onValueChange(itemProps.value),
+            onKeyDown: composeEventHandlers((event) => {
+              if (event.key === "Enter") event.preventDefault();
+            }),
+            onFocus: composeEventHandlers(itemProps.onFocus, () => {
+              var _a2;
+              if (isArrowKeyPressedRef.current) (_a2 = ref.current) == null ? void 0 : _a2.click();
+            })
+          }
+        )
+      }
+    );
+  }
+);
+RadioGroupItem$1.displayName = ITEM_NAME$1;
+var INDICATOR_NAME2 = "RadioGroupIndicator";
+var RadioGroupIndicator = reactExports.forwardRef(
+  (props, forwardedRef) => {
+    const { __scopeRadioGroup, ...indicatorProps } = props;
+    const radioScope = useRadioScope(__scopeRadioGroup);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(RadioIndicator, { ...radioScope, ...indicatorProps, ref: forwardedRef });
+  }
+);
+RadioGroupIndicator.displayName = INDICATOR_NAME2;
+var Root2$3 = RadioGroup$1;
+var Item2 = RadioGroupItem$1;
+var Indicator = RadioGroupIndicator;
+function RadioGroup({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Root2$3,
+    {
+      "data-slot": "radio-group",
+      className: cn("grid gap-3", className),
+      ...props
+    }
+  );
+}
+function RadioGroupItem({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Item2,
+    {
+      "data-slot": "radio-group-item",
+      className: cn(
+        "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      ),
+      ...props,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Indicator,
+        {
+          "data-slot": "radio-group-indicator",
+          className: "relative flex items-center justify-center",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Circle, { className: "fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" })
+        }
+      )
+    }
+  );
+}
+function QuizTakePage() {
+  const { id: id2, quizId } = useParams({
+    from: "/storefront-layout/position/$id/quizzes/$quizId/take"
+  });
+  const positionId = BigInt(id2);
+  const quizIdBig = BigInt(quizId);
+  const navigate = useNavigate();
+  const quizQuery = useQuiz(quizIdBig);
+  const questionsQuery = useQuestions(quizIdBig);
+  const submit = useSubmitAttempt();
+  const quiz = quizQuery.data ? toQuizView(quizQuery.data) : null;
+  const questions = reactExports.useMemo(
+    () => (questionsQuery.data ?? []).map(toQuestionView).sort((a2, b2) => a2.order - b2.order),
+    [questionsQuery.data]
+  );
+  const [selections, setSelections] = reactExports.useState({});
+  const [current, setCurrent] = reactExports.useState(0);
+  const isLoading = quizQuery.isLoading || questionsQuery.isLoading;
+  const total = questions.length;
+  const isLast = current === total - 1;
+  const answeredCount = questions.filter(
+    (q2) => (selections[String(q2.id)] ?? []).length > 0
+  ).length;
+  const allAnswered = answeredCount === total;
+  const setSingle = (questionId, optionId) => {
+    setSelections((prev) => ({ ...prev, [String(questionId)]: [optionId] }));
+  };
+  const toggleMultiple = (questionId, optionId) => {
+    setSelections((prev) => {
+      const current2 = new Set(prev[String(questionId)] ?? []);
+      if (current2.has(optionId)) current2.delete(optionId);
+      else current2.add(optionId);
+      return { ...prev, [String(questionId)]: [...current2] };
+    });
+  };
+  const handleSubmit = async () => {
+    if (!allAnswered) {
+      ue.error("Please answer every question before submitting.");
+      return;
+    }
+    const answers = questions.map((q2) => ({
+      questionId: q2.id,
+      selectedOptionIds: selections[String(q2.id)] ?? []
+    }));
+    try {
+      const attempt = await submit.mutateAsync({
+        quizId: quizIdBig,
+        answers
+      });
+      navigate({
+        to: "/position/$id/quizzes/$quizId/results",
+        params: { id: id2, quizId },
+        // Router state is typed as a flat HistoryState; we pass typed objects
+        // through it (consumed by QuizResultsPage) and assert the shape here.
+        state: { attempt, quiz, questions }
+      });
+    } catch {
+      ue.error("Couldn't submit your attempt. Please try again.");
+    }
+  };
+  if (isLoading) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-12 sm:py-16", "data-ocid": "quiz.take.loading_state", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto max-w-3xl space-y-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-9 w-64" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-2.5 w-full" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-64 w-full rounded-xl" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-9 w-24" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Skeleton, { className: "h-9 w-28" })
+      ] })
+    ] }) });
+  }
+  if (!quiz) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", "data-ocid": "quiz.take.error_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "mx-auto max-w-md text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-8 text-muted-foreground" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "Quiz not found" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "This quiz may have been removed. Pick another quiz from the position to continue." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          asChild: true,
+          variant: "outline",
+          "data-ocid": "quiz.take.error_state.back_button",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              href: `/position/${positionId}/quizzes`,
+              "data-ocid": "quiz.take.error_state.back_link",
+              children: "Back to quizzes"
+            }
+          )
+        }
+      )
+    ] }) }) });
+  }
+  if (total === 0) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-16 sm:py-20", "data-ocid": "quiz.take.empty_state", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "mx-auto max-w-md text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "flex flex-col items-center gap-3 py-10", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-8 text-muted-foreground" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-xl font-semibold", children: "No questions yet" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-muted-foreground", children: [
+        quiz.title,
+        " doesn't have any questions configured yet. Check back soon."
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button,
+        {
+          asChild: true,
+          variant: "outline",
+          "data-ocid": "quiz.take.empty_state.back_button",
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              href: `/position/${positionId}/quizzes`,
+              "data-ocid": "quiz.take.empty_state.back_link",
+              children: "Back to quizzes"
+            }
+          )
+        }
+      )
+    ] }) }) });
+  }
+  const question = questions[current];
+  const selected = selections[String(question.id)] ?? [];
+  const percent2 = Math.round((current + 1) / total * 100);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Section, { className: "py-10 sm:py-14", "data-ocid": "quiz.take.page", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto w-full max-w-3xl space-y-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-3.5 text-primary" }),
+            "Quiz"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "mt-1 truncate font-display text-2xl font-semibold tracking-tight sm:text-3xl", children: quiz.title }),
+          quiz.description ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-muted-foreground", children: quiz.description }) : null
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            asChild: true,
+            variant: "ghost",
+            size: "sm",
+            "data-ocid": "quiz.take.exit_button",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                href: `/position/${positionId}/quizzes`,
+                "data-ocid": "quiz.take.exit_link",
+                children: "Exit quiz"
+              }
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { "data-ocid": "quiz.take.progress", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2 flex items-baseline justify-between gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-medium text-foreground", children: [
+            "Question",
+            " ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "font-display text-lg text-primary",
+                "data-ocid": "quiz.take.progress.current",
+                children: current + 1
+              }
+            ),
+            " ",
+            "of",
+            " ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "text-muted-foreground",
+                "data-ocid": "quiz.take.progress.total",
+                children: total
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "span",
+            {
+              className: "text-xs font-medium tabular-nums text-muted-foreground",
+              "data-ocid": "quiz.take.progress.percent",
+              children: [
+                percent2,
+                "%"
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Progress,
+          {
+            value: percent2,
+            className: "h-2.5",
+            "data-ocid": "quiz.take.progress.bar"
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", initial: false, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      motion.div,
+      {
+        initial: { opacity: 0, x: 24 },
+        animate: { opacity: 1, x: 0 },
+        exit: { opacity: 0, x: -24 },
+        transition: { duration: 0.25, ease: "easeOut" },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { "data-ocid": `quiz.take.question.${current + 1}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { className: "space-y-5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary", children: current + 1 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 space-y-1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-lg font-semibold leading-snug", children: question.text }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium uppercase tracking-wider text-muted-foreground", children: question.type === "single" ? "Choose one answer" : "Choose all that apply" })
+            ] })
+          ] }),
+          question.type === "single" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioGroup,
+            {
+              value: selected[0] !== void 0 ? String(selected[0]) : "",
+              onValueChange: (val) => setSingle(question.id, BigInt(val)),
+              className: "gap-2.5",
+              "data-ocid": `quiz.take.radio.${current + 1}`,
+              children: question.options.map((opt, i) => {
+                const optId = `q${current + 1}-opt-${i + 1}`;
+                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Label$1,
+                  {
+                    htmlFor: optId,
+                    className: "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/40 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-primary/5",
+                    "data-ocid": `quiz.take.option.${current + 1}.${i + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        RadioGroupItem,
+                        {
+                          id: optId,
+                          value: String(opt.id),
+                          "data-ocid": `quiz.take.radio_item.${current + 1}.${i + 1}`
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm leading-snug", children: opt.text })
+                    ]
+                  },
+                  String(opt.id)
+                );
+              })
+            }
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "grid gap-2.5",
+              "data-ocid": `quiz.take.checkbox_group.${current + 1}`,
+              children: question.options.map((opt, i) => {
+                const optId = `q${current + 1}-opt-${i + 1}`;
+                const checked = selected.includes(opt.id);
+                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Label$1,
+                  {
+                    htmlFor: optId,
+                    className: "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-smooth hover:border-primary/40 hover:bg-accent/30 has-[:checked]:border-primary has-[:checked]:bg-primary/5",
+                    "data-ocid": `quiz.take.option.${current + 1}.${i + 1}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Checkbox,
+                        {
+                          id: optId,
+                          checked,
+                          onCheckedChange: () => toggleMultiple(question.id, opt.id),
+                          "data-ocid": `quiz.take.checkbox.${current + 1}.${i + 1}`
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm leading-snug", children: opt.text })
+                    ]
+                  },
+                  String(opt.id)
+                );
+              })
+            }
+          )
+        ] }) })
+      },
+      current
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      motion.div,
+      {
+        initial: { opacity: 0, y: 8 },
+        animate: { opacity: 1, y: 0 },
+        transition: { delay: 0.1, duration: 0.25 },
+        className: "flex items-center justify-between gap-3",
+        "data-ocid": "quiz.take.nav",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              variant: "outline",
+              onClick: () => setCurrent((c2) => Math.max(0, c2 - 1)),
+              disabled: current === 0,
+              "data-ocid": "quiz.take.back_button",
+              "aria-label": "Previous question",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+                "Back"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "span",
+            {
+              className: "hidden text-xs text-muted-foreground sm:inline",
+              "data-ocid": "quiz.take.nav.hint",
+              children: [
+                answeredCount,
+                " of ",
+                total,
+                " answered"
+              ]
+            }
+          ),
+          isLast ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              onClick: handleSubmit,
+              disabled: submit.isPending || !allAnswered,
+              "data-ocid": "quiz.take.submit_button",
+              children: submit.isPending ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                "Submitting…"
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-4" }),
+                "Submit attempt"
+              ] })
+            }
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              onClick: () => setCurrent((c2) => Math.min(total - 1, c2 + 1)),
+              disabled: selected.length === 0,
+              "data-ocid": "quiz.take.next_button",
+              "aria-label": "Next question",
+              children: [
+                "Next",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" })
+              ]
+            }
+          )
+        ]
+      }
+    ),
+    isLast && !allAnswered ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "p",
+      {
+        className: "text-center text-xs text-muted-foreground",
+        "data-ocid": "quiz.take.submit_hint",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Minus, { className: "mr-1 inline size-3" }),
+          "Answer all ",
+          total,
+          " questions to submit your attempt."
+        ]
+      }
+    ) : null
+  ] }) });
 }
 function RecipeCard({ item }) {
   const photoUrl = blobUrl(item.itemPhoto);
@@ -55277,117 +58258,6 @@ function TrainingComplete({
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-4 text-xs text-muted-foreground", children: "Progress resets when you leave training — revisit any time to refresh." })
       ] }) })
-    }
-  );
-}
-var PROGRESS_NAME = "Progress";
-var DEFAULT_MAX = 100;
-var [createProgressContext] = createContextScope$1(PROGRESS_NAME);
-var [ProgressProvider, useProgressContext] = createProgressContext(PROGRESS_NAME);
-var Progress$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      __scopeProgress,
-      value: valueProp = null,
-      max: maxProp,
-      getValueLabel = defaultGetValueLabel,
-      ...progressProps
-    } = props;
-    if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) {
-      console.error(getInvalidMaxError(`${maxProp}`, "Progress"));
-    }
-    const max2 = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
-    if (valueProp !== null && !isValidValueNumber(valueProp, max2)) {
-      console.error(getInvalidValueError(`${valueProp}`, "Progress"));
-    }
-    const value = isValidValueNumber(valueProp, max2) ? valueProp : null;
-    const valueLabel = isNumber(value) ? getValueLabel(value, max2) : void 0;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(ProgressProvider, { scope: __scopeProgress, value, max: max2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.div,
-      {
-        "aria-valuemax": max2,
-        "aria-valuemin": 0,
-        "aria-valuenow": isNumber(value) ? value : void 0,
-        "aria-valuetext": valueLabel,
-        role: "progressbar",
-        "data-state": getProgressState(value, max2),
-        "data-value": value ?? void 0,
-        "data-max": max2,
-        ...progressProps,
-        ref: forwardedRef
-      }
-    ) });
-  }
-);
-Progress$1.displayName = PROGRESS_NAME;
-var INDICATOR_NAME = "ProgressIndicator";
-var ProgressIndicator = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeProgress, ...indicatorProps } = props;
-    const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.div,
-      {
-        "data-state": getProgressState(context.value, context.max),
-        "data-value": context.value ?? void 0,
-        "data-max": context.max,
-        ...indicatorProps,
-        ref: forwardedRef
-      }
-    );
-  }
-);
-ProgressIndicator.displayName = INDICATOR_NAME;
-function defaultGetValueLabel(value, max2) {
-  return `${Math.round(value / max2 * 100)}%`;
-}
-function getProgressState(value, maxValue) {
-  return value == null ? "indeterminate" : value === maxValue ? "complete" : "loading";
-}
-function isNumber(value) {
-  return typeof value === "number";
-}
-function isValidMaxNumber(max2) {
-  return isNumber(max2) && !isNaN(max2) && max2 > 0;
-}
-function isValidValueNumber(value, max2) {
-  return isNumber(value) && !isNaN(value) && value <= max2 && value >= 0;
-}
-function getInvalidMaxError(propValue, componentName) {
-  return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
-}
-function getInvalidValueError(propValue, componentName) {
-  return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
-  - a positive number
-  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
-  - \`null\` or \`undefined\` if the progress is indeterminate.
-
-Defaulting to \`null\`.`;
-}
-var Root$3 = Progress$1;
-var Indicator = ProgressIndicator;
-function Progress({
-  className,
-  value,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$3,
-    {
-      "data-slot": "progress",
-      className: cn(
-        "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
-        className
-      ),
-      ...props,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Indicator,
-        {
-          "data-slot": "progress-indicator",
-          className: "bg-primary h-full w-full flex-1 transition-all",
-          style: { transform: `translateX(-${100 - (value || 0)}%)` }
-        }
-      )
     }
   );
 }
@@ -56185,7 +59055,7 @@ var DescriptionWarning$1 = ({ contentRef, descriptionId }) => {
   }, [MESSAGE, contentRef, descriptionId]);
   return null;
 };
-var Root$2 = Dialog$1;
+var Root$1 = Dialog$1;
 var Trigger$2 = DialogTrigger;
 var Portal$1 = DialogPortal$1;
 var Overlay = DialogOverlay$1;
@@ -56196,7 +59066,7 @@ var Close = DialogClose;
 function Dialog({
   ...props
 }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$2, { "data-slot": "dialog", ...props });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$1, { "data-slot": "dialog", ...props });
 }
 function DialogPortal({
   ...props
@@ -56319,53 +59189,8 @@ function Input({ className, type, ...props }) {
     }
   );
 }
-var NAME$2 = "Label";
-var Label$2 = reactExports.forwardRef((props, forwardedRef) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive$1.label,
-    {
-      ...props,
-      ref: forwardedRef,
-      onMouseDown: (event) => {
-        var _a2;
-        const target = event.target;
-        if (target.closest("button, input, select, textarea")) return;
-        (_a2 = props.onMouseDown) == null ? void 0 : _a2.call(props, event);
-        if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
-      }
-    }
-  );
-});
-Label$2.displayName = NAME$2;
-var Root$1 = Label$2;
-function Label$1({
-  className,
-  ...props
-}) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Root$1,
-    {
-      "data-slot": "label",
-      className: cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        className
-      ),
-      ...props
-    }
-  );
-}
 function clamp(value, [min2, max2]) {
   return Math.min(max2, Math.max(min2, value));
-}
-function usePrevious(value) {
-  const ref = reactExports.useRef({ value, previous: value });
-  return reactExports.useMemo(() => {
-    if (ref.current.value !== value) {
-      ref.current.previous = ref.current.value;
-      ref.current.value = value;
-    }
-    return ref.current.previous;
-  }, [value]);
 }
 var VISUALLY_HIDDEN_STYLES = Object.freeze({
   // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
@@ -56443,7 +59268,7 @@ var Select$1 = (props) => {
   const isFormControl = trigger ? form || !!trigger.closest("form") : true;
   const [nativeOptionsSet, setNativeOptionsSet] = reactExports.useState(/* @__PURE__ */ new Set());
   const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$4, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root2$5, { ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
     SelectProvider,
     {
       required,
@@ -57834,7 +60659,7 @@ var useDialogScope = createDialogScope();
 var AlertDialog$1 = (props) => {
   const { __scopeAlertDialog, ...alertDialogProps } = props;
   const dialogScope = useDialogScope(__scopeAlertDialog);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$2, { ...dialogScope, ...alertDialogProps, modal: true });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Root$1, { ...dialogScope, ...alertDialogProps, modal: true });
 };
 AlertDialog$1.displayName = ROOT_NAME;
 var TRIGGER_NAME$1 = "AlertDialogTrigger";
@@ -58084,38 +60909,6 @@ function AlertDialogCancel({
     Cancel,
     {
       className: cn(buttonVariants({ variant: "outline" }), className),
-      ...props
-    }
-  );
-}
-const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
-  {
-    variants: {
-      variant: {
-        default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
-        secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
-        destructive: "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground"
-      }
-    },
-    defaultVariants: {
-      variant: "default"
-    }
-  }
-);
-function Badge({
-  className,
-  variant,
-  asChild = false,
-  ...props
-}) {
-  const Comp = asChild ? Slot$3 : "span";
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Comp,
-    {
-      "data-slot": "badge",
-      className: cn(badgeVariants({ variant }), className),
       ...props
     }
   );
@@ -61492,6 +64285,1242 @@ function AdminPositionsPage() {
     )
   ] });
 }
+const PASSING_OPTIONS = [60, 70, 75, 80, 85, 90, 100];
+function AdminQuizEditPage() {
+  const { quizId } = useParams({ from: "/admin-layout/admin/quizzes/$quizId" });
+  const id2 = BigInt(quizId);
+  const navigate = useNavigate();
+  const { data: quiz, isLoading: quizLoading } = useQuiz(id2);
+  const { data: positions = [] } = usePositions();
+  const updateQuizMut = useUpdateQuiz();
+  const [title, setTitle] = reactExports.useState("");
+  const [description, setDescription] = reactExports.useState("");
+  const [passingPercentage, setPassingPercentage] = reactExports.useState(80);
+  const [positionName, setPositionName] = reactExports.useState(null);
+  const [touched, setTouched] = reactExports.useState(false);
+  const [hydrated, setHydrated] = reactExports.useState(false);
+  if (quiz && !hydrated) {
+    setTitle(quiz.title);
+    setDescription(quiz.description ?? "");
+    setPassingPercentage(Number(quiz.passingPercentage));
+    setHydrated(true);
+  }
+  reactExports.useEffect(() => {
+    if (quiz && positions.length > 0) {
+      const pos = positions.find((p2) => p2.id === quiz.positionId);
+      setPositionName(pos ? pos.name : null);
+    }
+  }, [quiz, positions]);
+  const titleError = touched && title.trim().length === 0;
+  const canSave = title.trim().length > 0;
+  const detailsDirty = !!quiz && (quiz.title !== title.trim() || (quiz.description ?? "") !== description.trim() || Number(quiz.passingPercentage) !== passingPercentage);
+  async function saveDetails() {
+    setTouched(true);
+    if (!canSave || !quiz) return;
+    try {
+      await updateQuizMut.mutateAsync({
+        quizId: id2,
+        edit: {
+          title: title.trim(),
+          description: description.trim() === "" ? void 0 : description.trim(),
+          passingPercentage: BigInt(passingPercentage)
+        }
+      });
+      ue.success("Quiz details saved");
+    } catch (err) {
+      ue.error("Could not save quiz details");
+      console.error(err);
+    }
+  }
+  if (quizLoading) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "flex items-center justify-center py-24",
+        "data-ocid": "quiz_edit.loading_state",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-6 animate-spin text-muted-foreground" })
+      }
+    );
+  }
+  if (!quiz) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex flex-col items-center justify-center gap-3 py-24 text-center",
+        "data-ocid": "quiz_edit.error_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "Quiz not found" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "This quiz may have been deleted." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              variant: "outline",
+              size: "sm",
+              onClick: () => navigate({ to: "/admin/quizzes" }),
+              "data-ocid": "quiz_edit.back_button",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-4" }),
+                " Back to quizzes"
+              ]
+            }
+          )
+        ]
+      }
+    );
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: "mx-auto flex max-w-3xl flex-col gap-6",
+      "data-ocid": "quiz_edit.page",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-col gap-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => navigate({ to: "/admin/quizzes" }),
+              className: "flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+              "data-ocid": "quiz_edit.back_link",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "size-3.5" }),
+                " All quizzes"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: quiz.title || "Untitled quiz" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: positionName ? `Position: ${positionName}` : "Edit quiz details, passing percentage, and manage its ordered questions." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "section",
+          {
+            className: "rounded-lg border border-border bg-card p-6",
+            "data-ocid": "quiz_edit.details.panel",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "quiz-title", "data-ocid": "quiz_edit.title.label", children: "Title" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Input,
+                  {
+                    id: "quiz-title",
+                    value: title,
+                    placeholder: "e.g. Barista fundamentals",
+                    "aria-invalid": titleError,
+                    onChange: (e) => setTitle(e.target.value),
+                    onBlur: () => setTouched(true),
+                    "data-ocid": "quiz_edit.title.input"
+                  }
+                ),
+                titleError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "p",
+                  {
+                    className: "text-xs text-destructive",
+                    "data-ocid": "quiz_edit.title.field_error",
+                    children: "Title is required."
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Label$1,
+                  {
+                    htmlFor: "quiz-description",
+                    "data-ocid": "quiz_edit.description.label",
+                    children: "Description (optional)"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Textarea,
+                  {
+                    id: "quiz-description",
+                    value: description,
+                    rows: 3,
+                    placeholder: "Short summary shown to trainees before they start.",
+                    onChange: (e) => setDescription(e.target.value),
+                    "data-ocid": "quiz_edit.description.input"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "quiz_edit.passing.label", children: "Passing percentage" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Select,
+                  {
+                    value: String(passingPercentage),
+                    onValueChange: (v2) => setPassingPercentage(Number(v2)),
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { "data-ocid": "quiz_edit.passing.select", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select passing percentage" }) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { "data-ocid": "quiz_edit.passing.dropdown_menu", children: PASSING_OPTIONS.map((p2, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        SelectItem,
+                        {
+                          value: String(p2),
+                          "data-ocid": `quiz_edit.passing.option.${i + 1}`,
+                          children: [
+                            p2,
+                            "%"
+                          ]
+                        },
+                        p2
+                      )) })
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Trainees must score at or above this percentage to pass." })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-3 border-t border-border pt-4", children: [
+                detailsDirty && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: "Unsaved changes" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  Button,
+                  {
+                    type: "button",
+                    onClick: saveDetails,
+                    disabled: updateQuizMut.isPending || !detailsDirty,
+                    "data-ocid": "quiz_edit.save_button",
+                    children: [
+                      updateQuizMut.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Save, { className: "size-4" }),
+                      " Save details"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(QuestionsEditor, { quizId: id2 })
+      ]
+    }
+  );
+}
+function QuestionsEditor({ quizId }) {
+  const { data: rawQuestions = [], isLoading } = useQuestions(quizId);
+  const createMut = useCreateQuestion();
+  const deleteMut = useDeleteQuestion();
+  const moveMut = useMoveQuestion();
+  const [dialogOpen, setDialogOpen] = reactExports.useState(false);
+  const [editing, setEditing] = reactExports.useState(null);
+  const [pendingDelete, setPendingDelete] = reactExports.useState(null);
+  const questions = rawQuestions.map(toQuestionView);
+  const sorted = [...questions].sort((a2, b2) => a2.order - b2.order);
+  function openCreate() {
+    setEditing(null);
+    setDialogOpen(true);
+  }
+  function openEdit(q2) {
+    setEditing(q2);
+    setDialogOpen(true);
+  }
+  async function move(index2, dir) {
+    const target = index2 + dir;
+    if (target < 0 || target >= sorted.length) return;
+    const q2 = sorted[index2];
+    const targetOrder = BigInt(sorted[target].order);
+    try {
+      await moveMut.mutateAsync({
+        quizId,
+        questionId: q2.id,
+        newOrder: targetOrder
+      });
+    } catch (err) {
+      ue.error("Could not reorder question");
+      console.error(err);
+    }
+  }
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    try {
+      await deleteMut.mutateAsync({
+        quizId,
+        questionId: pendingDelete.id
+      });
+      ue.success("Question deleted");
+    } catch (err) {
+      ue.error("Could not delete question");
+      console.error(err);
+    } finally {
+      setPendingDelete(null);
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "section",
+    {
+      className: "flex flex-col gap-4",
+      "data-ocid": "quiz_edit.questions.section",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex items-center justify-between gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "font-display text-base font-semibold", children: "Questions" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-muted-foreground", children: [
+              sorted.length,
+              " question",
+              sorted.length === 1 ? "" : "s"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            Button,
+            {
+              type: "button",
+              variant: "outline",
+              size: "sm",
+              onClick: openCreate,
+              disabled: createMut.isPending,
+              "data-ocid": "quiz_edit.add_question_button",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+                " Add question"
+              ]
+            }
+          )
+        ] }),
+        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "flex items-center justify-center rounded-md border border-border bg-card py-10",
+            "data-ocid": "quiz_edit.questions.loading_state",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-5 animate-spin text-muted-foreground" })
+          }
+        ) : sorted.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-muted/20 px-6 py-10 text-center",
+            "data-ocid": "quiz_edit.questions.empty_state",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-6 text-muted-foreground" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-foreground", children: "No questions yet" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Add questions with answer options and mark the correct answer(s)." })
+            ]
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "flex flex-col gap-3", children: sorted.map((q2, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "li",
+          {
+            className: "flex items-start gap-3 rounded-lg border border-border bg-card p-4",
+            "data-ocid": `quiz_edit.question.item.${index2 + 1}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary", children: index2 + 1 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "whitespace-pre-wrap text-sm font-medium text-foreground", children: q2.text }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-1 inline-flex items-center gap-1.5 rounded-md bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent", children: q2.type === "single" ? "Single answer" : "Multiple answers" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "mt-3 flex flex-col gap-1.5", children: q2.options.map((opt, oi) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "li",
+                  {
+                    className: "flex items-center gap-2 text-sm",
+                    "data-ocid": `quiz_edit.question.option.${index2 + 1}.${oi + 1}`,
+                    children: [
+                      opt.isCorrect ? /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "size-4 shrink-0 text-success" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "size-4 shrink-0 rounded-full border border-border" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          className: opt.isCorrect ? "text-foreground" : "text-muted-foreground",
+                          children: opt.text
+                        }
+                      )
+                    ]
+                  },
+                  String(opt.id)
+                )) })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 items-center gap-0.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    disabled: index2 === 0 || moveMut.isPending,
+                    onClick: () => move(index2, -1),
+                    "aria-label": "Move question up",
+                    "data-ocid": `quiz_edit.question.move_up.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUp, { className: "size-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    disabled: index2 === sorted.length - 1 || moveMut.isPending,
+                    onClick: () => move(index2, 1),
+                    "aria-label": "Move question down",
+                    "data-ocid": `quiz_edit.question.move_down.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowDown, { className: "size-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    onClick: () => openEdit(q2),
+                    "aria-label": "Edit question",
+                    "data-ocid": `quiz_edit.question.edit_button.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8 text-destructive hover:bg-destructive/10 hover:text-destructive",
+                    disabled: deleteMut.isPending,
+                    onClick: () => setPendingDelete(q2),
+                    "aria-label": "Delete question",
+                    "data-ocid": `quiz_edit.question.delete_button.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-4" })
+                  }
+                )
+              ] })
+            ]
+          },
+          String(q2.id)
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QuestionDialog,
+          {
+            open: dialogOpen,
+            onOpenChange: setDialogOpen,
+            quizId,
+            question: editing
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          AlertDialog,
+          {
+            open: !!pendingDelete,
+            onOpenChange: (o) => !o && setPendingDelete(null),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogContent, { "data-ocid": "quiz_edit.question.delete_dialog", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogTitle, { children: "Delete this question?" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: "The question and its answer options will be removed. Remaining questions will keep their relative order." })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogCancel, { "data-ocid": "quiz_edit.question.delete_cancel_button", children: "Cancel" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  AlertDialogAction,
+                  {
+                    onClick: confirmDelete,
+                    disabled: deleteMut.isPending,
+                    className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                    "data-ocid": "quiz_edit.question.delete_confirm_button",
+                    children: [
+                      deleteMut.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                      "Delete question"
+                    ]
+                  }
+                )
+              ] })
+            ] })
+          }
+        )
+      ]
+    }
+  );
+}
+function QuestionDialog({
+  open,
+  onOpenChange,
+  quizId,
+  question
+}) {
+  const isEdit = !!question;
+  const createMut = useCreateQuestion();
+  const updateMut = useUpdateQuestion();
+  const [text, setText] = reactExports.useState("");
+  const [type, setType] = reactExports.useState(QuestionType.single);
+  const [options, setOptions] = reactExports.useState([]);
+  const [touched, setTouched] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    if (!open) return;
+    setText((question == null ? void 0 : question.text) ?? "");
+    setType((question == null ? void 0 : question.type) ?? QuestionType.single);
+    setOptions(
+      question ? question.options.map((o) => ({
+        id: o.id,
+        text: o.text,
+        isCorrect: o.isCorrect
+      })) : [
+        { id: null, text: "", isCorrect: true },
+        { id: null, text: "", isCorrect: false }
+      ]
+    );
+    setTouched(false);
+  }, [open, question]);
+  const textError = touched && text.trim().length === 0;
+  const optionsError = touched && options.some((o) => o.text.trim().length === 0);
+  const correctError = touched && !options.some((o) => o.isCorrect);
+  const canSubmit = text.trim().length > 0 && options.length >= 2 && options.every((o) => o.text.trim().length > 0) && options.some((o) => o.isCorrect);
+  const pending = createMut.isPending || updateMut.isPending;
+  function addOption() {
+    setOptions((prev) => [...prev, { id: null, text: "", isCorrect: false }]);
+  }
+  function removeOption(index2) {
+    setOptions((prev) => {
+      if (prev.length <= 2) return prev;
+      const next = prev.filter((_2, i) => i !== index2);
+      if (type === QuestionType.single && !next.some((o) => o.isCorrect)) {
+        next[0] = { ...next[0], isCorrect: true };
+      }
+      return next;
+    });
+  }
+  function setOptionText(index2, value) {
+    setOptions(
+      (prev) => prev.map((o, i) => i === index2 ? { ...o, text: value } : o)
+    );
+  }
+  function setCorrectSingle(index2) {
+    setOptions(
+      (prev) => prev.map((o, i) => ({ ...o, isCorrect: i === index2 }))
+    );
+  }
+  function toggleCorrectMultiple(index2) {
+    setOptions(
+      (prev) => prev.map((o, i) => i === index2 ? { ...o, isCorrect: !o.isCorrect } : o)
+    );
+  }
+  function onTypeChange(next) {
+    setType(next);
+    if (next === QuestionType.single) {
+      setOptions((prev) => {
+        const firstCorrect = prev.findIndex((o) => o.isCorrect);
+        const target = firstCorrect === -1 ? 0 : firstCorrect;
+        return prev.map((o, i) => ({ ...o, isCorrect: i === target }));
+      });
+    }
+  }
+  async function onSubmit(e) {
+    e.preventDefault();
+    setTouched(true);
+    if (!canSubmit) return;
+    try {
+      if (isEdit && question) {
+        const edit = {
+          text: text.trim(),
+          questionType: type,
+          options: options.map((o) => ({
+            text: o.text.trim(),
+            correct: o.isCorrect
+          }))
+        };
+        await updateMut.mutateAsync({
+          quizId,
+          questionId: question.id,
+          edit
+        });
+        ue.success("Question updated");
+      } else {
+        const input = {
+          text: text.trim(),
+          questionType: type,
+          options: options.map((o) => ({
+            text: o.text.trim(),
+            correct: o.isCorrect
+          }))
+        };
+        await createMut.mutateAsync({ quizId, input });
+        ue.success("Question added");
+      }
+      onOpenChange(false);
+    } catch (err) {
+      ue.error(
+        isEdit ? "Could not update question" : "Could not add question"
+      );
+      console.error(err);
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    DialogContent,
+    {
+      className: "sm:max-w-lg",
+      "data-ocid": "quiz_edit.question.dialog",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit question" : "New question" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Enter the question text, choose single or multiple answers, then fill in the options and mark the correct one(s)." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Label$1,
+              {
+                htmlFor: "question-text",
+                "data-ocid": "quiz_edit.question.text.label",
+                children: "Question"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Textarea,
+              {
+                id: "question-text",
+                value: text,
+                rows: 3,
+                autoFocus: true,
+                placeholder: "e.g. What temperature should the milk be steamed to?",
+                "aria-invalid": textError,
+                onChange: (e) => setText(e.target.value),
+                onBlur: () => setTouched(true),
+                "data-ocid": "quiz_edit.question.text.input"
+              }
+            ),
+            textError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "text-xs text-destructive",
+                "data-ocid": "quiz_edit.question.text.field_error",
+                children: "Question text is required."
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "quiz_edit.question.type.label", children: "Answer type" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              RadioGroup,
+              {
+                value: type,
+                onValueChange: (v2) => onTypeChange(v2),
+                className: "grid grid-cols-2 gap-3",
+                "data-ocid": "quiz_edit.question.type.toggle",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "label",
+                    {
+                      htmlFor: "type-single",
+                      className: "flex cursor-pointer items-center gap-2.5 rounded-md border border-border bg-background px-3 py-2.5 text-sm transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5",
+                      "data-ocid": "quiz_edit.question.type.single",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(RadioGroupItem, { value: "single", id: "type-single" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium", children: "Single answer" })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "label",
+                    {
+                      htmlFor: "type-multiple",
+                      className: "flex cursor-pointer items-center gap-2.5 rounded-md border border-border bg-background px-3 py-2.5 text-sm transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5",
+                      "data-ocid": "quiz_edit.question.type.multiple",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(RadioGroupItem, { value: "multiple", id: "type-multiple" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium", children: "Multiple answers" })
+                      ]
+                    }
+                  )
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "quiz_edit.question.options.label", children: "Answer options" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                Button,
+                {
+                  type: "button",
+                  variant: "ghost",
+                  size: "sm",
+                  onClick: addOption,
+                  "data-ocid": "quiz_edit.question.add_option_button",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+                    " Add option"
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "flex flex-col gap-2", children: options.map((opt, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "li",
+              {
+                className: "flex items-center gap-2.5",
+                "data-ocid": `quiz_edit.question.option_input.${index2 + 1}`,
+                children: [
+                  type === "single" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    RadioGroup,
+                    {
+                      value: options.findIndex((o) => o.isCorrect) === index2 ? String(index2) : "",
+                      onValueChange: () => setCorrectSingle(index2),
+                      className: "grid",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        RadioGroupItem,
+                        {
+                          value: String(index2),
+                          id: `opt-${index2}`,
+                          "aria-label": `Mark option ${index2 + 1} as correct`,
+                          "data-ocid": `quiz_edit.question.correct_radio.${index2 + 1}`
+                        }
+                      )
+                    }
+                  ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Checkbox,
+                    {
+                      checked: opt.isCorrect,
+                      onCheckedChange: () => toggleCorrectMultiple(index2),
+                      "aria-label": `Mark option ${index2 + 1} as correct`,
+                      "data-ocid": `quiz_edit.question.correct_checkbox.${index2 + 1}`
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Input,
+                    {
+                      value: opt.text,
+                      placeholder: `Option ${index2 + 1}`,
+                      "aria-invalid": touched && opt.text.trim().length === 0,
+                      onChange: (e) => setOptionText(index2, e.target.value),
+                      "data-ocid": `quiz_edit.question.option_text.${index2 + 1}`
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Button,
+                    {
+                      type: "button",
+                      variant: "ghost",
+                      size: "icon",
+                      className: "size-8 shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive",
+                      disabled: options.length <= 2,
+                      onClick: () => removeOption(index2),
+                      "aria-label": "Remove option",
+                      "data-ocid": `quiz_edit.question.remove_option.${index2 + 1}`,
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-4" })
+                    }
+                  )
+                ]
+              },
+              opt.id ?? `opt-${index2}`
+            )) }),
+            optionsError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "text-xs text-destructive",
+                "data-ocid": "quiz_edit.question.options.field_error",
+                children: "Every option needs text."
+              }
+            ),
+            correctError && !optionsError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "p",
+              {
+                className: "text-xs text-destructive",
+                "data-ocid": "quiz_edit.question.correct.field_error",
+                children: "Mark at least one option as correct."
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: type === "single" ? "Select one radio to mark the single correct answer." : "Tick every checkbox that should be counted as correct." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button,
+              {
+                type: "button",
+                variant: "outline",
+                onClick: () => onOpenChange(false),
+                disabled: pending,
+                "data-ocid": "quiz_edit.question.cancel_button",
+                children: "Cancel"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Button,
+              {
+                type: "submit",
+                disabled: pending || !canSubmit,
+                "data-ocid": "quiz_edit.question.save_button",
+                children: [
+                  pending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                  isEdit ? "Save changes" : "Add question"
+                ]
+              }
+            )
+          ] })
+        ] })
+      ]
+    }
+  ) });
+}
+const MIN_PERCENT = 1;
+const MAX_PERCENT = 100;
+function QuizFormDialog({
+  open,
+  onOpenChange,
+  quiz
+}) {
+  var _a2;
+  const isEdit = !!quiz;
+  const createMut = useCreateQuiz();
+  const updateMut = useUpdateQuiz();
+  const { data: positions } = usePositions();
+  const sortedPositions = (positions ?? []).map(toPositionView).sort((a2, b2) => a2.sortOrder - b2.sortOrder);
+  const [positionId, setPositionId] = reactExports.useState(null);
+  const [title, setTitle] = reactExports.useState("");
+  const [description, setDescription] = reactExports.useState("");
+  const [percent2, setPercent] = reactExports.useState("80");
+  const [touched, setTouched] = reactExports.useState(false);
+  const defaultPositionId = ((_a2 = sortedPositions[0]) == null ? void 0 : _a2.id) ?? null;
+  reactExports.useEffect(() => {
+    if (!open) return;
+    setPositionId((quiz == null ? void 0 : quiz.positionId) ?? defaultPositionId);
+    setTitle((quiz == null ? void 0 : quiz.title) ?? "");
+    setDescription((quiz == null ? void 0 : quiz.description) ?? "");
+    setPercent(quiz ? String(Number(quiz.passingPercentage)) : "80");
+    setTouched(false);
+  }, [open, quiz, defaultPositionId]);
+  const positionError = touched && positionId === null;
+  const titleError = touched && title.trim().length === 0;
+  const parsedPercent = Number.parseInt(percent2, 10);
+  const percentError = touched && (Number.isNaN(parsedPercent) || parsedPercent < MIN_PERCENT || parsedPercent > MAX_PERCENT);
+  const canSubmit = positionId !== null && title.trim().length > 0 && !Number.isNaN(parsedPercent) && parsedPercent >= MIN_PERCENT && parsedPercent <= MAX_PERCENT;
+  const pending = createMut.isPending || updateMut.isPending;
+  async function onSubmit(e) {
+    e.preventDefault();
+    setTouched(true);
+    if (!canSubmit || positionId === null) return;
+    const trimmedDescription = description.trim().length > 0 ? description.trim() : null;
+    try {
+      if (isEdit && quiz) {
+        await updateMut.mutateAsync({
+          quizId: quiz.id,
+          edit: {
+            title: title.trim(),
+            description: trimmedDescription ?? void 0,
+            passingPercentage: BigInt(parsedPercent)
+          }
+        });
+        ue.success("Quiz updated");
+      } else {
+        await createMut.mutateAsync({
+          positionId,
+          input: {
+            title: title.trim(),
+            description: trimmedDescription ?? void 0,
+            passingPercentage: BigInt(parsedPercent)
+          }
+        });
+        ue.success("Quiz created");
+      }
+      onOpenChange(false);
+    } catch (err) {
+      ue.error(isEdit ? "Could not update quiz" : "Could not create quiz");
+      console.error(err);
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", "data-ocid": "quiz.dialog", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: isEdit ? "Edit quiz" : "New quiz" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: isEdit ? "Update the position, title, description, and passing percentage for this quiz." : "Create a quiz attached to a position. You can add questions next." })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit, className: "flex flex-col gap-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { "data-ocid": "quiz.position.label", children: "Position" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Select,
+          {
+            value: positionId !== null ? String(positionId) : void 0,
+            onValueChange: (v2) => setPositionId(BigInt(v2)),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SelectTrigger,
+                {
+                  "aria-invalid": positionError,
+                  "data-ocid": "quiz.position.select",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select a position" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectContent, { "data-ocid": "quiz.position.dropdown_menu", children: sortedPositions.map((p2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                SelectItem,
+                {
+                  value: String(p2.id),
+                  "data-ocid": `quiz.position.option.${i + 1}`,
+                  children: p2.name
+                },
+                String(p2.id)
+              )) })
+            ]
+          }
+        ),
+        positionError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "text-xs text-destructive",
+            "data-ocid": "quiz.position.field_error",
+            children: "Please choose a position."
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Label$1, { htmlFor: "quiz-title", "data-ocid": "quiz.title.label", children: "Title" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Input,
+          {
+            id: "quiz-title",
+            value: title,
+            placeholder: "e.g. Bartender Basics, Server Onboarding",
+            autoFocus: true,
+            "aria-invalid": titleError,
+            onChange: (e) => setTitle(e.target.value),
+            onBlur: () => setTouched(true),
+            "data-ocid": "quiz.title.input"
+          }
+        ),
+        titleError && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "p",
+          {
+            className: "text-xs text-destructive",
+            "data-ocid": "quiz.title.field_error",
+            children: "Title is required."
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Label$1,
+          {
+            htmlFor: "quiz-description",
+            "data-ocid": "quiz.description.label",
+            children: [
+              "Description",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-normal text-muted-foreground", children: "(optional)" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Textarea,
+          {
+            id: "quiz-description",
+            value: description,
+            placeholder: "A short summary of what this quiz covers.",
+            rows: 3,
+            onChange: (e) => setDescription(e.target.value),
+            "data-ocid": "quiz.description.input"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Label$1, { htmlFor: "quiz-percent", "data-ocid": "quiz.percent.label", children: [
+          "Passing percentage",
+          " ",
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-normal text-muted-foreground", children: [
+            "(",
+            MIN_PERCENT,
+            "–",
+            MAX_PERCENT,
+            ")"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Input,
+          {
+            id: "quiz-percent",
+            type: "number",
+            min: MIN_PERCENT,
+            max: MAX_PERCENT,
+            value: percent2,
+            "aria-invalid": percentError,
+            onChange: (e) => setPercent(e.target.value),
+            onBlur: () => setTouched(true),
+            "data-ocid": "quiz.percent.input"
+          }
+        ),
+        percentError && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "p",
+          {
+            className: "text-xs text-destructive",
+            "data-ocid": "quiz.percent.field_error",
+            children: [
+              "Enter a whole number between ",
+              MIN_PERCENT,
+              " and ",
+              MAX_PERCENT,
+              "."
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { className: "gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: () => onOpenChange(false),
+            disabled: pending,
+            "data-ocid": "quiz.cancel_button",
+            children: "Cancel"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          Button,
+          {
+            type: "submit",
+            disabled: pending || !canSubmit,
+            "data-ocid": "quiz.save_button",
+            children: [
+              pending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+              isEdit ? "Save changes" : "Create quiz"
+            ]
+          }
+        )
+      ] })
+    ] })
+  ] }) });
+}
+function QuizList({ quizzes, positionNames }) {
+  const deleteMut = useDeleteQuiz();
+  const sorted = [...quizzes].sort(
+    (a2, b2) => Number(a2.createdAt) - Number(b2.createdAt)
+  );
+  const [pendingDelete, setPendingDelete] = reactExports.useState(null);
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    try {
+      await deleteMut.mutateAsync({
+        quizId: BigInt(pendingDelete.id),
+        positionId: BigInt(pendingDelete.positionId)
+      });
+      ue.success("Quiz deleted");
+    } catch (err) {
+      ue.error("Could not delete quiz");
+      console.error(err);
+    } finally {
+      setPendingDelete(null);
+    }
+  }
+  if (sorted.length === 0) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/20 px-6 py-16 text-center",
+        "data-ocid": "quiz.empty_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-full bg-primary/10 p-3 text-primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ClipboardList, { className: "size-5" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-display text-lg font-semibold", children: "No quizzes yet" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-sm text-sm text-muted-foreground", children: "Create your first quiz to start testing your team on a position's menu knowledge." })
+        ]
+      }
+    );
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-hidden rounded-lg border border-border bg-card", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { "data-ocid": "quiz.table", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { className: "bg-muted/40", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-12 text-center", children: "#" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Title" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Position" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Questions" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Pass %" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-28 text-right", children: "Actions" })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sorted.map((quiz, index2) => {
+        const positionName = positionNames.get(BigInt(quiz.positionId)) ?? "—";
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          TableRow,
+          {
+            "data-ocid": `quiz.row.${index2 + 1}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "text-center text-muted-foreground", children: index2 + 1 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "font-medium text-foreground", children: quiz.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "text-muted-foreground", children: positionName }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                Badge,
+                {
+                  variant: "secondary",
+                  "data-ocid": `quiz.question_count.${index2 + 1}`,
+                  children: quiz.questionCount
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                TableCell,
+                {
+                  className: "text-right tabular-nums",
+                  "data-ocid": `quiz.pass_percent.${index2 + 1}`,
+                  children: [
+                    quiz.passingPercentage,
+                    "%"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    asChild: true,
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8",
+                    "aria-label": `Edit ${quiz.title}`,
+                    "data-ocid": `quiz.edit_button.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Link,
+                      {
+                        to: "/admin/quizzes/$quizId",
+                        params: { quizId: String(quiz.id) },
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "size-4" })
+                      }
+                    )
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8 text-destructive hover:bg-destructive/10 hover:text-destructive",
+                    disabled: deleteMut.isPending,
+                    onClick: () => setPendingDelete(quiz),
+                    "aria-label": `Delete ${quiz.title}`,
+                    "data-ocid": `quiz.delete_button.${index2 + 1}`,
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-4" })
+                  }
+                )
+              ] }) })
+            ]
+          },
+          String(quiz.id)
+        );
+      }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AlertDialog,
+      {
+        open: !!pendingDelete,
+        onOpenChange: (o) => !o && setPendingDelete(null),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogContent, { "data-ocid": "quiz.delete_dialog", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogTitle, { children: [
+              "Delete “",
+              pendingDelete == null ? void 0 : pendingDelete.title,
+              "”?"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogDescription, { children: pendingDelete && pendingDelete.questionCount > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              "This quiz currently has",
+              " ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: pendingDelete.questionCount }),
+              " question",
+              pendingDelete.questionCount === 1 ? "" : "s",
+              " and all stored attempts. Deleting it removes the quiz, its questions, and its attempt history permanently."
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: "This quiz has no questions yet. It will be removed immediately." }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertDialogFooter, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(AlertDialogCancel, { "data-ocid": "quiz.delete_cancel_button", children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              AlertDialogAction,
+              {
+                onClick: confirmDelete,
+                disabled: deleteMut.isPending,
+                className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                "data-ocid": "quiz.delete_confirm_button",
+                children: [
+                  deleteMut.isPending && /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-4 animate-spin" }),
+                  "Delete quiz"
+                ]
+              }
+            )
+          ] })
+        ] })
+      }
+    )
+  ] });
+}
+function AdminQuizzesPage() {
+  var _a2;
+  const { data: positions = [], isLoading: positionsLoading } = usePositions();
+  const [dialogOpen, setDialogOpen] = reactExports.useState(false);
+  const [editingId, setEditingId] = reactExports.useState(null);
+  const [slices, setSlices] = reactExports.useState({});
+  function openCreate() {
+    setEditingId(null);
+    setDialogOpen(true);
+  }
+  const isLoading = positionsLoading || positions.length > 0 && Object.keys(slices).length < positions.length || Object.values(slices).some((s) => s.isLoading);
+  const firstError = ((_a2 = Object.values(slices).find((s) => s.error)) == null ? void 0 : _a2.error) ?? null;
+  const quizData = reactExports.useMemo(() => {
+    const all = [];
+    for (const s of Object.values(slices)) all.push(...s.quizzes);
+    return all.sort((a2, b2) => Number(b2.createdAt - a2.createdAt));
+  }, [slices]);
+  const quizzes = reactExports.useMemo(() => quizData.map(toQuizView), [quizData]);
+  const positionNames = reactExports.useMemo(() => {
+    const map = /* @__PURE__ */ new Map();
+    for (const p2 of positions) {
+      map.set(BigInt(p2.id), p2.name);
+    }
+    return map;
+  }, [positions]);
+  const editing = editingId !== null ? quizData.find((q2) => q2.id === editingId) ?? null : null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-5xl flex-col gap-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hidden", children: positions.map((p2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PositionQuizzes,
+      {
+        positionId: p2.id,
+        onResult: (r2) => setSlices((prev) => ({
+          ...prev,
+          [String(p2.id)]: r2
+        }))
+      },
+      String(p2.id)
+    )) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex flex-wrap items-end justify-between gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "font-display text-2xl font-semibold tracking-tight", children: "Quizzes" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Create and manage quizzes attached to positions. Edit a quiz to add questions and mark correct answers." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: openCreate, "data-ocid": "quiz.create_button", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-4" }),
+        " New quiz"
+      ] })
+    ] }),
+    isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "flex items-center justify-center rounded-lg border border-border bg-card py-20",
+        "data-ocid": "quiz.loading_state",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "size-6 animate-spin text-muted-foreground" })
+      }
+    ) : firstError ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "flex flex-col items-center justify-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 py-16 text-center",
+        "data-ocid": "quiz.error_state",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-destructive", children: "Could not load quizzes" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-md text-sm text-muted-foreground", children: firstError instanceof Error ? firstError.message : "Please try again later." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              variant: "outline",
+              size: "sm",
+              onClick: () => window.location.reload(),
+              "data-ocid": "quiz.retry_button",
+              children: "Retry"
+            }
+          )
+        ]
+      }
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsx(QuizList, { quizzes, positionNames }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      QuizFormDialog,
+      {
+        open: dialogOpen,
+        onOpenChange: setDialogOpen,
+        quiz: editing
+      }
+    )
+  ] });
+}
+function PositionQuizzes({
+  positionId,
+  onResult
+}) {
+  const { data, isLoading, error } = useQuizzesByPosition(positionId);
+  reactExports.useEffect(() => {
+    onResult({ quizzes: data ?? [], isLoading, error });
+  }, [data, isLoading, error, onResult]);
+  return null;
+}
 const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 function normalizeHex(raw) {
   const trimmed = raw.trim();
@@ -62434,6 +66463,26 @@ const positionRoute = createRoute({
   path: "/position/$id",
   component: PositionPage
 });
+const positionQuizzesRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes",
+  component: PositionQuizzesPage
+});
+const quizTakeRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes/$quizId/take",
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(QuizTakePage, {}) })
+});
+const quizResultsRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes/$quizId/results",
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(QuizResultsPage, {}) })
+});
+const quizHistoryRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes/$quizId/history",
+  component: () => /* @__PURE__ */ jsxRuntimeExports.jsx(ProtectedRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(QuizHistoryPage, {}) })
+});
 const adminLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "admin-layout",
@@ -62474,6 +66523,16 @@ const adminThemeRoute = createRoute({
   path: "/admin/theme",
   component: AdminThemePage
 });
+const adminQuizzesRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/quizzes",
+  component: AdminQuizzesPage
+});
+const adminQuizEditRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/quizzes/$quizId",
+  component: AdminQuizEditPage
+});
 const routeTree = rootRoute.addChildren([
   storefrontLayoutRoute.addChildren([
     homeRoute,
@@ -62481,7 +66540,11 @@ const routeTree = rootRoute.addChildren([
     subCategoryRoute,
     itemRoute,
     trainingRoute,
-    positionRoute
+    positionRoute,
+    positionQuizzesRoute,
+    quizTakeRoute,
+    quizResultsRoute,
+    quizHistoryRoute
   ]),
   adminLayoutRoute.addChildren([
     adminDashboardRoute,
@@ -62490,7 +66553,9 @@ const routeTree = rootRoute.addChildren([
     adminItemsRoute,
     adminItemEditRoute,
     adminUsersRoute,
-    adminThemeRoute
+    adminThemeRoute,
+    adminQuizzesRoute,
+    adminQuizEditRoute
   ])
 ]);
 const router = createRouter({ routeTree });

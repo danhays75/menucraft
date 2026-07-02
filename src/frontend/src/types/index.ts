@@ -4,6 +4,11 @@
 
 import { UserRole } from "@/backend";
 import type {
+  AnswerOption,
+  AttemptAnswer,
+  AttemptId,
+  AttemptInput,
+  AttemptPublic,
   CategoryId,
   CategoryPublic,
   ExternalBlob,
@@ -12,6 +17,15 @@ import type {
   MenuItemPublic,
   PositionId,
   PositionPublic,
+  QuestionEdit,
+  QuestionId,
+  QuestionInput,
+  QuestionPublic,
+  QuestionType,
+  QuizEdit,
+  QuizId,
+  QuizInput,
+  QuizPublic,
   SubCategoryId,
   SubCategoryPublic,
   ThemePublic,
@@ -25,6 +39,11 @@ import { blobUrl } from "@/lib/blob";
 
 export { UserRole };
 export type {
+  AnswerOption,
+  AttemptAnswer,
+  AttemptId,
+  AttemptInput,
+  AttemptPublic,
   CategoryId,
   CategoryPublic,
   ExternalBlob,
@@ -33,6 +52,15 @@ export type {
   MenuItemPublic,
   PositionId,
   PositionPublic,
+  QuestionEdit,
+  QuestionId,
+  QuestionInput,
+  QuestionPublic,
+  QuestionType,
+  QuizEdit,
+  QuizId,
+  QuizInput,
+  QuizPublic,
   SubCategoryId,
   SubCategoryPublic,
   ThemePublic,
@@ -42,6 +70,13 @@ export type {
   TrainingStepPublic,
   UserProfilePublic,
 };
+
+/**
+ * Legacy alias kept so existing imports (`AttemptAnswerPublic`) keep working.
+ * The real bindgen type is `AttemptAnswer`; this is the same type under the
+ * old name. Prefer `AttemptAnswer` in new code.
+ */
+export type AttemptAnswerPublic = AttemptAnswer;
 
 /** A category card enriched with a usable cover-photo URL for display. */
 export interface CategoryView {
@@ -148,6 +183,118 @@ export function toSubCategoryView(s: SubCategoryPublic): SubCategoryView {
     sortOrder: Number(s.sortOrder),
     itemCount: Number(s.itemCount),
     coverUrl: blobUrl(s.coverPhoto),
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Quizzes (frontend display models)                                   */
+/* ------------------------------------------------------------------ */
+//
+// The quiz feature is backed by the real canister methods (see backend.d.ts):
+// listQuizzesByPosition, getQuizWithQuestions, submitQuizAttempt,
+// listMyQuizAttempts, createQuiz, updateQuiz, deleteQuiz, createQuestion,
+// updateQuestion, deleteQuestion, moveQuestion. The display models below are
+// stable frontend shapes; the to*View converters map from the real bindgen
+// types (QuizPublic, QuestionPublic, AnswerOption, AttemptPublic) into them.
+
+/** A quiz attached to a position, with admin-set passing percentage. */
+export interface QuizView {
+  id: bigint;
+  positionId: bigint;
+  title: string;
+  description: string | null;
+  passingPercentage: number;
+  questionCount: number;
+  createdAt: bigint;
+  updatedAt: bigint;
+}
+
+/** A question within a quiz, with ordered answer options and marked correct answers. */
+export interface QuestionView {
+  id: bigint;
+  quizId: bigint;
+  order: number;
+  text: string;
+  type: QuestionType;
+  options: QuestionOptionView[];
+}
+
+/** An answer option for a question. */
+export interface QuestionOptionView {
+  id: bigint;
+  questionId: bigint;
+  order: number;
+  text: string;
+  isCorrect: boolean;
+}
+
+/** A trainee's attempt at a quiz — append-only, never overwritten. */
+export interface AttemptView {
+  id: bigint;
+  quizId: bigint;
+  score: number;
+  total: number;
+  percentage: number;
+  passed: boolean;
+  answers: AttemptAnswerView[];
+  submittedAt: bigint;
+}
+
+/** A single answer within an attempt — the option ids the trainee selected. */
+export interface AttemptAnswerView {
+  questionId: bigint;
+  selectedOptionIds: bigint[];
+}
+
+/** Convert a backend QuizPublic into a display-ready QuizView. */
+export function toQuizView(q: QuizPublic): QuizView {
+  return {
+    id: q.id,
+    positionId: q.positionId,
+    title: q.title,
+    description: q.description ?? null,
+    passingPercentage: Number(q.passingPercentage),
+    questionCount: Number(q.questionCount),
+    createdAt: q.createdAt,
+    updatedAt: q.updatedAt,
+  };
+}
+
+/** Convert a backend QuestionPublic into a display-ready QuestionView. */
+export function toQuestionView(q: QuestionPublic): QuestionView {
+  return {
+    id: q.id,
+    quizId: q.quizId,
+    order: Number(q.order),
+    text: q.text,
+    type: q.questionType,
+    options: q.options.map((o, i) => ({
+      id: o.id,
+      questionId: q.id,
+      order: i,
+      text: o.text,
+      isCorrect: o.correct,
+    })),
+  };
+}
+
+/** Convert a backend AttemptPublic into a display-ready AttemptView. */
+export function toAttemptView(a: AttemptPublic): AttemptView {
+  const score = Number(a.score);
+  const total = Number(a.maxScore);
+  const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+  return {
+    id: a.id,
+    quizId: a.quizId,
+    score,
+    total,
+    percentage,
+    passed: a.passed,
+    answers: a.answers.map((ans) => ({
+      questionId: ans.questionId,
+      selectedOptionIds: ans.selectedOptionIds,
+    })),
+    submittedAt: a.createdAt,
   };
 }
 

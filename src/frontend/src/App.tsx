@@ -7,6 +7,10 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useThemeSettings } from "@/hooks/useThemeSettings";
 import { CategoryPage } from "@/pages/CategoryPage";
 import { PositionPage } from "@/pages/PositionPage";
+import { PositionQuizzesPage } from "@/pages/PositionQuizzesPage";
+import { QuizHistoryPage } from "@/pages/QuizHistoryPage";
+import { QuizResultsPage } from "@/pages/QuizResultsPage";
+import { QuizTakePage } from "@/pages/QuizTakePage";
 import { RecipeCardPage } from "@/pages/RecipeCardPage";
 import { StorefrontHomePage } from "@/pages/StorefrontHomePage";
 import { SubCategoryPage } from "@/pages/SubCategoryPage";
@@ -15,6 +19,8 @@ import { AdminCategoriesPage } from "@/pages/admin/AdminCategoriesPage";
 import { AdminItemEditPage } from "@/pages/admin/AdminItemEditPage";
 import { AdminItemsPage } from "@/pages/admin/AdminItemsPage";
 import { AdminPositionsPage } from "@/pages/admin/AdminPositionsPage";
+import { AdminQuizEditPage } from "@/pages/admin/AdminQuizEditPage";
+import { AdminQuizzesPage } from "@/pages/admin/AdminQuizzesPage";
 import { AdminThemePage } from "@/pages/admin/AdminThemePage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import {
@@ -87,6 +93,42 @@ const positionRoute = createRoute({
   component: PositionPage,
 });
 
+const positionQuizzesRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes",
+  component: PositionQuizzesPage,
+});
+
+const quizTakeRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes/$quizId/take",
+  component: () => (
+    <ProtectedRoute>
+      <QuizTakePage />
+    </ProtectedRoute>
+  ),
+});
+
+const quizResultsRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes/$quizId/results",
+  component: () => (
+    <ProtectedRoute>
+      <QuizResultsPage />
+    </ProtectedRoute>
+  ),
+});
+
+const quizHistoryRoute = createRoute({
+  getParentRoute: () => storefrontLayoutRoute,
+  path: "/position/$id/quizzes/$quizId/history",
+  component: () => (
+    <ProtectedRoute>
+      <QuizHistoryPage />
+    </ProtectedRoute>
+  ),
+});
+
 const adminLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "admin-layout",
@@ -139,6 +181,18 @@ const adminThemeRoute = createRoute({
   component: AdminThemePage,
 });
 
+const adminQuizzesRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/quizzes",
+  component: AdminQuizzesPage,
+});
+
+const adminQuizEditRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/quizzes/$quizId",
+  component: AdminQuizEditPage,
+});
+
 const routeTree = rootRoute.addChildren([
   storefrontLayoutRoute.addChildren([
     homeRoute,
@@ -147,6 +201,10 @@ const routeTree = rootRoute.addChildren([
     itemRoute,
     trainingRoute,
     positionRoute,
+    positionQuizzesRoute,
+    quizTakeRoute,
+    quizResultsRoute,
+    quizHistoryRoute,
   ]),
   adminLayoutRoute.addChildren([
     adminDashboardRoute,
@@ -156,6 +214,8 @@ const routeTree = rootRoute.addChildren([
     adminItemEditRoute,
     adminUsersRoute,
     adminThemeRoute,
+    adminQuizzesRoute,
+    adminQuizEditRoute,
   ]),
 ]);
 

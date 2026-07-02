@@ -11,6 +11,7 @@ import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Briefcase,
   ChefHat,
+  ClipboardList,
   LayoutDashboard,
   ListOrdered,
   Package,
@@ -33,6 +34,13 @@ const NAV = [
     to: "/admin/positions",
     icon: Briefcase,
     ocid: "admin.nav.positions",
+    end: false,
+  },
+  {
+    label: "Quizzes",
+    to: "/admin/quizzes",
+    icon: ClipboardList,
+    ocid: "admin.nav.quizzes",
     end: false,
   },
   {

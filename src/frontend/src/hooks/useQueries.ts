@@ -20,6 +20,17 @@ import type {
   UserProfilePublic,
   UserRole,
 } from "@/backend";
+import type {
+  AttemptAnswerPublic,
+  AttemptInput,
+  AttemptPublic,
+  QuestionEdit,
+  QuestionInput,
+  QuestionPublic,
+  QuizEdit,
+  QuizInput,
+  QuizPublic,
+} from "@/types";
 import { useActor } from "@caffeineai/core-infrastructure";
 import type { Principal } from "@icp-sdk/core/principal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -705,6 +716,229 @@ export function useMoveTrainingStep() {
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["training", String(vars.itemId)] });
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Quizzes                                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Quizzes scoped to a single position (storefront + admin per-position view).
+ * Backed by the real `listQuizzesByPosition` canister method.
+ */
+export function useQuizzesByPosition(positionId: PositionId | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<QuizPublic[]>({
+    queryKey: ["quizzes", "position", String(positionId)],
+    queryFn: async () => {
+      if (!actor || positionId === undefined) return [];
+      return actor.listQuizzesByPosition(positionId);
+    },
+    enabled: !!actor && !isFetching && positionId !== undefined,
+  });
+}
+
+/**
+ * A single quiz by id. The backend exposes quiz + questions together via
+ * `getQuizWithQuestions`; this hook returns just the quiz half (or null when
+ * the quiz doesn't exist). The questions half is available via `useQuestions`.
+ */
+export function useQuiz(quizId: bigint | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<QuizPublic | null>({
+    queryKey: ["quiz", String(quizId)],
+    queryFn: async () => {
+      if (!actor || quizId === undefined) return null;
+      const data = await actor.getQuizWithQuestions(quizId);
+      return data?.quiz ?? null;
+    },
+    enabled: !!actor && !isFetching && quizId !== undefined,
+  });
+}
+
+export function useCreateQuiz() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      positionId: PositionId;
+      input: QuizInput;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createQuiz(vars.positionId, vars.input);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({
+        queryKey: ["quizzes", "position", String(vars.positionId)],
+      });
+    },
+  });
+}
+
+export function useUpdateQuiz() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { quizId: bigint; edit: QuizEdit }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateQuiz(vars.quizId, vars.edit);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+    },
+  });
+}
+
+export function useDeleteQuiz() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { quizId: bigint; positionId: PositionId }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.deleteQuiz(vars.quizId);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({
+        queryKey: ["quizzes", "position", String(vars.positionId)],
+      });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Quiz questions                                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Ordered questions for a quiz. The backend exposes quiz + questions together
+ * via `getQuizWithQuestions`; this hook returns just the questions half.
+ */
+export function useQuestions(quizId: bigint | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<QuestionPublic[]>({
+    queryKey: ["questions", String(quizId)],
+    queryFn: async () => {
+      if (!actor || quizId === undefined) return [];
+      const data = await actor.getQuizWithQuestions(quizId);
+      return data?.questions ?? [];
+    },
+    enabled: !!actor && !isFetching && quizId !== undefined,
+  });
+}
+
+export function useCreateQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { quizId: bigint; input: QuestionInput }) => {
+      if (!actor) throw new Error("actor not ready");
+      return actor.createQuestion(vars.quizId, vars.input);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+    },
+  });
+}
+
+export function useUpdateQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      quizId: bigint;
+      questionId: bigint;
+      edit: QuestionEdit;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.updateQuestion(vars.questionId, vars.edit);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+    },
+  });
+}
+
+export function useDeleteQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { quizId: bigint; questionId: bigint }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.deleteQuestion(vars.questionId);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+      qc.invalidateQueries({ queryKey: ["quizzes"] });
+      qc.invalidateQueries({ queryKey: ["quiz", String(vars.quizId)] });
+    },
+  });
+}
+
+export function useMoveQuestion() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      quizId: bigint;
+      questionId: bigint;
+      newOrder: bigint;
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      await actor.moveQuestion(vars.questionId, vars.newOrder);
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["questions", String(vars.quizId)] });
+    },
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Quiz attempts                                                       */
+/* ------------------------------------------------------------------ */
+
+/** The signed-in user's attempts for a quiz (trainee history). */
+export function useMyAttempts(quizId: bigint | undefined) {
+  const { actor, isFetching } = useActor(createActor);
+  return useQuery<AttemptPublic[]>({
+    queryKey: ["attempts", "mine", String(quizId)],
+    queryFn: async () => {
+      if (!actor || quizId === undefined) return [];
+      return actor.listMyQuizAttempts(quizId);
+    },
+    enabled: !!actor && !isFetching && quizId !== undefined,
+  });
+}
+
+export function useSubmitAttempt() {
+  const { actor } = useActor(createActor);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      quizId: bigint;
+      answers: AttemptAnswerPublic[];
+    }) => {
+      if (!actor) throw new Error("actor not ready");
+      const input: AttemptInput = {
+        quizId: vars.quizId,
+        answers: vars.answers,
+      };
+      return actor.submitQuizAttempt(input);
+    },
+    onSuccess: (_data, vars) => {
+      // Attempts are append-only — refresh the trainee history list so the
+      // new attempt shows up immediately.
+      qc.invalidateQueries({
+        queryKey: ["attempts", "mine", String(vars.quizId)],
+      });
     },
   });
 }

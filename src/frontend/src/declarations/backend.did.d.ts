@@ -10,6 +10,30 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface AnswerOption {
+  'id' : bigint,
+  'text' : string,
+  'correct' : boolean,
+}
+export interface AnswerOptionInput { 'text' : string, 'correct' : boolean }
+export interface AttemptAnswer {
+  'questionId' : QuestionId,
+  'selectedOptionIds' : Array<bigint>,
+}
+export type AttemptId = bigint;
+export interface AttemptInput {
+  'answers' : Array<AttemptAnswer>,
+  'quizId' : QuizId,
+}
+export interface AttemptPublic {
+  'id' : AttemptId,
+  'maxScore' : bigint,
+  'answers' : Array<AttemptAnswer>,
+  'createdAt' : Timestamp,
+  'score' : bigint,
+  'quizId' : QuizId,
+  'passed' : boolean,
+}
 export type CategoryId = bigint;
 export interface CategoryPublic {
   'id' : CategoryId,
@@ -62,6 +86,48 @@ export interface PositionPublic {
   'categoryCount' : bigint,
 }
 export type Principal = Principal;
+export interface QuestionEdit {
+  'text' : string,
+  'questionType' : QuestionType,
+  'options' : Array<AnswerOptionInput>,
+}
+export type QuestionId = bigint;
+export interface QuestionInput {
+  'text' : string,
+  'questionType' : QuestionType,
+  'options' : Array<AnswerOptionInput>,
+}
+export interface QuestionPublic {
+  'id' : QuestionId,
+  'order' : bigint,
+  'text' : string,
+  'questionType' : QuestionType,
+  'quizId' : QuizId,
+  'options' : Array<AnswerOption>,
+}
+export type QuestionType = { 'multiple' : null } |
+  { 'single' : null };
+export interface QuizEdit {
+  'title' : string,
+  'description' : [] | [string],
+  'passingPercentage' : bigint,
+}
+export type QuizId = bigint;
+export interface QuizInput {
+  'title' : string,
+  'description' : [] | [string],
+  'passingPercentage' : bigint,
+}
+export interface QuizPublic {
+  'id' : QuizId,
+  'title' : string,
+  'createdAt' : Timestamp,
+  'description' : [] | [string],
+  'positionId' : PositionId,
+  'updatedAt' : Timestamp,
+  'passingPercentage' : bigint,
+  'questionCount' : bigint,
+}
 export type Result = { 'ok' : null } |
   { 'err' : Error };
 export type SubCategoryId = bigint;
@@ -124,6 +190,10 @@ export interface _SERVICE {
   '__categories' : ActorMethod<[], any>,
   '__items' : ActorMethod<[], any>,
   '__positions' : ActorMethod<[], any>,
+  '__quizAttempts' : ActorMethod<[], any>,
+  '__quizQuestions' : ActorMethod<[], any>,
+  '__quizState' : ActorMethod<[], any>,
+  '__quizzes' : ActorMethod<[], any>,
   '__state' : ActorMethod<[], any>,
   '__steps' : ActorMethod<[], any>,
   '__subCategories' : ActorMethod<[], any>,
@@ -165,6 +235,8 @@ export interface _SERVICE {
     [string, [] | [string], [] | [ExternalBlob]],
     PositionId
   >,
+  'createQuestion' : ActorMethod<[QuizId, QuestionInput], QuestionPublic>,
+  'createQuiz' : ActorMethod<[PositionId, QuizInput], QuizId>,
   'createSubCategory' : ActorMethod<
     [CategoryId, string, ExternalBlob],
     SubCategoryPublic
@@ -176,6 +248,8 @@ export interface _SERVICE {
   'deleteCategory' : ActorMethod<[CategoryId], bigint>,
   'deleteMenuItem' : ActorMethod<[ItemId], undefined>,
   'deletePosition' : ActorMethod<[PositionId], bigint>,
+  'deleteQuestion' : ActorMethod<[QuestionId], boolean>,
+  'deleteQuiz' : ActorMethod<[QuizId], boolean>,
   'deleteSubCategory' : ActorMethod<[SubCategoryId], { 'itemCount' : bigint }>,
   'deleteTrainingStep' : ActorMethod<[bigint], boolean>,
   'editTrainingStep' : ActorMethod<
@@ -186,6 +260,10 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getMenuItem' : ActorMethod<[ItemId], [] | [MenuItemPublic]>,
   'getPosition' : ActorMethod<[PositionId], [] | [PositionPublic]>,
+  'getQuizWithQuestions' : ActorMethod<
+    [QuizId],
+    [] | [{ 'quiz' : QuizPublic, 'questions' : Array<QuestionPublic> }]
+  >,
   'getTheme' : ActorMethod<[], ThemePublic>,
   'getTrainingStep' : ActorMethod<[bigint], [] | [TrainingStepPublic]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
@@ -195,10 +273,13 @@ export interface _SERVICE {
     [SubCategoryId],
     Array<MenuItemPublic>
   >,
+  'listMyQuizAttempts' : ActorMethod<[QuizId], Array<AttemptPublic>>,
   'listPositions' : ActorMethod<[], Array<PositionPublic>>,
+  'listQuizzesByPosition' : ActorMethod<[PositionId], Array<QuizPublic>>,
   'listSubCategories' : ActorMethod<[CategoryId], Array<SubCategoryPublic>>,
   'listTrainingSteps' : ActorMethod<[ItemId], Array<TrainingStepPublic>>,
   'listUsers' : ActorMethod<[], Array<UserProfilePublic>>,
+  'moveQuestion' : ActorMethod<[QuestionId, bigint], boolean>,
   'moveTrainingStep' : ActorMethod<[bigint, bigint], boolean>,
   'resetTheme' : ActorMethod<[], ThemePublic>,
   'revokeRole' : ActorMethod<[Principal], UserProfilePublic>,
@@ -211,6 +292,7 @@ export interface _SERVICE {
   'setCategorySortOrder' : ActorMethod<[CategoryId, bigint], undefined>,
   'setPositionSortOrder' : ActorMethod<[PositionId, bigint], undefined>,
   'setSubCategorySortOrder' : ActorMethod<[SubCategoryId, bigint], undefined>,
+  'submitQuizAttempt' : ActorMethod<[AttemptInput], AttemptPublic>,
   'updateCategory' : ActorMethod<
     [CategoryId, PositionId, string, ExternalBlob],
     undefined
@@ -228,6 +310,8 @@ export interface _SERVICE {
     [PositionId, string, [] | [string], [] | [ExternalBlob]],
     undefined
   >,
+  'updateQuestion' : ActorMethod<[QuestionId, QuestionEdit], QuestionPublic>,
+  'updateQuiz' : ActorMethod<[QuizId, QuizEdit], undefined>,
   'updateSubCategory' : ActorMethod<
     [SubCategoryId, string, ExternalBlob],
     SubCategoryPublic

@@ -59,6 +59,39 @@ export const ExternalBlob = IDL.Vec(IDL.Nat8);
 export const CategoryId = IDL.Nat;
 export const SubCategoryId = IDL.Nat;
 export const ItemId = IDL.Nat;
+export const QuizId = IDL.Nat;
+export const QuestionType = IDL.Variant({
+  'multiple' : IDL.Null,
+  'single' : IDL.Null,
+});
+export const AnswerOptionInput = IDL.Record({
+  'text' : IDL.Text,
+  'correct' : IDL.Bool,
+});
+export const QuestionInput = IDL.Record({
+  'text' : IDL.Text,
+  'questionType' : QuestionType,
+  'options' : IDL.Vec(AnswerOptionInput),
+});
+export const QuestionId = IDL.Nat;
+export const AnswerOption = IDL.Record({
+  'id' : IDL.Nat,
+  'text' : IDL.Text,
+  'correct' : IDL.Bool,
+});
+export const QuestionPublic = IDL.Record({
+  'id' : QuestionId,
+  'order' : IDL.Nat,
+  'text' : IDL.Text,
+  'questionType' : QuestionType,
+  'quizId' : QuizId,
+  'options' : IDL.Vec(AnswerOption),
+});
+export const QuizInput = IDL.Record({
+  'title' : IDL.Text,
+  'description' : IDL.Opt(IDL.Text),
+  'passingPercentage' : IDL.Nat,
+});
 export const SubCategoryPublic = IDL.Record({
   'id' : SubCategoryId,
   'sortOrder' : IDL.Nat,
@@ -105,6 +138,16 @@ export const PositionPublic = IDL.Record({
   'updatedAt' : Timestamp,
   'categoryCount' : IDL.Nat,
 });
+export const QuizPublic = IDL.Record({
+  'id' : QuizId,
+  'title' : IDL.Text,
+  'createdAt' : Timestamp,
+  'description' : IDL.Opt(IDL.Text),
+  'positionId' : PositionId,
+  'updatedAt' : Timestamp,
+  'passingPercentage' : IDL.Nat,
+  'questionCount' : IDL.Nat,
+});
 export const FontChoice = IDL.Variant({
   'sansSerif' : IDL.Null,
   'monospace' : IDL.Null,
@@ -126,12 +169,44 @@ export const CategoryPublic = IDL.Record({
   'positionId' : PositionId,
   'coverPhoto' : ExternalBlob,
 });
+export const AttemptId = IDL.Nat;
+export const AttemptAnswer = IDL.Record({
+  'questionId' : QuestionId,
+  'selectedOptionIds' : IDL.Vec(IDL.Nat),
+});
+export const AttemptPublic = IDL.Record({
+  'id' : AttemptId,
+  'maxScore' : IDL.Nat,
+  'answers' : IDL.Vec(AttemptAnswer),
+  'createdAt' : Timestamp,
+  'score' : IDL.Nat,
+  'quizId' : QuizId,
+  'passed' : IDL.Bool,
+});
+export const AttemptInput = IDL.Record({
+  'answers' : IDL.Vec(AttemptAnswer),
+  'quizId' : QuizId,
+});
+export const QuestionEdit = IDL.Record({
+  'text' : IDL.Text,
+  'questionType' : QuestionType,
+  'options' : IDL.Vec(AnswerOptionInput),
+});
+export const QuizEdit = IDL.Record({
+  'title' : IDL.Text,
+  'description' : IDL.Opt(IDL.Text),
+  'passingPercentage' : IDL.Nat,
+});
 
 export const idlService = IDL.Service({
   '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
   '__categories' : IDL.Func([], [IDL.Reserved], ['query']),
   '__items' : IDL.Func([], [IDL.Reserved], ['query']),
   '__positions' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__quizAttempts' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__quizQuestions' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__quizState' : IDL.Func([], [IDL.Reserved], ['query']),
+  '__quizzes' : IDL.Func([], [IDL.Reserved], ['query']),
   '__state' : IDL.Func([], [IDL.Reserved], ['query']),
   '__steps' : IDL.Func([], [IDL.Reserved], ['query']),
   '__subCategories' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -184,6 +259,8 @@ export const idlService = IDL.Service({
       [PositionId],
       [],
     ),
+  'createQuestion' : IDL.Func([QuizId, QuestionInput], [QuestionPublic], []),
+  'createQuiz' : IDL.Func([PositionId, QuizInput], [QuizId], []),
   'createSubCategory' : IDL.Func(
       [CategoryId, IDL.Text, ExternalBlob],
       [SubCategoryPublic],
@@ -197,6 +274,8 @@ export const idlService = IDL.Service({
   'deleteCategory' : IDL.Func([CategoryId], [IDL.Nat], []),
   'deleteMenuItem' : IDL.Func([ItemId], [], []),
   'deletePosition' : IDL.Func([PositionId], [IDL.Nat], []),
+  'deleteQuestion' : IDL.Func([QuestionId], [IDL.Bool], []),
+  'deleteQuiz' : IDL.Func([QuizId], [IDL.Bool], []),
   'deleteSubCategory' : IDL.Func(
       [SubCategoryId],
       [IDL.Record({ 'itemCount' : IDL.Nat })],
@@ -216,6 +295,18 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getMenuItem' : IDL.Func([ItemId], [IDL.Opt(MenuItemPublic)], ['query']),
   'getPosition' : IDL.Func([PositionId], [IDL.Opt(PositionPublic)], ['query']),
+  'getQuizWithQuestions' : IDL.Func(
+      [QuizId],
+      [
+        IDL.Opt(
+          IDL.Record({
+            'quiz' : QuizPublic,
+            'questions' : IDL.Vec(QuestionPublic),
+          })
+        ),
+      ],
+      ['query'],
+    ),
   'getTheme' : IDL.Func([], [ThemePublic], ['query']),
   'getTrainingStep' : IDL.Func(
       [IDL.Nat],
@@ -234,7 +325,17 @@ export const idlService = IDL.Service({
       [IDL.Vec(MenuItemPublic)],
       ['query'],
     ),
+  'listMyQuizAttempts' : IDL.Func(
+      [QuizId],
+      [IDL.Vec(AttemptPublic)],
+      ['query'],
+    ),
   'listPositions' : IDL.Func([], [IDL.Vec(PositionPublic)], ['query']),
+  'listQuizzesByPosition' : IDL.Func(
+      [PositionId],
+      [IDL.Vec(QuizPublic)],
+      ['query'],
+    ),
   'listSubCategories' : IDL.Func(
       [CategoryId],
       [IDL.Vec(SubCategoryPublic)],
@@ -246,6 +347,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'listUsers' : IDL.Func([], [IDL.Vec(UserProfilePublic)], ['query']),
+  'moveQuestion' : IDL.Func([QuestionId, IDL.Nat], [IDL.Bool], []),
   'moveTrainingStep' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Bool], []),
   'resetTheme' : IDL.Func([], [ThemePublic], []),
   'revokeRole' : IDL.Func([Principal], [UserProfilePublic], []),
@@ -259,6 +361,7 @@ export const idlService = IDL.Service({
   'setCategorySortOrder' : IDL.Func([CategoryId, IDL.Nat], [], []),
   'setPositionSortOrder' : IDL.Func([PositionId, IDL.Nat], [], []),
   'setSubCategorySortOrder' : IDL.Func([SubCategoryId, IDL.Nat], [], []),
+  'submitQuizAttempt' : IDL.Func([AttemptInput], [AttemptPublic], []),
   'updateCategory' : IDL.Func(
       [CategoryId, PositionId, IDL.Text, ExternalBlob],
       [],
@@ -287,6 +390,8 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'updateQuestion' : IDL.Func([QuestionId, QuestionEdit], [QuestionPublic], []),
+  'updateQuiz' : IDL.Func([QuizId, QuizEdit], [], []),
   'updateSubCategory' : IDL.Func(
       [SubCategoryId, IDL.Text, ExternalBlob],
       [SubCategoryPublic],
@@ -353,6 +458,39 @@ export const idlFactory = ({ IDL }) => {
   const CategoryId = IDL.Nat;
   const SubCategoryId = IDL.Nat;
   const ItemId = IDL.Nat;
+  const QuizId = IDL.Nat;
+  const QuestionType = IDL.Variant({
+    'multiple' : IDL.Null,
+    'single' : IDL.Null,
+  });
+  const AnswerOptionInput = IDL.Record({
+    'text' : IDL.Text,
+    'correct' : IDL.Bool,
+  });
+  const QuestionInput = IDL.Record({
+    'text' : IDL.Text,
+    'questionType' : QuestionType,
+    'options' : IDL.Vec(AnswerOptionInput),
+  });
+  const QuestionId = IDL.Nat;
+  const AnswerOption = IDL.Record({
+    'id' : IDL.Nat,
+    'text' : IDL.Text,
+    'correct' : IDL.Bool,
+  });
+  const QuestionPublic = IDL.Record({
+    'id' : QuestionId,
+    'order' : IDL.Nat,
+    'text' : IDL.Text,
+    'questionType' : QuestionType,
+    'quizId' : QuizId,
+    'options' : IDL.Vec(AnswerOption),
+  });
+  const QuizInput = IDL.Record({
+    'title' : IDL.Text,
+    'description' : IDL.Opt(IDL.Text),
+    'passingPercentage' : IDL.Nat,
+  });
   const SubCategoryPublic = IDL.Record({
     'id' : SubCategoryId,
     'sortOrder' : IDL.Nat,
@@ -399,6 +537,16 @@ export const idlFactory = ({ IDL }) => {
     'updatedAt' : Timestamp,
     'categoryCount' : IDL.Nat,
   });
+  const QuizPublic = IDL.Record({
+    'id' : QuizId,
+    'title' : IDL.Text,
+    'createdAt' : Timestamp,
+    'description' : IDL.Opt(IDL.Text),
+    'positionId' : PositionId,
+    'updatedAt' : Timestamp,
+    'passingPercentage' : IDL.Nat,
+    'questionCount' : IDL.Nat,
+  });
   const FontChoice = IDL.Variant({
     'sansSerif' : IDL.Null,
     'monospace' : IDL.Null,
@@ -420,12 +568,44 @@ export const idlFactory = ({ IDL }) => {
     'positionId' : PositionId,
     'coverPhoto' : ExternalBlob,
   });
+  const AttemptId = IDL.Nat;
+  const AttemptAnswer = IDL.Record({
+    'questionId' : QuestionId,
+    'selectedOptionIds' : IDL.Vec(IDL.Nat),
+  });
+  const AttemptPublic = IDL.Record({
+    'id' : AttemptId,
+    'maxScore' : IDL.Nat,
+    'answers' : IDL.Vec(AttemptAnswer),
+    'createdAt' : Timestamp,
+    'score' : IDL.Nat,
+    'quizId' : QuizId,
+    'passed' : IDL.Bool,
+  });
+  const AttemptInput = IDL.Record({
+    'answers' : IDL.Vec(AttemptAnswer),
+    'quizId' : QuizId,
+  });
+  const QuestionEdit = IDL.Record({
+    'text' : IDL.Text,
+    'questionType' : QuestionType,
+    'options' : IDL.Vec(AnswerOptionInput),
+  });
+  const QuizEdit = IDL.Record({
+    'title' : IDL.Text,
+    'description' : IDL.Opt(IDL.Text),
+    'passingPercentage' : IDL.Nat,
+  });
   
   return IDL.Service({
     '__accessControlState' : IDL.Func([], [IDL.Reserved], ['query']),
     '__categories' : IDL.Func([], [IDL.Reserved], ['query']),
     '__items' : IDL.Func([], [IDL.Reserved], ['query']),
     '__positions' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__quizAttempts' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__quizQuestions' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__quizState' : IDL.Func([], [IDL.Reserved], ['query']),
+    '__quizzes' : IDL.Func([], [IDL.Reserved], ['query']),
     '__state' : IDL.Func([], [IDL.Reserved], ['query']),
     '__steps' : IDL.Func([], [IDL.Reserved], ['query']),
     '__subCategories' : IDL.Func([], [IDL.Reserved], ['query']),
@@ -478,6 +658,8 @@ export const idlFactory = ({ IDL }) => {
         [PositionId],
         [],
       ),
+    'createQuestion' : IDL.Func([QuizId, QuestionInput], [QuestionPublic], []),
+    'createQuiz' : IDL.Func([PositionId, QuizInput], [QuizId], []),
     'createSubCategory' : IDL.Func(
         [CategoryId, IDL.Text, ExternalBlob],
         [SubCategoryPublic],
@@ -491,6 +673,8 @@ export const idlFactory = ({ IDL }) => {
     'deleteCategory' : IDL.Func([CategoryId], [IDL.Nat], []),
     'deleteMenuItem' : IDL.Func([ItemId], [], []),
     'deletePosition' : IDL.Func([PositionId], [IDL.Nat], []),
+    'deleteQuestion' : IDL.Func([QuestionId], [IDL.Bool], []),
+    'deleteQuiz' : IDL.Func([QuizId], [IDL.Bool], []),
     'deleteSubCategory' : IDL.Func(
         [SubCategoryId],
         [IDL.Record({ 'itemCount' : IDL.Nat })],
@@ -514,6 +698,18 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(PositionPublic)],
         ['query'],
       ),
+    'getQuizWithQuestions' : IDL.Func(
+        [QuizId],
+        [
+          IDL.Opt(
+            IDL.Record({
+              'quiz' : QuizPublic,
+              'questions' : IDL.Vec(QuestionPublic),
+            })
+          ),
+        ],
+        ['query'],
+      ),
     'getTheme' : IDL.Func([], [ThemePublic], ['query']),
     'getTrainingStep' : IDL.Func(
         [IDL.Nat],
@@ -532,7 +728,17 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(MenuItemPublic)],
         ['query'],
       ),
+    'listMyQuizAttempts' : IDL.Func(
+        [QuizId],
+        [IDL.Vec(AttemptPublic)],
+        ['query'],
+      ),
     'listPositions' : IDL.Func([], [IDL.Vec(PositionPublic)], ['query']),
+    'listQuizzesByPosition' : IDL.Func(
+        [PositionId],
+        [IDL.Vec(QuizPublic)],
+        ['query'],
+      ),
     'listSubCategories' : IDL.Func(
         [CategoryId],
         [IDL.Vec(SubCategoryPublic)],
@@ -544,6 +750,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'listUsers' : IDL.Func([], [IDL.Vec(UserProfilePublic)], ['query']),
+    'moveQuestion' : IDL.Func([QuestionId, IDL.Nat], [IDL.Bool], []),
     'moveTrainingStep' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Bool], []),
     'resetTheme' : IDL.Func([], [ThemePublic], []),
     'revokeRole' : IDL.Func([Principal], [UserProfilePublic], []),
@@ -557,6 +764,7 @@ export const idlFactory = ({ IDL }) => {
     'setCategorySortOrder' : IDL.Func([CategoryId, IDL.Nat], [], []),
     'setPositionSortOrder' : IDL.Func([PositionId, IDL.Nat], [], []),
     'setSubCategorySortOrder' : IDL.Func([SubCategoryId, IDL.Nat], [], []),
+    'submitQuizAttempt' : IDL.Func([AttemptInput], [AttemptPublic], []),
     'updateCategory' : IDL.Func(
         [CategoryId, PositionId, IDL.Text, ExternalBlob],
         [],
@@ -585,6 +793,12 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'updateQuestion' : IDL.Func(
+        [QuestionId, QuestionEdit],
+        [QuestionPublic],
+        [],
+      ),
+    'updateQuiz' : IDL.Func([QuizId, QuizEdit], [], []),
     'updateSubCategory' : IDL.Func(
         [SubCategoryId, IDL.Text, ExternalBlob],
         [SubCategoryPublic],
